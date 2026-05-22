@@ -1,7 +1,7 @@
 {
   "books": [
     {
-      "id": 1,
+      "id": "1",
       "title": "별빛 아래의 서점",
       "author": "홍길동",
       "content": "작은 마을 서점의 1년을 담은 에세이",
@@ -10,7 +10,7 @@
       "updatedAt": "2026-05-22T02:05:45.430Z"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "비밀의 숲",
       "author": "이선우",
       "content": "오래된 숲 속 깊은 곳에 숨겨진 오두막과 그곳에서 벌어지는 마법 같은 이야기",
@@ -19,13 +19,14 @@
       "updatedAt": "2026-05-22T02:16:12.818Z"
     },
     {
-      "id": 2,
-      "title": "비밀의 숲",
-      "author": "이선우",
-      "content": "오래된 숲 속 깊은 곳에 숨겨진 오두막과 그곳에서 벌어지는 마법 같은 이야기",
+      "id": "fJRtC_Cbz8g",
+      "title": "제목만 수정",
+      "author": "나",
+      "content": "테스트 내용",
       "coverImageUrl": "",
-      "createdAt": "2026-05-20T11:00:00.000Z",
-      "updatedAt": "2026-05-22T02:16:12.818Z"
+      "createdAt": "2026-05-22T06:37:58.101Z",
+      "updatedAt": "2026-05-22T06:41:48.255Z"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
