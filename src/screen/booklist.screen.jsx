@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
 import './booklist.screen.css';
+import { hookBookList } from "../hooks/booklist.hook"
 
 function BookListScreen() {
-  const [books, setBooks] = useState([]);
+  const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/books')
-      .then((res) => res.json())
-      .then((data) => setBooks(data))
-      .catch((err) => console.error('도서 목록 조회 실패:', err));
+    const fetchBooks = async () => {
+        try {
+            const data = await hookBookList();
+            setBookList(data);
+        } catch (err) {
+            console.error('도서 목록 조회 실패:', err);
+      }
+  };  fetchBooks();
   }, []);
 
   return (
@@ -25,19 +30,36 @@ function BookListScreen() {
         </div>
 
         <section className="book-list">
-          {books.map((book, index) => (
-            <div className="book-card" key={`${book.id}-${index}`}>
-              <div className="book-cover" onClick={() => navigate('/book-detail')}>
-                {book.coverImageUrl && (
-                  <img src={book.coverImageUrl} alt={book.title} />
-                )}
-              </div>
+            {bookList.map((book, index) => (
+                <div
+                className="book-card"
+                key={`${book.id}-${index}`}
+                >
+                <div
+                    className="book-cover"
+                    onClick={() => navigate(`/book-detail/${book.id}`)}
+                >
+                    {book.coverImageUrl ? (
+                    <img
+                        src={book.coverImageUrl}
+                        alt={book.title}
+                    />
+                    ) : (
+                    <div className="empty-cover">
+                        표지 없음
+                    </div>
+                    )}
+                </div>
 
-              <h3>{book.title}</h3>
-              <p>저자 · {book.author}</p>
-              <p>{book.updatedAt.slice(0, 10)}</p>
-            </div>
-          ))}
+                <h3>{book.title}</h3>
+
+                <p>저자 · {book.author}</p>
+
+                <p>
+                    {book.updatedAt?.slice(0, 10)}
+                </p>
+                </div>
+            ))}
 
           <div className="book-card">
             <div className="book-cover add-cover"  onClick={() => navigate('/book-new')}> 
