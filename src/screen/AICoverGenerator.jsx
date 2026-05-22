@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './AICoverGenerator.css';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 const JSON_SERVER_URL = 'http://localhost:3000';
