@@ -17,15 +17,6 @@
       "coverImageUrl": "",
       "createdAt": "2026-05-20T11:00:00.000Z",
       "updatedAt": "2026-05-22T02:16:12.818Z"
-    },
-    {
-      "id": "fJRtC_Cbz8g",
-      "title": "제목만 수정",
-      "author": "나",
-      "content": "테스트 내용",
-      "coverImageUrl": "",
-      "createdAt": "2026-05-22T06:37:58.101Z",
-      "updatedAt": "2026-05-22T06:41:48.255Z"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
