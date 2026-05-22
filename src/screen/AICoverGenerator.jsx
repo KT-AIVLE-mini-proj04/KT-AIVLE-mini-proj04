@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import './AICoverGenerator.css';
-import { hookBooks } from '../hooks/books.hook';
-
-const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
+import { hookAiCover } from '../hooks/aiCover.hook';
 
 /**
  * AI 표지 생성 컴포넌트 (M5 · M6)
@@ -32,45 +30,7 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
     setError('');
 
     try {
-      // 2. 도서 제목·내용으로 프롬프트 구성
-      const prompt = `A book cover for a book titled "${book.title}" by ${book.author}. ${book.content}`;
-
-      // 3. OpenAI Image API 호출
-      const res = await fetch(OPENAI_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey.trim()}`,
-        },
-        body: JSON.stringify({
-          model,
-          prompt,
-          n: 1,
-          size,
-          quality,
-          output_format: 'png',
-        }),
-      });
-
-      // 4. 응답 확인
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        const status = res.status;
-        if (status === 401) throw new Error('API Key가 유효하지 않습니다. [401 Unauthorized]');
-        if (status === 429) throw new Error('요청 한도 초과입니다. 잠시 후 재시도하세요. [429 Too Many Requests]');
-        throw new Error(errData.error?.message || `OpenAI 오류 [${status}]`);
-      }
-
-      // 5. b64_json 추출 → Data URL 변환
-      const data = await res.json();
-      const b64Json = data.data?.[0]?.b64_json;
-      if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
-      const imageSrc = `data:image/png;base64,${b64Json}`;
-
-      // 6. json-server에 coverImageUrl PATCH 저장
-      await hookBooks('PATCH', { id: book.id, coverImageUrl: imageSrc });
-
-      // 7. 화면 즉시 반영
+      const imageSrc = await hookAiCover(apiKey.trim(), book, { model, size, quality });
       onCoverUpdate(imageSrc);
 
     } catch (err) {
