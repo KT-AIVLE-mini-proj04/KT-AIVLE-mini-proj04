@@ -1,0 +1,13 @@
+header {
+  width: 100%;
+  background: #d9d9d9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 50px;
+}
+
+.alarm {
+  background: #ffc2c2;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
