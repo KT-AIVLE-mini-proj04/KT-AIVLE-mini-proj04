@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './AICoverGenerator.css';
+import { hookBooks } from '../hooks/books.hook';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
-const JSON_SERVER_URL = 'http://localhost:3000';
 
 /**
  * AI 표지 생성 컴포넌트 (M5 · M6)
@@ -68,11 +68,7 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
       const imageSrc = `data:image/png;base64,${b64Json}`;
 
       // 6. json-server에 coverImageUrl PATCH 저장
-      await fetch(`${JSON_SERVER_URL}/books/${book.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ coverImageUrl: imageSrc }),
-      });
+      await hookBooks('PATCH', { id: book.id, coverImageUrl: imageSrc });
 
       // 7. 화면 즉시 반영
       onCoverUpdate(imageSrc);
