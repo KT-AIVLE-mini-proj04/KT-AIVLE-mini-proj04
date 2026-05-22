@@ -15,9 +15,9 @@ const JSON_SERVER_URL = 'http://localhost:3000';
  */
 export default function AICoverGenerator({ book, onCoverUpdate }) {
   const [apiKey, setApiKey]     = useState('');
-  const [model, setModel]       = useState('gpt-image-2');
+  const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
-  const [quality, setQuality]   = useState('auto');
+  const [quality, setQuality]   = useState('medium');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError]       = useState('');
 
@@ -103,13 +103,6 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
       {/* 옵션 선택 */}
       <div className="ai-options">
         <div className="ai-field">
-          <label htmlFor="ai-model">생성 모델</label>
-          <select id="ai-model" value={model} onChange={(e) => setModel(e.target.value)}>
-            <option value="gpt-image-2">gpt-image-2</option>
-          </select>
-        </div>
-
-        <div className="ai-field">
           <label htmlFor="ai-size">이미지 크기</label>
           <select id="ai-size" value={size} onChange={(e) => setSize(e.target.value)}>
             <option value="1024x1536">1024x1536 (도서표지)</option>
@@ -123,7 +116,6 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
-            <option value="auto">Auto</option>
           </select>
         </div>
       </div>
