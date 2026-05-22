@@ -1,20 +1,18 @@
-import './submit_edit.screen.css';
+import "./submit_edit.screen.css";
 
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { useEffect } from "react";
 
-import './submit_edit.screen.css';
+import "./submit_edit.screen.css";
+import { Link } from "react-router";
 
 function submit_edit() {
   return (
     <div className="page">
-      <header className="header">
-        <h1 className="logo">걷기가 서재</h1>
-        <button className="alarm-btn">알림</button>
-      </header>
-
       <main className="main">
-        <button className="back-btn">← 뒤로 가기</button>
+        <Link to={"/books"}>
+          <button className="back-btn">← 뒤로 가기</button>
+        </Link>
 
         <section className="content">
           <section className="form-card">
@@ -56,21 +54,6 @@ function submit_edit() {
           </section>
         </section>
       </main>
-
-      <footer className="footer">
-        <h2 className="footer-logo">걷기가 서재</h2>
-
-        <div className="footer-info">
-          <div className="footer-links">
-            <span>이용약관</span>
-            <span>개인정보처리방침</span>
-            <span>고객센터</span>
-          </div>
-
-          <p>문의 전화: 010-0000-0000</p>
-          <p>© 2026. (주) 걷기가 서재 Co., Ltd. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 }
