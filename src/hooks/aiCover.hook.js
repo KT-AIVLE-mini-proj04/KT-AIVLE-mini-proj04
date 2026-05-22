@@ -3,11 +3,70 @@ import { hookBooks } from './books.hook';
 const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 
 /**
- * AI 표지 생성 hook
- * @param {string} apiKey  - OpenAI API Key
- * @param {object} book    - { id, title, author, content }
- * @param {object} options - { model, size, quality }
- * @returns {string} imageSrc - data:image/png;base64,...
+ * hookAiCover — AI 표지 생성 hook
+ *
+ * OpenAI 이미지 생성 API를 호출하고, 결과를 json-server에 저장한 뒤
+ * Data URL(base64) 형태의 이미지 경로를 반환합니다.
+ *
+ * ─────────────────────────────────────────
+ * 파라미터
+ * ─────────────────────────────────────────
+ * @param {string} apiKey
+ *   OpenAI API Key (sk-... 형태)
+ *   예) 'sk-proj-abc123...'
+ *
+ * @param {object} book
+ *   도서 정보 객체 — 아래 필드가 모두 있어야 합니다.
+ *   - id      {string|number}  json-server 도서 ID
+ *   - title   {string}         도서 제목 (프롬프트에 사용)
+ *   - author  {string}         저자명   (프롬프트에 사용)
+ *   - content {string}         줄거리   (프롬프트에 사용)
+ *
+ * @param {object} [options={}]
+ *   이미지 생성 옵션 (모두 선택 사항, 생략 시 기본값 사용)
+ *   - model   {string}  생성 모델       기본값: 'gpt-image-2'
+ *   - size    {string}  이미지 크기     기본값: '1024x1536'
+ *                       선택: '1024x1024' | '1024x1536'
+ *   - quality {string}  이미지 품질     기본값: 'medium'
+ *                       선택: 'low' | 'medium' | 'high'
+ *
+ * ─────────────────────────────────────────
+ * 반환값
+ * ─────────────────────────────────────────
+ * @returns {Promise<string>}
+ *   생성된 이미지의 Data URL — 'data:image/png;base64,...'
+ *   이 값은 <img src={imageSrc} /> 에 바로 사용 가능합니다.
+ *   json-server의 해당 도서 coverImageUrl 필드에도 자동 저장됩니다.
+ *
+ * ─────────────────────────────────────────
+ * 에러
+ * ─────────────────────────────────────────
+ * 아래 상황에서 Error를 throw합니다. try/catch로 처리하세요.
+ *   - API Key 없음 또는 잘못됨 → '401 Unauthorized'
+ *   - 요청 한도 초과           → '429 Too Many Requests'
+ *   - 이미지 데이터 없음       → '이미지 데이터를 받지 못했습니다.'
+ *
+ * ─────────────────────────────────────────
+ * 사용 예시
+ * ─────────────────────────────────────────
+ * import { hookAiCover } from '../hooks/aiCover.hook';
+ *
+ * // 기본 옵션으로 호출
+ * const imageSrc = await hookAiCover(apiKey, book);
+ *
+ * // 옵션 지정
+ * const imageSrc = await hookAiCover(apiKey, book, {
+ *   size: '1024x1024',
+ *   quality: 'high',
+ * });
+ *
+ * // 에러 처리 포함
+ * try {
+ *   const imageSrc = await hookAiCover(apiKey, book);
+ *   console.log(imageSrc); // 'data:image/png;base64,...'
+ * } catch (err) {
+ *   console.error(err.message);
+ * }
  */
 export const hookAiCover = async (apiKey, book, options = {}) => {
   const {
