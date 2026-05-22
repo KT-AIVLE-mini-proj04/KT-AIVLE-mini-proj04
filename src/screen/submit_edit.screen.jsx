@@ -1,11 +1,11 @@
-import './App.css';
+import './submit_edit.screen.css';
 
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-import './App.css';
+import './submit_edit.screen.css';
 
-function App() {
+function submit_edit() {
   return (
     <div className="page">
       <header className="header">
@@ -75,4 +75,4 @@ function App() {
   );
 }
 
-export default App;
+export default submit_edit;
