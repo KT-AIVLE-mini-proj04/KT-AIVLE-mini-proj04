@@ -12,11 +12,11 @@ const bookData = {
 
 function BookDetailPage() {
   const handleBack = () => {
-    console.log("뒤로가기 버튼 클릭");
+    console.log("뒤로가기 버튼 클릭");  // 페이지 이동 로직 추가 해야함
   };
 
   const handleEdit = () => {
-    console.log("수정 버튼 클릭, book id:", bookData.id);
+    console.log("수정 버튼 클릭, book id:", bookData.id);  // 
   };
 
   const formatDate = (isoString) => {
@@ -28,10 +28,16 @@ function BookDetailPage() {
     });
   };
 
+  const handleDelete = () => {
+  if (window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
+    console.log("삭제 진행, book id:", bookData.id);
+  }
+};
+
   const hasCoverImage = bookData.coverImageUrl && bookData.coverImageUrl.trim() !== '';
 
   return (
-    <div ClassName="book-detail-page">
+    <div className="book-detail-page">
       
       <header className="header">
         <h1 className="title">걷기가 서재</h1>

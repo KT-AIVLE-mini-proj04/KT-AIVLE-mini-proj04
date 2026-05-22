@@ -1,0 +1,215 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #111;
+  background-color: white;
+}
+
+/* ===== 페이지 전체 ===== */
+.book-detail-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+.header {
+  height: 110px;
+  background-color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 90px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.notification-btn {
+  border: none;
+  background-color: #f5bcbc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ===== Main ===== */
+.main-content {
+  flex: 1;
+  padding: 40px 90px 80px;
+}
+
+.back-button {
+  border: none;
+  background-color: #eeeeee;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 24px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+/* ===== 책 상세 카드 ===== */
+.book-detail-Card {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  align-items: flex-start;
+  padding: 20px 0;
+}
+
+/* ===== 왼쪽: 표지 ===== */
+.book-cover {
+  flex-shrink: 0;
+  width: 280px;
+}
+
+.book-cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+}
+
+/* 이미지 없을 때 Placeholder*/
+.book-cover-placeholder {
+  width: 280px;
+  height: 400px;
+  background-color: #d9d9d9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+}
+
+.placeholder-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.placeholder-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+}
+
+/* ===== 오른쪽: 책 정보 ===== */
+.book-info {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.book-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.book-author {
+  font-size: 18px;
+  color: #555;
+  margin: 0;
+}
+
+.content-label {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 8px 0 0 0;
+}
+
+/* 내용 박스 */
+.content-box {
+  background-color: #ffe3e3;
+  padding: 20px;
+  border-radius: 8px;
+  min-height: 180px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+}
+
+.content-box p {
+  white-space: pre-line;
+  line-height: 1.7;
+  color: #333;
+  margin: 0;
+  font-size: 15px;
+}
+
+/* 등록일 */
+.book-date {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* ===== 수정/삭제 버튼 ===== */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.btn-edit,
+.btn-delete {
+  border: none;
+  padding: 8px 26px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background-color: #d9d9d9;
+  border-radius: 3px;
+}
+
+.btn-delete {
+  background: transparent;
+}
+
+/* ===== Footer ===== */
+.footer {
+  height: 170px;
+  background-color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  padding: 0 90px;
+}
+
+.footer-logo {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.footer-info {
+  margin-left: auto;
+  margin-right: 110px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 10px;
+}
+
+.footer-info p {
+  margin: 8px 0;
+}
