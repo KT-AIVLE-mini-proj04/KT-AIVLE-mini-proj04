@@ -1,4 +1,6 @@
 import coverLogo from '../assets/sample_img.png'
+import Footer from '../common/components/Footer'
+import Header from '../common/components/Header'
 import './main.screen.css'
 
 const stats = [
@@ -10,14 +12,7 @@ const stats = [
 function MainScreen() {
 	return (
 		<div className="main-page">
-			<header className="main-header">
-				<div className="main-shell header-content">
-					<strong className="brand">걷기와 서재</strong>
-					<button type="button" className="alert-btn">
-						알림
-					</button>
-				</div>
-			</header>
+			<Header />
 
 			<main>
 				<section className="hero">
@@ -52,28 +47,7 @@ function MainScreen() {
 				</section>
 			</main>
 
-			<footer className="main-footer">
-				<div className="main-shell footer-content">
-					<strong className="footer-brand">걷기와 서재</strong>
-					<div className="footer-meta">
-						<div className="footer-links">
-							<button type="button" className="footer-link">
-								이용약관
-							</button>
-							<button type="button" className="footer-link">
-								개인정보처리방침
-							</button>
-							<button type="button" className="footer-link">
-								고객센터
-							</button>
-						</div>
-						<div className="footer-contact">문의 전화 : 010-0000-0000</div>
-						<div className="footer-copy">
-							© 2026. (주) 걷기와 서재 Co., Ltd. All rights reserved.
-						</div>
-					</div>
-				</div>
-			</footer>
+			<Footer />
 		</div>
 	)
 }
