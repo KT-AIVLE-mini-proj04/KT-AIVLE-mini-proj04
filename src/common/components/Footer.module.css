@@ -1,0 +1,21 @@
+footer {
+  width: 100%;
+  background: #d9d9d9;
+  padding: 48px 75px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+}
+
+footer span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#company-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
