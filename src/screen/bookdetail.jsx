@@ -66,7 +66,6 @@ function BookDetailPage() {
               <p>{bookData.content}</p>
             </div>
 
-            {/* 등록일 표시 (선택사항) */}
             <p className="book-date">
               등록일: {formatDate(bookData.createdAt)}
             </p>
@@ -79,7 +78,7 @@ function BookDetailPage() {
         </div>
       </main>
 
-      {/* Footer */}
+
       <footer className="footer">
         <h2 className="footer-logo">걷기가 서재</h2>
         <div className="footer-info">
