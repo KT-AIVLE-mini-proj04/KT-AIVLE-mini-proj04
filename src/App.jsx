@@ -32,8 +32,7 @@ function App() {
     //hookBooks('DELETE', { id: 'MNq0sDIB_og' }).then(console.log)
 
   }, [])
-
-  return <div>테스트 중</div>
+  
   return <MainScreen />
 }
 
