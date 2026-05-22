@@ -31,8 +31,8 @@ function App() {
     // 삭제
     hookBooks('DELETE', { id: 'vMa9VeVkGDU' }).then(console.log)
   }, [])
-
-  return <div>테스트 중</div>
+  
+  return <MainScreen />
 }
 
-export default App
+export default App;
