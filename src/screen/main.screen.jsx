@@ -1,3 +1,4 @@
+import coverLogo from '../assets/sample_img.png'
 import './main.screen.css'
 
 const stats = [
@@ -21,44 +22,8 @@ function MainScreen() {
 			<main>
 				<section className="hero">
 					<div className="main-shell hero-content">
-						<div className="hero-mark" aria-hidden="true">
-							<svg
-								viewBox="0 0 120 80"
-								role="presentation"
-								aria-hidden="true"
-							>
-								<path
-									d="M20 30c8-10 26-14 40-4 10 8 12 22 6 32"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="3"
-									strokeLinecap="round"
-								/>
-								<path
-									d="M70 20c10-2 18 2 24 10"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="3"
-									strokeLinecap="round"
-								/>
-								<rect
-									x="46"
-									y="34"
-									width="28"
-									height="32"
-									rx="6"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="3"
-								/>
-								<path
-									d="M54 44h12M54 52h12"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="3"
-									strokeLinecap="round"
-								/>
-							</svg>
+						<div className="hero-mark">
+							<img src={coverLogo} alt="CoverAI" />
 						</div>
 						<h1>도서 관리 시스템에 오신 것을 환영합니다!</h1>
 						<p className="hero-subtext">

@@ -95,15 +95,16 @@
 }
 
 .hero-mark {
-  width: 96px;
-  height: 72px;
-  color: #3a3a3a;
+  width: 160px;
+  height: 96px;
   animation: float-in 0.8s ease forwards;
 }
 
-.hero-mark svg {
+.hero-mark img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .hero-actions {
