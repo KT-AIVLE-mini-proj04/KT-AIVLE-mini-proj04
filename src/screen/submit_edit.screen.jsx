@@ -5,13 +5,13 @@ import { useEffect } from "react";
 
 import "./submit_edit.screen.css";
 import { Link } from "react-router";
-import { hookBooks } from '../hooks/books.hook.js';
+import { hookBooks } from "../hooks/books.hook.js";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
-    title: '',
-    author: '',
-    content: '',
+    title: "",
+    author: "",
+    content: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -29,40 +29,40 @@ function SubmitEdit() {
     e.preventDefault();
 
     if (!form.title.trim()) {
-      alert('제목을 입력하세요.');
+      alert("제목을 입력하세요.");
       return;
     }
 
     if (!form.author.trim()) {
-      alert('저자를 입력하세요.');
+      alert("저자를 입력하세요.");
       return;
     }
 
     if (!form.content.trim()) {
-      alert('내용을 입력하세요.');
+      alert("내용을 입력하세요.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const res = await hookBooks('POST', {
+      const res = await hookBooks("POST", {
         title: form.title,
         author: form.author,
         content: form.content,
       });
 
-      console.log('등록 성공:', res);
-      alert('도서가 등록되었습니다.');
+      console.log("등록 성공:", res);
+      alert("도서가 등록되었습니다.");
 
       setForm({
-        title: '',
-        author: '',
-        content: '',
+        title: "",
+        author: "",
+        content: "",
       });
     } catch (error) {
-      console.error('등록 실패:', error);
-      alert('도서 등록에 실패했습니다.');
+      console.error("등록 실패:", error);
+      alert("도서 등록에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -118,21 +118,16 @@ function SubmitEdit() {
                   className="cancel-btn"
                   onClick={() =>
                     setForm({
-                      title: '',
-                      author: '',
-                      content: '',
+                      title: "",
+                      author: "",
+                      content: "",
                     })
-                  }
-                >
+                  }>
                   취소
                 </button>
 
-                <button
-                  type="submit"
-                  className="save-btn"
-                  disabled={loading}
-                >
-                  {loading ? '저장 중...' : '저장'}
+                <button type="submit" className="save-btn" disabled={loading}>
+                  {loading ? "저장 중..." : "저장"}
                 </button>
               </div>
             </form>
