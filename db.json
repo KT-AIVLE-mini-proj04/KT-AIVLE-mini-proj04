@@ -17,6 +17,22 @@
       "coverImageUrl": "",
       "createdAt": "2026-05-20T11:00:00.000Z",
       "updatedAt": "2026-05-22T02:16:12.818Z"
+    },
+    {
+      "title": "별빛 아래의 서점SFDDSF",
+      "author": "홍길동DSADSA",
+      "content": "작은 마을 서점의 1년을 담은 에세이DSADSA",
+      "createdAt": "2026-05-26T04:41:20.399Z",
+      "updatedAt": "2026-05-26T04:41:20.399Z",
+      "id": "z7IwryJCpDk"
+    },
+    {
+      "title": "테스트",
+      "author": "테스트",
+      "content": "테스트",
+      "createdAt": "2026-05-26T04:42:11.175Z",
+      "updatedAt": "2026-05-26T04:42:11.175Z",
+      "id": "UJiy0LaPBKk"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
