@@ -17,8 +17,8 @@ function App() {
           <Route path="books">
             <Route index element={<BookList />} />
             <Route path=":id" element={<BookDetail />} />
+            <Route path=":id/edit" element={<SubmitEdit />} />
             <Route path="submit" element={<SubmitEdit />} />
-            <Route path="edit" element={<SubmitEdit />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

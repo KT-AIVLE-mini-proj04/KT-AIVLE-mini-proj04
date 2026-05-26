@@ -2,12 +2,10 @@ import "./submit_edit.screen.css";
 
 import { useState } from "react";
 import { useEffect } from "react";
-
-import "./submit_edit.screen.css";
 import { Link } from "react-router";
-// import { useState } from 'react';
-import { hookBooks } from '../hooks/books.hook.js';
-import { useNavigate } from 'react-router-dom';
+
+import { hookBooks } from "../hooks/books.hook.js";
+import { useLocation, useNavigate } from "react-router";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -15,6 +13,27 @@ function SubmitEdit() {
     author: "",
     content: "",
   });
+  const location = useLocation();
+  const id = location.state?.id;
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchBook = async () => {
+      try {
+        const res = await hookBooks('GET', { id });
+        setForm({
+          title: res.title,
+          author: res.author,
+          content: res.content,
+        });
+      } catch (error) {
+        console.error('도서 정보 불러오기 실패:', error);
+        alert('도서 정보를 불러오는 데 실패했습니다.');
+      }
+    };
+    fetchBook();
+  }, [id]);
 
   const [loading, setLoading] = useState(false);
 
@@ -48,25 +67,29 @@ function SubmitEdit() {
     try {
       setLoading(true);
 
-      const res = await hookBooks("POST", {
+      const res = await hookBooks(id ? 'PATCH' : 'POST', {
+        id,
         title: form.title,
         author: form.author,
         content: form.content,
       });
 
-      console.log("등록 성공:", res);
-      alert("도서가 등록되었습니다.");
+      console.log(id ? '수정 성공:' : '등록 성공:', res);
+      alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
-      setForm({
-        title: "",
-        author: "",
-        content: "",
-      });
+      if (!id) {
+        setForm({
+          title: '',
+          author: '',
+          content: '',
+        });
+      }
     } catch (error) {
-      console.error("등록 실패:", error);
-      alert("도서 등록에 실패했습니다.");
+      console.error(id ? '수정 실패:' : '등록 실패:', error);
+      alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
+      navigate(-1);
     }
   };
 
@@ -78,12 +101,14 @@ function SubmitEdit() {
         <div>
           <button onClick={() => navigate(-1)}>
             ← 뒤로가기
-          </button> 
+          </button>
         </div>
 
         <section className="content">
           <section className="form-card">
-            <div className="form-title">새 도서 등록</div>
+            <div className="form-title">
+              {id ? '도서 수정' : '새 도서 등록'}
+            </div>
 
             <form className="book-form" onSubmit={handleSubmit}>
               <label>
@@ -132,8 +157,12 @@ function SubmitEdit() {
                   취소
                 </button>
 
-                <button type="submit" className="save-btn" disabled={loading}>
-                  {loading ? "저장 중..." : "저장"}
+                <button
+                  type="submit"
+                  className="save-btn"
+                  disabled={loading}
+                >
+                  {loading ? '저장 중...' : id ? '수정' : '저장'}
                 </button>
               </div>
             </form>
