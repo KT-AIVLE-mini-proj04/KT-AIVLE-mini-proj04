@@ -163,7 +163,7 @@ function SubmitEdit() {
                       content: "",
                     })
                   }>
-                  }>
+                  
                   취소
                 </button>
 
