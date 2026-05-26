@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from 'react-router';
 import { hookBooks } from '../hooks/books.hook';
 import './bookdetail.css';
 
@@ -35,7 +35,7 @@ function BookDetailPage() {
 
 
   const handleEdit = () => {
-    navigate(`/books/edit?id=${bookData.id}`);
+    navigate("/books/submit", { state: { id: bookData.id } });
   };
 
 
@@ -98,7 +98,7 @@ if (error || !bookData) {
 
 
 
-  const hasCoverImage = 
+  const hasCoverImage =
   bookData.coverImageUrl && bookData.coverImageUrl.trim() !== '';
 
   return (
@@ -117,7 +117,6 @@ if (error || !bookData) {
                 alt={`${bookData.title} 표지`}
               />
             ) : (
-              // Placeholder: 이미지 없을 때 보여줄 대체 UI
               <div className="book-cover-placeholder">
                 <span className="placeholder-icon">📖</span>
                 <span className="placeholder-text">{bookData.title}</span>
