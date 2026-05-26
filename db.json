@@ -8,15 +8,6 @@
       "coverImageUrl": "",
       "createdAt": "2026-04-24T09:00:00.000Z",
       "updatedAt": "2026-05-22T02:05:45.430Z"
-    },
-    {
-      "id": "2",
-      "title": "비밀의 숲",
-      "author": "이선우",
-      "content": "오래된 숲 속 깊은 곳에 숨겨진 오두막과 그곳에서 벌어지는 마법 같은 이야기",
-      "coverImageUrl": "",
-      "createdAt": "2026-05-20T11:00:00.000Z",
-      "updatedAt": "2026-05-22T02:16:12.818Z"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

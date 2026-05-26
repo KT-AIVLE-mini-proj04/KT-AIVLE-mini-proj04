@@ -1,44 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
+import { hookBooks } from '../hooks/books.hook';
 import './bookdetail.css';
 
-const booksData = [
-  {
-    id: 1,
-    title: "별빛 아래의 서점",
-    author: "홍길동",
-    content: "작은 마을 서점의 1년을 담은 에세이",
-    coverImageUrl: "",
-    createdAt: "2026-04-24T09:00:00.000Z",
-    updatedAt: "2026-04-24T09:00:00.000Z",
-  },
-  {
-    id: 2,
-    title: "비밀의 숲",
-    author: "이선우",
-    content: "오래된 숲 속 깊은 곳에 숨겨진 오두막과 그곳에서 벌어지는 마법 같은 이야기",
-    coverImageUrl: "",
-    createdAt: "2026-05-20T11:00:00.000Z",
-    updatedAt: "2026-05-20T11:00:00.000Z",
-  },
-  {
-    id: 3,
-    title: "인공지능 시대의 생존법",
-    author: "김철수",
-    content: "급변하는 기술 트렌드 속에서 지치지 않고 자신만의 경쟁력을 가꾸는 실천 가이드",
-    coverImageUrl: "",
-    createdAt: "2026-05-21T14:30:00.000Z",
-    updatedAt: "2026-05-21T14:30:00.000Z",
-  },
-];
 
 function BookDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const { id } = useParams(); // URL 파라미터에서 id 추출 (예: /books/3 → id는 "3" 문자열)
+  // 상태 3종 세트
+  const [bookData, setBookData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // 뒤로 가기 기능
-
-  const bookData = booksData.find((book) => book.id === Number(id)); // id는 문자열이므로 Number()로 숫자로 변환하여 비교
+  // 페이지 진입 시 책 정보 가져오기
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const result = await hookBooks('GET', { id });
+        setBookData(result);
+      } catch (err) {
+        console.error('도서 조회 실패:', err);
+        setError('해당 도서를 찾을 수 없습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBook();
+  }, [id]);
 
   const handleBack = () => {
     navigate('/books');
@@ -50,12 +39,20 @@ function BookDetailPage() {
   };
 
 
-  const handleDelete = () => {
-    if (window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
-      console.log("삭제 진행, book id:", bookData.id);
-      navigate('/books'); // 삭제 후 책 목록 페이지로 이동
-    }
-  }; 
+const handleDelete = async () => {
+  if (!window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
+    return;
+  }
+
+  try {
+    await hookBooks('DELETE', { id: bookData.id });
+    alert('삭제되었습니다.');
+    navigate('/books');
+  } catch (err) {
+    console.error('삭제 중 오류:', err);
+    alert('삭제 중 오류가 발생했습니다.');
+  }
+};
 
 
   const formatDate = (isoString) => {  // 날짜
@@ -70,24 +67,35 @@ function BookDetailPage() {
 
 
 
-  if (!bookData) { // 해당 id에 맞는 책이 없는 경우
-    return (
-      <div className="book-detail-page">
-        <header className="header">
-          <h1 className="title">걷기가 서재</h1>
-          <button className="notification-btn">알림</button>
-        </header>
-        <main className="main-content">
-          <button className="back-button" onClick={() => navigate(-1)}>
-            ← 뒤로 가기
-          </button>
-          <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
-            해당 도서를 찾을 수 없습니다.
-          </p>
-        </main>
-      </div>
-    );
-  }  
+// 로딩 중 표시
+if (isLoading) {
+  return (
+    <div className="book-detail-page">
+      <main className="main-content">
+        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
+          도서 정보를 불러오는 중...
+        </p>
+      </main>
+    </div>
+  );
+}
+
+// 에러 또는 책 없음
+if (error || !bookData) {
+  return (
+    <div className="book-detail-page">
+      <main className="main-content">
+        <button className="back-button" onClick={handleBack}>
+          ← 뒤로 가기
+        </button>
+        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
+          {error || '해당 도서를 찾을 수 없습니다.'}
+        </p>
+      </main>
+    </div>
+  );
+}
+
 
 
   const hasCoverImage = 
