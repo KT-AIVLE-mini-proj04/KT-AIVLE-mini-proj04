@@ -145,6 +145,17 @@ if (error || !bookData) {
                 삭제
               </button>
             </div>
+
+            {(bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)) && (
+              <div style={{ marginTop: '20px' }}>
+                <h4 style={{ margin: '0 0 8px', fontSize: '15px' }}>🎧 오디오북</h4>
+                <audio
+                  controls
+                  src={bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </main>
