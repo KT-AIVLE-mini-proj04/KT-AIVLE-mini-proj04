@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import "./booklist.screen.css";
-import { hookBookList } from "../hooks/booklist.hook";
-import { Link } from "react-router";
+import { hookBookList } from "../hooks/bookList.hook.js";
+import { Link, useNavigate } from "react-router";
 
 function BookListScreen() {
   const [bookList, setBookList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         const data = await hookBookList();
-        setBookList(data);
+        setBookList(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("도서 목록 조회 실패:", err);
       }
@@ -30,9 +31,7 @@ function BookListScreen() {
           {bookList.map((book, index) => (
             <div className="book-card" key={`${book.id}-${index}`}>
               <Link to={`${book.id}`}>
-                <div
-                  className="book-cover"
-                  onClick={() => navigate(`/book-detail/${book.id}`)}>
+                <div className="book-cover" onClick={() => navigate(`${book.id}`)}>
                   {book.coverImageUrl ? (
                     <img src={book.coverImageUrl} alt={book.title} />
                   ) : (
