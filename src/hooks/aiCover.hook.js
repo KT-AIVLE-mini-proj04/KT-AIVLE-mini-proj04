@@ -102,8 +102,10 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
   if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
   const imageSrc = `data:image/png;base64,${b64Json}`;
 
-  // 4. json-server에 coverImageUrl PATCH 저장
-  await hookBooks('PATCH', { id: book.id, coverImageUrl: imageSrc });
+  // 4. book.id가 있을 때만 서버에 저장 (없으면 부모 컴포넌트에서 POST 후 PATCH)
+  if (book.id) {
+    await hookBooks('PATCH', { id: book.id, coverImageUrl: imageSrc });
+  }
 
   return imageSrc;
 };
