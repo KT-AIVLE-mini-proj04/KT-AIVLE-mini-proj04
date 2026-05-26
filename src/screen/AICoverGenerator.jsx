@@ -11,7 +11,7 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, onCoverUpdate }) {
+export default function AICoverGenerator({ book, setForm }) {
   const [apiKey, setApiKey]     = useState('');
   const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
@@ -21,17 +21,13 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
 
   const handleGenerateCover = async () => {
     // 1. API Key 유효성 검사
-    if (!apiKey.trim()) {
-      setError('OpenAI API Key를 입력해주세요.');
-      return;
-    }
-
     setIsGenerating(true);
     setError('');
 
     try {
-      const imageSrc = await hookAiCover(apiKey.trim(), book, { model, size, quality });
-      onCoverUpdate(imageSrc);
+      const imageSrc = await hookAiCover(book, { model, size, quality });
+      console.log('생성된 이미지 URL:', imageSrc);
+      setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
 
     } catch (err) {
       setError(err.message || '표지 생성에 실패했습니다.');
@@ -43,18 +39,6 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
   return (
     <div className="ai-cover-generator">
       <h3>AI 표지 생성</h3>
-
-      {/* API Key 입력 */}
-      <div className="ai-field">
-        <label htmlFor="ai-api-key">OpenAI API Key</label>
-        <input
-          id="ai-api-key"
-          type="password"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder="sk-..."
-        />
-      </div>
 
       {/* 옵션 선택 */}
       <div className="ai-options">

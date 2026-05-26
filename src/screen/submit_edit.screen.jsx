@@ -6,12 +6,14 @@ import { Link } from "react-router";
 
 import { hookBooks } from "../hooks/books.hook.js";
 import { useLocation, useNavigate } from "react-router";
+import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
     title: "",
     author: "",
     content: "",
+    coverImageUrl: "",
   });
   const location = useLocation();
   const id = location.state?.id;
@@ -22,10 +24,13 @@ function SubmitEdit() {
     const fetchBook = async () => {
       try {
         const res = await hookBooks('GET', { id });
+        console.log('도서 정보:', res);
         setForm({
+          id: res.id,
           title: res.title,
           author: res.author,
           content: res.content,
+          coverImageUrl: res.coverImageUrl,
         });
       } catch (error) {
         console.error('도서 정보 불러오기 실패:', error);
@@ -72,6 +77,7 @@ function SubmitEdit() {
         title: form.title,
         author: form.author,
         content: form.content,
+        coverImageUrl: form.coverImageUrl || '',
       });
 
       console.log(id ? '수정 성공:' : '등록 성공:', res);
@@ -82,6 +88,7 @@ function SubmitEdit() {
           title: '',
           author: '',
           content: '',
+          coverImageUrl: '',
         });
       }
     } catch (error) {
@@ -152,6 +159,7 @@ function SubmitEdit() {
                       title: "",
                       author: "",
                       content: "",
+                      coverImageUrl: "",
                     })
                   }>
                   취소
@@ -170,10 +178,10 @@ function SubmitEdit() {
 
           <section className="ai-section">
             <h2>AI 표지 생성</h2>
-
-            <div className="result-box">
+            <AICoverGenerator book={form} setForm={setForm} />
+            {/*<div className="result-box">
               <p>(결과물)</p>
-            </div>
+            </div>*/}
           </section>
         </section>
       </main>

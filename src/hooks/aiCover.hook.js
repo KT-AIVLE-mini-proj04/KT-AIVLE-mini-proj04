@@ -68,7 +68,13 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
  *   console.error(err.message);
  * }
  */
-export const hookAiCover = async (apiKey, book, options = {}) => {
+export const hookAiCover = async (book, options = {}) => {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('VITE_OPENAI_API_KEY가 설정되지 않았습니다. .env 설정과 dev 서버 재시작을 확인하세요.');
+  }
+
+  console.log('hookAiCover 호출:', { book, options });
   const {
     model = 'gpt-image-2',
     size = '1024x1536',
@@ -103,7 +109,5 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
   const imageSrc = `data:image/png;base64,${b64Json}`;
 
   // 4. json-server에 coverImageUrl PATCH 저장
-  await hookBooks('PATCH', { id: book.id, coverImageUrl: imageSrc });
-
   return imageSrc;
 };
