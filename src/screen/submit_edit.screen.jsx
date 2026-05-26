@@ -3,6 +3,7 @@ import "./submit_edit.screen.css";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { hookBooks } from '../hooks/books.hook.js';
+import { compressImage } from '../hooks/aiCover.hook.js';
 import AICoverGenerator from './AICoverGenerator';
 import TtsGenerator from './tts_mp3';
 
@@ -82,7 +83,8 @@ function SubmitEdit() {
       if (!id && book) {
         // 새 등록: AI 에셋 저장 후 폼 초기화, 페이지 유지 (AI 생성 계속 사용 가능)
         if (coverImageUrl) {
-          await hookBooks('PATCH', { id: book.id, coverImageUrl });
+          const thumb = await compressImage(coverImageUrl, 300);
+          await hookBooks('PATCH', { id: book.id, coverImageUrl: thumb });
         }
         if (audioUrl) {
           await hookBooks('PATCH', { id: book.id, audioUrl });

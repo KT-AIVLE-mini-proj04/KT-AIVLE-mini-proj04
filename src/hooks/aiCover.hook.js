@@ -2,6 +2,21 @@ import { hookBooks } from './books.hook';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 
+// Canvas API로 이미지를 maxWidth px 너비로 압축 (JPEG 70%) → json-server 저장 크기 절감
+export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject) => {
+  const img = new Image();
+  img.onload = () => {
+    const scale = Math.min(1, maxWidth / img.width);
+    const canvas = document.createElement('canvas');
+    canvas.width  = Math.round(img.width  * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    resolve(canvas.toDataURL('image/jpeg', 0.7));
+  };
+  img.onerror = reject;
+  img.src = dataUrl;
+});
+
 /**
  * hookAiCover — AI 표지 생성 hook
  *
@@ -104,7 +119,8 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
 
   // 4. book.id가 있을 때만 서버에 저장 (없으면 부모 컴포넌트에서 POST 후 PATCH)
   if (book.id) {
-    await hookBooks('PATCH', { id: book.id, coverImageUrl: imageSrc });
+    const thumb = await compressImage(imageSrc, 300);
+    await hookBooks('PATCH', { id: book.id, coverImageUrl: thumb });
   }
 
   return imageSrc;
