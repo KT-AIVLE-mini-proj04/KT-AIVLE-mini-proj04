@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { hookBooks } from '../hooks/books.hook';
 import './bookdetail.css';
 
@@ -7,6 +7,7 @@ import './bookdetail.css';
 function BookDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 상태 3종 세트
   const [bookData, setBookData] = useState(null);
@@ -27,7 +28,7 @@ function BookDetailPage() {
       }
     };
     fetchBook();
-  }, [id]);
+  }, [id, location.key]); // location.key가 바뀌면(navigate(-1) 포함) 재fetch
 
   const handleBack = () => {
     navigate('/books');
