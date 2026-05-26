@@ -1,7 +1,7 @@
 import style from "./Button.module.css";
 
-function Button({ className, children }) {
-  return <button className={className}>{children}</button>;
+function Button({ className, children, onClick }) {
+  return <button className={className} onClick={onClick}>{children}</button>;
 }
 
 export default Button;
