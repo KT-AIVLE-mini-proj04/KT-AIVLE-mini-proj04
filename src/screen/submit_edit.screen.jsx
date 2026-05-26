@@ -5,12 +5,9 @@ import { useEffect } from "react";
 
 import "./submit_edit.screen.css";
 import { Link } from "react-router";
-<<<<<<< HEAD
+// import { useState } from 'react';
 import { hookBooks } from '../hooks/books.hook.js';
 import { useNavigate } from 'react-router-dom';
-=======
-import { hookBooks } from "../hooks/books.hook.js";
->>>>>>> 031b7f89689b1cc7ddf77f7ae59c3af1a200bc63
 
 function SubmitEdit() {
   const [form, setForm] = useState({
