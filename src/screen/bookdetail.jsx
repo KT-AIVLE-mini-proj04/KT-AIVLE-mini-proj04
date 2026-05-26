@@ -34,9 +34,9 @@ function BookDetailPage() {
   };
 
 
-  const handleEdit = () => {
-    navigate(`/books/edit?id=${bookData.id}`);
-  };
+const handleEdit = () => {
+  navigate("/books/submit", { state: { id: bookData.id } }); // submit으로 수정, 파람으로 id 자체를 넘겨야 함
+};
 
 
 const handleDelete = async () => {
