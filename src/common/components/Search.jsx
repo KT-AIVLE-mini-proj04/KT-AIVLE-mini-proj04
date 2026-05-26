@@ -2,6 +2,7 @@ import style from "./Search.module.css";
 import Button from "./Button";
 import { Link } from "react-router";
 import { useEffect, useRef, useState } from "react";
+import { hookBookList } from "@hooks/bookList.hook.js";
 
 import { searchBooks } from "@utils/searchBooks.js";
 
@@ -15,12 +16,6 @@ export default function Search() {
   const searchInputRef = useRef(null);
   const searchResultRef = useRef(null);
   const hasSearchResult = searchQuery.length > 0;
-
-  const tempBooks = [
-    { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", content: "..." },
-    { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee", content: "..." },
-    { id: 3, title: "1984", author: "George Orwell", content: "..." },
-  ];
 
   const handleClickSearch = () => {
     setIsSearchOpen((prev) => {
@@ -40,12 +35,19 @@ export default function Search() {
       setSearchQuery([]);
       return;
     }
-    const res = searchBooks(tempBooks, query);
+    const res = searchBooks(books, query);
     setSearchQuery(res);
     console.log("검색 결과:", res);
   };
 
 	useEffect(() => {
+
+		const getBooks = async () => {
+			const data = await hookBookList();
+			setBooks(data);
+		};
+		getBooks();
+
 		if (isSearchOpen) {
 			searchInputRef.current?.focus();
 		}
