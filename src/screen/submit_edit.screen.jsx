@@ -1,12 +1,12 @@
 import "./submit_edit.screen.css";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router";
 
 import "./submit_edit.screen.css";
 import { hookBooks } from "../hooks/books.hook.js";
-import AICoverGenerator from "./AICoverGenerator";
+import { useParams } from "react-router";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -14,6 +14,27 @@ function SubmitEdit() {
     author: '',
     content: '',
   });
+  const { id } = useParams();
+  useEffect(() => {
+    //if (!id) return;
+
+    const fetchBook = async () => {
+      try {
+        const res = await hookBooks('GET', { id: '1' });
+        setForm({
+          title: res.title,
+          author: res.author,
+          content: res.content,
+        });
+      } catch (error) {
+        console.error('도서 정보 불러오기 실패:', error);
+        alert('도서 정보를 불러오는 데 실패했습니다.');
+      }
+    };
+    fetchBook();
+  }, []);
+
+
 
   const [loading, setLoading] = useState(false);
 
