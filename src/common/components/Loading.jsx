@@ -8,7 +8,8 @@ function Message({ children }) {
   return <span className={style.message}>{children}</span>;
 }
 
-function Loading({message}) {
+function Loading({ loading, message }) {
+  if (!loading) return null;
   return (
     <div id={style.loading}>
       <Spinner />
