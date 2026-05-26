@@ -1,20 +1,30 @@
 import { useEffect, useState } from "react";
 import "./booklist.screen.css";
 import { hookBookList } from "../hooks/booklist.hook";
-import { Link } from "react-router";
+import { Link, useOutletContext } from "react-router";
 
 function BookListScreen() {
   const [bookList, setBookList] = useState([]);
+  const { changeLoading } = useOutletContext();
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const data = await hookBookList();
-        setBookList(data);
+        changeLoading(true, "도서 목록을 가져오고 있습니다.");
+
+        const data = await hookBookList(); // 여기 실제 서버 API 요청 시... (요청 지연 시간이 있잖아요)
+        console.log("데이터 로드");
+        console.log(data);
+        if (data) {
+          setBookList(data);
+          changeLoading(false);
+        }
       } catch (err) {
         console.error("도서 목록 조회 실패:", err);
+        changeLoading(false);
       }
     };
+
     fetchBooks();
   }, []);
 
@@ -27,7 +37,7 @@ function BookListScreen() {
         </div>
 
         <section className="book-list">
-          {bookList.map((book, index) => (
+          {bookList?.map((book, index) => (
             <div className="book-card" key={`${book.id}-${index}`}>
               <Link to={`${book.id}`}>
                 <div
