@@ -166,14 +166,9 @@ body {
 }
 
 .ai-section h2 {
-<<<<<<< HEAD
-  font-size: 28px;
-  margin: 0 0 20px;
-=======
   font-size: 31px;
   font-weight: 800;
   margin: 0 0 12px;
->>>>>>> 46f7827cc8a7a934d6f6b5818a035e6ae2196d4c
 }
 
 .result-box {
@@ -198,7 +193,6 @@ body {
     align-items: center;
   }
 
-<<<<<<< HEAD
 .footer-links {
   display: flex;
   gap: 24px;
@@ -208,9 +202,3 @@ body {
 .footer-info p {
   margin: 8px 0;
 }
-=======
-  .back-btn {
-    margin-left: 40px;
-  }
-}
->>>>>>> 46f7827cc8a7a934d6f6b5818a035e6ae2196d4c

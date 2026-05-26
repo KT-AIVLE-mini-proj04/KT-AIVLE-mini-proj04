@@ -12,13 +12,7 @@ function SubmitEdit() {
     title: "",
     author: "",
     content: "",
-<<<<<<< HEAD
     coverImageUrl: "",
-=======
-    title: "",
-    author: "",
-    content: "",
->>>>>>> 46f7827cc8a7a934d6f6b5818a035e6ae2196d4c
   });
   const location = useLocation();
   const id = location.state?.id;
@@ -69,7 +63,6 @@ function SubmitEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-<<<<<<< HEAD
     if (!form.title.trim()) { alert('제목을 입력하세요.'); return; }
     if (!form.author.trim()) { alert('저자를 입력하세요.'); return; }
     if (!form.content.trim()) { alert('내용을 입력하세요.'); return; }
@@ -77,25 +70,6 @@ function SubmitEdit() {
     if (form.author.trim().length > 10) { alert('저자는 10자 이하로 입력하세요.'); return; }
     if (form.content.trim().length < 10) { alert('내용을 10자 이상 입력하세요.'); return; }
     if (form.content.trim().length > 43) { alert('내용은 43자 이하로 입력하세요.'); return; }
-=======
-    if (!form.title.trim()) {
-      alert("제목을 입력하세요.");
-      alert("제목을 입력하세요.");
-      return;
-    }
-
-    if (!form.author.trim()) {
-      alert("저자를 입력하세요.");
-      alert("저자를 입력하세요.");
-      return;
-    }
-
-    if (!form.content.trim()) {
-      alert("내용을 입력하세요.");
-      alert("내용을 입력하세요.");
-      return;
-    }
->>>>>>> 46f7827cc8a7a934d6f6b5818a035e6ae2196d4c
 
     try {
       setLoading(true);
@@ -133,15 +107,9 @@ function SubmitEdit() {
     <div className="page">
       <main className="main">
         <div>
-<<<<<<< HEAD
           <button className="back-btn" onClick={() => navigate(-1)}>
             ← 뒤로가기
           </button>
-=======
-            <button className="back-btn" onClick={() => navigate(-1)}>
-                ← 뒤로가기
-            </button>
->>>>>>> 46f7827cc8a7a934d6f6b5818a035e6ae2196d4c
         </div>
 
         <section className="content">
@@ -203,16 +171,10 @@ function SubmitEdit() {
                       title: "",
                       author: "",
                       content: "",
-<<<<<<< HEAD
                       coverImageUrl: "",
-=======
-                      title: "",
-                      author: "",
-                      content: "",
->>>>>>> 46f7827cc8a7a934d6f6b5818a035e6ae2196d4c
                     })
                   }>
-                  
+
                   취소
                 </button>
                 {/* 팀 main 패턴: 수정/저장 텍스트 분기 */}
