@@ -87,10 +87,13 @@ body {
   gap: 22px;
 }
 
-.book-form label {
+.form-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+}
+
+.form-field label {
   font-size: 16px;
 }
 
@@ -109,6 +112,29 @@ body {
   padding: 14px;
   font-size: 14px;
   resize: none;
+}
+
+.char-counter {
+  font-size: 11px;
+  color: #888;
+  text-align: right;
+}
+
+.char-counter.over {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+.char-counter.under {
+  color: #dd6b20;
+}
+
+.char-counter.under {
+  color: #dd6b20;
+}
+
+.char-counter.under {
+  color: #dd6b20;
 }
 
 .form-buttons {

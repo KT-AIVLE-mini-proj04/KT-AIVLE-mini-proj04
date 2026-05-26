@@ -11,8 +11,7 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, onCoverUpdate }) {
-  const [apiKey, setApiKey]     = useState('');
+export default function AICoverGenerator({ book, onCoverUpdate, apiKey }) {
   const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
   const [quality, setQuality]   = useState('medium');
@@ -43,18 +42,6 @@ export default function AICoverGenerator({ book, onCoverUpdate }) {
   return (
     <div className="ai-cover-generator">
       <h3>AI 표지 생성</h3>
-
-      {/* API Key 입력 */}
-      <div className="ai-field">
-        <label htmlFor="ai-api-key">OpenAI API Key</label>
-        <input
-          id="ai-api-key"
-          type="password"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder="sk-..."
-        />
-      </div>
 
       {/* 옵션 선택 */}
       <div className="ai-options">
