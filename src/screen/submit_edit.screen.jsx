@@ -7,6 +7,7 @@ import "./submit_edit.screen.css";
 import { Link } from "react-router";
 // import { useState } from 'react';
 import { hookBooks } from '../hooks/books.hook.js';
+import { useNavigate } from 'react-router-dom';
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -69,12 +70,16 @@ function SubmitEdit() {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="page">
       <main className="main">
-        <Link to={"/books"}>
-          <button className="back-btn">← 뒤로 가기</button>
-        </Link>
+        <div>
+          <button onClick={() => navigate(-1)}>
+            ← 뒤로가기
+          </button> 
+        </div>
 
         <section className="content">
           <section className="form-card">
