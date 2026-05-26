@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './AICoverGenerator.css';
 import { hookAiCover } from '../hooks/aiCover.hook';
 
@@ -17,7 +17,11 @@ export default function AICoverGenerator({ book, setForm }) {
   const [quality, setQuality]   = useState('medium');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError]       = useState('');
-  const [imageSrc, setImageSrc]   = useState(book.coverImageUrl || '');
+  const [imageSrc, setImageSrc]   = useState('');
+  useEffect(() => {
+    setImageSrc(book.coverImageUrl || '');
+  }, [book.coverImageUrl]);
+
 
   const handleGenerateCover = async () => {
     // 1. API Key 유효성 검사

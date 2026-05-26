@@ -16,9 +16,8 @@ function SubmitEdit() {
   });
   const location = useLocation();
   const id = location.state?.id;
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   // 팀 main 패턴: form 객체 state
 
   // 글자수 카운터 ref (onInput DOM 직접 조작 → IME 방해 없음)
@@ -35,6 +34,7 @@ function SubmitEdit() {
 
   useEffect(() => {
     if (!id) return;
+
     const fetchBook = async () => {
       try {
         const res = await hookBooks('GET', { id });
@@ -73,8 +73,7 @@ function SubmitEdit() {
 
     try {
       setLoading(true);
-      // 팀 main 패턴: id 유무로 PATCH/POST 분기
-      const book = await hookBooks(id ? 'PATCH' : 'POST', {
+      const res = await hookBooks(id ? 'PATCH' : 'POST', {
         id,
         title: form.title,
         author: form.author,
@@ -82,7 +81,7 @@ function SubmitEdit() {
         coverImageUrl: form.coverImageUrl || '',
       });
 
-      console.log(id ? '수정 성공:' : '등록 성공:', book);
+      console.log(id ? '수정 성공:' : '등록 성공:', res);
       alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
       if (!id) {
@@ -174,7 +173,6 @@ function SubmitEdit() {
                       coverImageUrl: "",
                     })
                   }>
-
                   취소
                 </button>
                 {/* 팀 main 패턴: 수정/저장 텍스트 분기 */}
