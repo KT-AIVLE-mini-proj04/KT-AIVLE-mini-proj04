@@ -7,7 +7,7 @@ AIVLE EDU 4차 미니 프로젝트로 진행된 AI 활용 도서 관리 단일 �
 * **[진행기간]:** 3일
 * **[프로젝트]:** 미니 프로젝트 4차
 * **[플렛폼]:** AIVLE EDU
-* **[주요 목표]:** 
+* **[주요목표]:** 
   1. React와 json-server를 활용한 RESTful API 통신 및 CRUD 구현
   2. OpenAI GPT Image 2 모델을 활용한 프롬프트 엔지니어링 및 외부 API 연동
   3. Base64 이미지 데이터 처리 및 부분 업데이트(PATCH) 적용
@@ -51,10 +51,17 @@ git clone https://github.com/KT-AIVLE-mini-proj04/KT-AIVLE-mini-proj04.git
 
 2. 패키지를 설치합니다.
 \`\`\`bash
+cd KT-AIVLE-mini-proj04
 npm install
 \`\`\`
 
-3. 개발 서버를 실행합니다.
+3. json-server 실행 (새 터미널 창을 열어서 실행)
+가짜 REST API 서버를 포트 3001번에서 실행합니다.
+\`\`\`bash
+npx json-server --watch db.json --port 3001
+\`\`\`
+
+4. 개발 서버를 실행합니다.
 \`\`\`bash
 npm run dev
 \`\`\`
