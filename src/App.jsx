@@ -1,38 +1,30 @@
-import { hookBookList } from "./hooks/booklist.hook"
-import { hookBooks } from './hooks/books.hook'
-import { useEffect } from "react"
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router";
+import "./App.css";
+import MainLayout from "./common/layout/MainLayout.jsx";
+import MainPage from "./screen/main.screen.jsx";
+import BookList from "./screen/booklist.screen.jsx";
+import BookDetail from "./screen/bookdetail.jsx";
+import SubmitEdit from "./screen/submit_edit.screen.jsx";
+import NotFound from "./screen/NotFound.screen.jsx";
 
 function App() {
-  useEffect(() => {
-    // 목록 조회
-    /*hookBookList().then(console.log)
-
-    // 단건 조회
-    hookBooks('GET', { id: '1' }).then(console.log)*/
-
-    // 추가
-    /*hookBooks('POST', {
-      id: '4',
-      title: '테스트',
-      author: '한울',
-      content: '테스트 내용',
-      coverImageUrl: ''
-    }).then(console.log)*/
-
-
-    // 일부 수정 (PATCH)
-    hookBooks('PATCH', {
-      id: 'fJRtC_Cbz8g',
-      title: '제목만 수정',
-      author: '나',
-    }).then(console.log)
-
-    // 삭제
-    //hookBooks('DELETE', { id: 'MNq0sDIB_og' }).then(console.log)
-
-  }, [])
-
-  return <div>테스트 중</div>
+  return (
+    <>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route index element={<MainPage />} />
+          <Route path="books">
+            <Route index element={<BookList />} />
+            <Route path=":id" element={<BookDetail />} />
+            <Route path=":id/edit" element={<SubmitEdit />} />
+            <Route path="submit" element={<SubmitEdit />} />
+          </Route>
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;

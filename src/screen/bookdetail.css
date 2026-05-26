@@ -1,0 +1,322 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap');
+
+:root {
+  --page-bg: #d8d8d8;
+  --panel-bg: #ffffff;
+  --bar-bg: #cfcfcf;
+  --ink: #1b1b1b;
+  --subtle: #5a5a5a;
+  --accent: #f4b4b4;
+  --accent-strong: #ef9f9f;
+  --band-bg: #f7dede;
+  --shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 6px 12px rgba(0, 0, 0, 0.12);
+  --shell-width: 1120px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nanum Gothic', 'Apple SD Gothic Neo', sans-serif;
+  color: var(--ink);
+}
+
+/* 페이지 전체  */
+.book-detail-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #dadada 0%, #cfcfcf 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main 영역 (Layout 안에 들어가므로 헤더/푸터는 제외)*/
+.main-content {
+  flex: 1;
+  width: min(var(--shell-width), 100%);
+  margin: 0 auto;
+  padding: 32px 28px 64px;
+  box-sizing: border-box;
+}
+
+/*  뒤로 가기 버튼*/
+.back-button {
+  border: 0;
+  background: var(--panel-bg);
+  color: var(--ink);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.back-button:focus-visible {
+  outline: 2px solid #2d2d2d;
+  outline-offset: 2px;
+}
+
+/* 책 상세 카드 (흰색 패널) */
+.book-detail-Card {
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+  background: var(--panel-bg);
+  padding: 48px 56px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  animation: fade-up 0.6s ease forwards;
+}
+
+/*왼쪽: 표지 */
+.book-cover {
+  flex-shrink: 0;
+  width: 260px;
+}
+
+.book-cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+/* 이미지 없을 때 Placeholder */
+.book-cover-placeholder {
+  width: 260px;
+  height: 380px;
+  background: var(--band-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 24px;
+  border: 2px dashed var(--accent);
+}
+
+.placeholder-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.placeholder-text {
+  font-family: 'Gowun Batang', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* 오른쪽 책 정보*/
+.book-info {
+  flex: 1;
+  min-width: 0; /* flex 자식 줄바꿈 위해 */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.book-title {
+  font-family: 'Gowun Batang', 'Nanum Gothic', serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+}
+
+.book-author {
+  font-size: 15px;
+  color: var(--subtle);
+  margin: 0;
+  font-weight: 400;
+}
+
+.book-author::before {
+  content: '✍️ ';
+  margin-right: 4px;
+}
+
+/* 내용 라벨 */
+.content-label {
+  font-family: 'Gowun Batang', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 8px 0 0 0;
+  color: var(--ink);
+  position: relative;
+  padding-left: 14px;
+}
+
+.content-label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* 내용 박스 */
+.content-box {
+  background: var(--band-bg);
+  padding: 24px;
+  border-radius: 12px;
+  min-height: 180px;
+  box-shadow: var(--shadow-soft);
+}
+
+.content-box p {
+  white-space: pre-line;
+  line-height: 1.8;
+  color: var(--ink);
+  margin: 0;
+  font-size: 15px;
+}
+
+/* 등록일 */
+.book-date {
+  font-size: 13px;
+  color: var(--subtle);
+  margin: 0;
+  text-align: right;
+}
+
+/* 수정/삭제 버튼 */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.btn-edit,
+.btn-delete {
+  border: 0;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn-edit {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.btn-edit:hover {
+  background: var(--accent-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-delete {
+  background: #f7caca;
+  color: var(--ink);
+}
+
+.btn-delete:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn-edit:focus-visible,
+.btn-delete:focus-visible {
+  outline: 2px solid #2d2d2d;
+  outline-offset: 2px;
+}
+
+/* 책 없을 때 화면 */
+.book-detail-page .main-content > p {
+  background: var(--panel-bg);
+  padding: 60px 40px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  font-family: 'Gowun Batang', serif;
+  color: var(--subtle);
+}
+
+/*애니메이션*/
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*반응형 */
+@media (max-width: 900px) {
+  .main-content {
+    padding: 24px 18px 48px;
+  }
+
+  .book-detail-Card {
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px;
+    gap: 32px;
+  }
+
+  .book-info {
+    width: 100%;
+  }
+
+  .book-title {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .book-author {
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .book-cover,
+  .book-cover-placeholder {
+    width: 220px;
+  }
+
+  .book-cover-placeholder {
+    height: 320px;
+  }
+
+  .action-buttons {
+    justify-content: stretch;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    flex: 1;
+  }
+}
