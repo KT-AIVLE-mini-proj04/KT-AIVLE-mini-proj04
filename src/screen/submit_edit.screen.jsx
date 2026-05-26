@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router";
 
-import "./submit_edit.screen.css";
 import { hookBooks } from "../hooks/books.hook.js";
 import { useParams } from "react-router";
 
@@ -15,6 +14,7 @@ function SubmitEdit() {
     content: '',
   });
   const { id } = useParams();
+
   useEffect(() => {
     if (!id) return;
 
@@ -33,8 +33,6 @@ function SubmitEdit() {
     };
     fetchBook();
   }, [id]);
-
-
 
   const [loading, setLoading] = useState(false);
 
@@ -68,23 +66,26 @@ function SubmitEdit() {
     try {
       setLoading(true);
 
-      const res = await hookBooks('POST', {
+      const res = await hookBooks(id ? 'PATCH' : 'POST', {
+        id,
         title: form.title,
         author: form.author,
         content: form.content,
       });
 
-      console.log('등록 성공:', res);
-      alert('도서가 등록되었습니다.');
+      console.log(id ? '수정 성공:' : '등록 성공:', res);
+      alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
-      setForm({
-        title: '',
-        author: '',
-        content: '',
-      });
+      if (!id) {
+        setForm({
+          title: '',
+          author: '',
+          content: '',
+        });
+      }
     } catch (error) {
-      console.error('등록 실패:', error);
-      alert('도서 등록에 실패했습니다.');
+      console.error(id ? '수정 실패:' : '등록 실패:', error);
+      alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -99,7 +100,9 @@ function SubmitEdit() {
 
         <section className="content">
           <section className="form-card">
-            <div className="form-title">새 도서 등록</div>
+            <div className="form-title">
+              {id ? '도서 수정' : '새 도서 등록'}
+            </div>
 
             <form className="book-form" onSubmit={handleSubmit}>
               <label>
@@ -154,7 +157,7 @@ function SubmitEdit() {
                   className="save-btn"
                   disabled={loading}
                 >
-                  {loading ? '저장 중...' : '저장'}
+                  {loading ? '저장 중...' : id ? '수정' : '저장'}
                 </button>
               </div>
             </form>

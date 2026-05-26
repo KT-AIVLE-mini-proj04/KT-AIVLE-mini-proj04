@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router";
+import { Link, useParams, useNavigate } from "react-router";
 
 const bookData = {
   id: 3,
@@ -13,12 +13,15 @@ const bookData = {
 };
 
 function BookDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const handleBack = () => {
-    console.log("뒤로가기 버튼 클릭"); // 페이지 이동 로직 추가 해야함
+    console.log("뒤로가기 버튼 클릭");
   };
 
   const handleEdit = () => {
-    console.log("수정 버튼 클릭, book id:", bookData.id); //
+    navigate(`/books/${id}/edit`);
   };
 
   const formatDate = (isoString) => {
@@ -32,7 +35,7 @@ function BookDetailPage() {
 
   const handleDelete = () => {
     if (window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
-      console.log("삭제 진행, book id:", bookData.id);
+      console.log("삭제 진행, book id:", id);
     }
   };
 
@@ -56,7 +59,6 @@ function BookDetailPage() {
                 alt={`${bookData.title} 표지`}
               />
             ) : (
-              // Placeholder: 이미지 없을 때 보여줄 대체 UI
               <div className="book-cover-placeholder">
                 <span className="placeholder-icon">📖</span>
                 <span className="placeholder-text">{bookData.title}</span>
