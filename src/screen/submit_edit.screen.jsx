@@ -12,6 +12,9 @@ function SubmitEdit() {
     title: "",
     author: "",
     content: "",
+    title: "",
+    author: "",
+    content: "",
   });
   const location = useLocation();
   const id = location.state?.id;
@@ -51,15 +54,18 @@ function SubmitEdit() {
 
     if (!form.title.trim()) {
       alert("제목을 입력하세요.");
+      alert("제목을 입력하세요.");
       return;
     }
 
     if (!form.author.trim()) {
       alert("저자를 입력하세요.");
+      alert("저자를 입력하세요.");
       return;
     }
 
     if (!form.content.trim()) {
+      alert("내용을 입력하세요.");
       alert("내용을 입력하세요.");
       return;
     }
@@ -152,7 +158,11 @@ function SubmitEdit() {
                       title: "",
                       author: "",
                       content: "",
+                      title: "",
+                      author: "",
+                      content: "",
                     })
+                  }>
                   }>
                   취소
                 </button>
