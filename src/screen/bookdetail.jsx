@@ -1,30 +1,61 @@
-import React from "react";
-import { Link, useParams, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from 'react-router';
+import { hookBooks } from '../hooks/books.hook';
+import './bookdetail.css';
 
-const bookData = {
-  id: 3,
-  title: "인공지능 시대의 생존법",
-  author: "김철수",
-  content:
-    "급변하는 기술 트렌드 속에서 지치지 않고 자신만의 경쟁력을 가꾸는 실천 가이드",
-  coverImageUrl: "",
-  createdAt: "2026-05-21T14:30:00.000Z",
-  updatedAt: "2026-05-21T14:30:00.000Z",
-};
 
 function BookDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // 상태 3종 세트
+  const [bookData, setBookData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 페이지 진입 시 책 정보 가져오기
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const result = await hookBooks('GET', { id });
+        setBookData(result);
+      } catch (err) {
+        console.error('도서 조회 실패:', err);
+        setError('해당 도서를 찾을 수 없습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBook();
+  }, [id]);
+
   const handleBack = () => {
-    console.log("뒤로가기 버튼 클릭");
+    navigate('/books');
   };
+
 
   const handleEdit = () => {
-    navigate(`/books/${id}/edit`);
+    navigate("/books/submit", { state: { id: bookData.id } });
   };
 
-  const formatDate = (isoString) => {
+
+const handleDelete = async () => {
+  if (!window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
+    return;
+  }
+
+  try {
+    await hookBooks('DELETE', { id: bookData.id });
+    alert('삭제되었습니다.');
+    navigate('/books');
+  } catch (err) {
+    console.error('삭제 중 오류:', err);
+    alert('삭제 중 오류가 발생했습니다.');
+  }
+};
+
+
+  const formatDate = (isoString) => {  // 날짜
     if (!isoString) return "";
     return new Date(isoString).toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -33,23 +64,50 @@ function BookDetailPage() {
     });
   };
 
-  const handleDelete = () => {
-    if (window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
-      console.log("삭제 진행, book id:", id);
-    }
-  };
+
+
+
+// 로딩 중 표시
+if (isLoading) {
+  return (
+    <div className="book-detail-page">
+      <main className="main-content">
+        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
+          도서 정보를 불러오는 중...
+        </p>
+      </main>
+    </div>
+  );
+}
+
+// 에러 또는 책 없음
+if (error || !bookData) {
+  return (
+    <div className="book-detail-page">
+      <main className="main-content">
+        <button className="back-button" onClick={handleBack}>
+          ← 뒤로 가기
+        </button>
+        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
+          {error || '해당 도서를 찾을 수 없습니다.'}
+        </p>
+      </main>
+    </div>
+  );
+}
+
+
 
   const hasCoverImage =
-    bookData.coverImageUrl && bookData.coverImageUrl.trim() !== "";
+  bookData.coverImageUrl && bookData.coverImageUrl.trim() !== '';
 
   return (
     <div className="book-detail-page">
       <main className="main-content">
-        <Link to={"/books"}>
-          <button className="back-button" onClick={handleBack}>
-            ← 뒤로 가기
-          </button>
-        </Link>
+        <button className="back-button" onClick={handleBack}>
+          ← 뒤로 가기
+        </button>
+
 
         <div className="book-detail-Card">
           <div className="book-cover">

@@ -2,12 +2,12 @@
   "books": [
     {
       "id": "1",
-      "title": "별빛 아래의 서점",
+      "title": "별빛 아래의 서점1",
       "author": "홍길동",
       "content": "작은 마을 서점의 1년을 담은 에세이",
       "coverImageUrl": "",
       "createdAt": "2026-04-24T09:00:00.000Z",
-      "updatedAt": "2026-05-22T02:05:45.430Z"
+      "updatedAt": "2026-05-26T06:38:38.410Z"
     },
     {
       "id": "2",
@@ -19,11 +19,11 @@
       "updatedAt": "2026-05-22T02:16:12.818Z"
     },
     {
-      "title": "별빛 아래의 서점SFDDSF",
+      "title": "별빛 아래의 서점 테스트",
       "author": "홍길동DSADSA",
       "content": "작은 마을 서점의 1년을 담은 에세이DSADSA",
       "createdAt": "2026-05-26T04:41:20.399Z",
-      "updatedAt": "2026-05-26T04:41:20.399Z",
+      "updatedAt": "2026-05-26T06:38:53.978Z",
       "id": "z7IwryJCpDk"
     },
     {
