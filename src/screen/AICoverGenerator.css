@@ -1,0 +1,77 @@
+.ai-cover-generator {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .ai-cover-generator h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  .ai-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .ai-field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+  }
+  
+  .ai-field input,
+  .ai-field select {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #fff;
+    color: #1e293b;
+    color-scheme: light;
+  }
+  
+  .ai-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  
+  .ai-generate-btn {
+    padding: 10px 20px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  
+  .ai-generate-btn:hover {
+    background: #1d4ed8;
+  }
+  
+  .ai-generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .ai-error {
+    color: #ef4444;
+    font-size: 12px;
+    margin: 0;
+  }
+  
+  .ai-notice {
+    color: #94a3b8;
+    font-size: 11px;
+    margin: 0;
+  }
