@@ -105,9 +105,9 @@ function SubmitEdit() {
     <div className="page">
       <main className="main">
         <div>
-          <button onClick={() => navigate(-1)}>
-            ← 뒤로가기
-          </button>
+            <button className="back-btn" onClick={() => navigate(-1)}>
+                ← 뒤로가기
+            </button>
         </div>
 
         <section className="content">
