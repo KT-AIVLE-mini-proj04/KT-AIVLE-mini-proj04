@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { Link } from "react-router";
 
 import { hookBooks } from "../hooks/books.hook.js";
-import { useParams } from "react-router";
+import { useLocation } from "react-router";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -13,7 +13,8 @@ function SubmitEdit() {
     author: '',
     content: '',
   });
-  const { id } = useParams();
+  const location = useLocation();
+  const id = location.state?.id;
 
   useEffect(() => {
     if (!id) return;
