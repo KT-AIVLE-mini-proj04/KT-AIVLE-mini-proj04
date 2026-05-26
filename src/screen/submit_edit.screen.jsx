@@ -1,6 +1,6 @@
 import "./submit_edit.screen.css";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router";
 
@@ -16,11 +16,11 @@ function SubmitEdit() {
   });
   const { id } = useParams();
   useEffect(() => {
-    //if (!id) return;
+    if (!id) return;
 
     const fetchBook = async () => {
       try {
-        const res = await hookBooks('GET', { id: '1' });
+        const res = await hookBooks('GET', { id });
         setForm({
           title: res.title,
           author: res.author,
@@ -32,7 +32,7 @@ function SubmitEdit() {
       }
     };
     fetchBook();
-  }, []);
+  }, [id]);
 
 
 
