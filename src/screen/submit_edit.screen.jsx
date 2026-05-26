@@ -5,13 +5,13 @@ import { useEffect } from "react";
 import { Link } from "react-router";
 
 import { hookBooks } from "../hooks/books.hook.js";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
-    title: '',
-    author: '',
-    content: '',
+    title: "",
+    author: "",
+    content: "",
   });
   const location = useLocation();
   const id = location.state?.id;
@@ -50,17 +50,17 @@ function SubmitEdit() {
     e.preventDefault();
 
     if (!form.title.trim()) {
-      alert('제목을 입력하세요.');
+      alert("제목을 입력하세요.");
       return;
     }
 
     if (!form.author.trim()) {
-      alert('저자를 입력하세요.');
+      alert("저자를 입력하세요.");
       return;
     }
 
     if (!form.content.trim()) {
-      alert('내용을 입력하세요.');
+      alert("내용을 입력하세요.");
       return;
     }
 
@@ -89,15 +89,20 @@ function SubmitEdit() {
       alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
+      navigate(-1);
     }
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="page">
       <main className="main">
-        <Link to={"/books"}>
-          <button className="back-btn">← 뒤로 가기</button>
-        </Link>
+        <div>
+          <button onClick={() => navigate(-1)}>
+            ← 뒤로가기
+          </button>
+        </div>
 
         <section className="content">
           <section className="form-card">
@@ -144,12 +149,11 @@ function SubmitEdit() {
                   className="cancel-btn"
                   onClick={() =>
                     setForm({
-                      title: '',
-                      author: '',
-                      content: '',
+                      title: "",
+                      author: "",
+                      content: "",
                     })
-                  }
-                >
+                  }>
                   취소
                 </button>
 
