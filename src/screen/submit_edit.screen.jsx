@@ -191,12 +191,6 @@ function SubmitEdit() {
                 setForm={setForm}
                 apiKey={apiKey}
               />
-
-              <div className="result-box">
-                {form.coverImageUrl
-                  ? <img src={form.coverImageUrl} alt="AI 생성 표지" />
-                  : <p>(결과물)</p>}
-              </div>
             </div>
           </section>
         </section>

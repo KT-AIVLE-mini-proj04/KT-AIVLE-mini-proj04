@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './AICoverGenerator.css';
 import { hookAiCover } from '../hooks/aiCover.hook';
 
