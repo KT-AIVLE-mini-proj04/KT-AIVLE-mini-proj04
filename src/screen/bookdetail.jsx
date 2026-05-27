@@ -322,6 +322,7 @@ function BookDetailPage() {
               {audioSrc && (
                 <audio controls src={audioSrc} className="tts-player" />
               )}
+              <p className="tts-notice">* TTS 생성 시 OpenAI API 비용이 발생합니다.</p>
             </div>
             <section className="comments-section">
               <div className="comments-header">
