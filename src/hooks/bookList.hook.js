@@ -1,8 +1,11 @@
-import { commonPostHook } from './common.hook';
+import { commonPostHook } from "@hooks/common.hook";
 
+const apiBaseUrl = import.meta.env.PROD
+  ? import.meta.env.VITE_API_URL || "/api"
+  : import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const hookBookList = async () => {
-    const baseUrl = import.meta.env.VITE_API_URL + '/books';
-    const res = await commonPostHook('GET', baseUrl, null);
-    return res;
-  };
+  const baseUrl = `${apiBaseUrl}/books`;
+  const res = await commonPostHook("GET", baseUrl, null);
+  return res;
+};

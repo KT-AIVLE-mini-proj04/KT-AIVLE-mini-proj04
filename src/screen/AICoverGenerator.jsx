@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import './AICoverGenerator.css';
-import { hookAiCover } from '../hooks/aiCover.hook';
+import { useState, useEffect } from "react";
+import "@screen/AICoverGenerator.css";
+import { hookAiCover } from "@hooks/aiCover.hook";
 
 /**
  * AI 표지 생성 컴포넌트 (M5 · M6)
@@ -11,29 +11,45 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, onCoverUpdate, apiKey }) {
+const SIZE_OPTIONS = [
+  { label: '1024×1536 (세로 대형 · 도서표지)', apiSize: '1024x1536', w: 1024, h: 1536 },
+  { label: '768×1152 (세로 중형)',              apiSize: '1024x1536', w: 768,  h: 1152 },
+  { label: '512×768 (세로 소형)',               apiSize: '1024x1536', w: 512,  h: 768  },
+  { label: '400×600 (세로 미니)',               apiSize: '1024x1536', w: 400,  h: 600  },
+  { label: '1024×1024 (정사각형 대형)',         apiSize: '1024x1024', w: 1024, h: 1024 },
+  { label: '512×512 (정사각형 중형)',           apiSize: '1024x1024', w: 512,  h: 512  },
+  { label: '300×300 (정사각형 소형)',           apiSize: '1024x1024', w: 300,  h: 300  },
+  { label: '1536×1024 (가로 대형)',             apiSize: '1536x1024', w: 1536, h: 1024 },
+  { label: '1024×683 (가로 중형)',              apiSize: '1536x1024', w: 1024, h: 683  },
+  { label: '512×341 (가로 소형)',               apiSize: '1536x1024', w: 512,  h: 341  },
+];
+
+export default function AICoverGenerator({ book, setForm, isGenerating, setIsGenerating }) {
   const model                   = 'gpt-image-2';
-  const [size, setSize]         = useState('1024x1536');
+  const [sizeKey, setSizeKey]   = useState('1024×1536 (세로 대형 · 도서표지)');
   const [quality, setQuality]   = useState('medium');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError]       = useState('');
+  const [imageSrc, setImageSrc] = useState('');
+  const [apiKey, setApiKey]     = useState('');
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setImageSrc(book.coverImageUrl || "");
+  }, [book.coverImageUrl]);
 
   const handleGenerateCover = async () => {
-    // 1. API Key 유효성 검사
-    if (!apiKey.trim()) {
-      setError('OpenAI API Key를 입력해주세요.');
-      return;
-    }
-
     setIsGenerating(true);
-    setError('');
-
+    setError("");
     try {
-      const imageSrc = await hookAiCover(apiKey.trim(), book, { model, size, quality });
-      onCoverUpdate(imageSrc);
-
+      const opt = SIZE_OPTIONS.find(o => o.label === sizeKey) || SIZE_OPTIONS[0];
+      const result = await hookAiCover(apiKey, book, {
+        model, size: opt.apiSize, quality,
+        compressWidth: opt.w, compressHeight: opt.h,
+      });
+      setForm((prev) => ({ ...prev, coverImageUrl: result }));
+      setImageSrc(result);
     } catch (err) {
-      setError(err.message || '표지 생성에 실패했습니다.');
+      setError(err.message || "표지 생성에 실패했습니다.");
     } finally {
       setIsGenerating(false);
     }
@@ -41,21 +57,37 @@ export default function AICoverGenerator({ book, onCoverUpdate, apiKey }) {
 
   return (
     <div className="ai-cover-generator">
-      <h3>AI 표지 생성</h3>
+      <div className="ai-field">
+        <label htmlFor="shared-api-key">OpenAI API Key</label>
+        <input
+          id="shared-api-key"
+          type="password"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="sk-..."
+        />
+      </div>
 
-      {/* 옵션 선택 */}
+      <div className="ai-result">
+        {imageSrc && <img src={imageSrc} alt="AI 생성 표지" />}
+      </div>
+
       <div className="ai-options">
-        <div className="ai-field">
+        <div className="cover-opt">
           <label htmlFor="ai-size">이미지 크기</label>
-          <select id="ai-size" value={size} onChange={(e) => setSize(e.target.value)}>
-            <option value="1024x1536">1024x1536 (도서표지)</option>
-            <option value="1024x1024">1024x1024 (정사각형)</option>
+          <select id="ai-size" value={sizeKey} onChange={(e) => setSizeKey(e.target.value)}>
+            {SIZE_OPTIONS.map(o => (
+              <option key={o.label} value={o.label}>{o.label}</option>
+            ))}
           </select>
         </div>
 
-        <div className="ai-field">
+        <div className="cover-opt">
           <label htmlFor="ai-quality">품질</label>
-          <select id="ai-quality" value={quality} onChange={(e) => setQuality(e.target.value)}>
+          <select
+            id="ai-quality"
+            value={quality}
+            onChange={(e) => setQuality(e.target.value)}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -63,20 +95,17 @@ export default function AICoverGenerator({ book, onCoverUpdate, apiKey }) {
         </div>
       </div>
 
-      {/* 생성 버튼 */}
-      <button
-        onClick={handleGenerateCover}
-        disabled={isGenerating}
-        className="ai-generate-btn"
-      >
-        {isGenerating ? '생성 중...' : 'AI 표지 생성'}
-      </button>
+      <div className="ai-btn-row">
+        <button
+          onClick={handleGenerateCover}
+          disabled={isGenerating}
+          className="ai-generate-btn">
+          {isGenerating ? "생성 중..." : "생성"}
+        </button>
+      </div>
 
-      {/* 에러 메시지 */}
       {error && <p className="ai-error">{error}</p>}
-
-      {/* 비용 안내 */}
-      <p className="ai-notice">* AI 표지 생성 시 OpenAI API 비용이 발생합니다.</p>
+      <p className="ai-notice">* 이미지 생성 시 OpenAI API 비용이 발생합니다.</p>
     </div>
   );
 }

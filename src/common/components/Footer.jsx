@@ -1,9 +1,9 @@
-import style from "./Footer.module.css";
-import TextLogo from "./TextLogo";
+import style from "@/common/components/Footer.module.css";
+import ServiceLogo from "@/common/components/ServiceLogo";
 
 function CompanyInfo() {
   return (
-    <div id={style["company-info"]}>
+    <div className={style["company-info"]}>
       <div
         style={{
           display: "flex",
@@ -14,7 +14,7 @@ function CompanyInfo() {
         <span>고객센터</span>
       </div>
       <span>문의 전화: 010-0000-0000</span>
-      <span>{"ⓒ 2026. (주) 걷기가 서재 Co., Ltd. All rights reserved."}</span>
+      <span>{"ⓒ 2026. PIC:STORY Co., Ltd. All rights reserved."}</span>
     </div>
   );
 }
@@ -22,7 +22,7 @@ function CompanyInfo() {
 function Footer() {
   return (
     <footer>
-      <TextLogo>걷기가 서재</TextLogo>
+      <ServiceLogo className="footer-text-logo" />
       <CompanyInfo />
     </footer>
   );

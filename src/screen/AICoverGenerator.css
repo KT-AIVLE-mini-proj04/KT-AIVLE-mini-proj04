@@ -1,77 +1,71 @@
 .ai-cover-generator {
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 20px;
-    background: #f8fafc;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
   }
-  
-  .ai-cover-generator h3 {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: #1e293b;
-  }
-  
-  .ai-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .ai-field label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #475569;
-  }
-  
-  .ai-field input,
-  .ai-field select {
-    padding: 8px 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 13px;
-    background: #fff;
-    color: #1e293b;
-    color-scheme: light;
-  }
-  
+
   .ai-options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
-  
-  .ai-generate-btn {
-    padding: 10px 20px;
-    background: #2563eb;
-    color: #fff;
+
+  .cover-opt {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cover-opt label {
+    font-size: 16px;
+  }
+
+  .cover-opt select {
+    width: 100%;
+    height: 43px;
     border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
+    border-radius: 4px;
+    padding: 0 14px;
+    font-size: 14px;
+    background-color: #ffffff;
+    outline: none;
     cursor: pointer;
+    appearance: auto;
   }
-  
+
+  .ai-btn-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .ai-generate-btn {
+    border: none;
+    padding: 7px 27px;
+    font-size: 14px;
+    background-color: #ffc0b8;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
   .ai-generate-btn:hover {
-    background: #1d4ed8;
+    background-color: #f4a59b;
   }
-  
+
   .ai-generate-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
   }
-  
+
   .ai-error {
-    color: #ef4444;
+    color: #e53e3e;
     font-size: 12px;
     margin: 0;
+    text-align: left;
   }
-  
+
   .ai-notice {
-    color: #94a3b8;
     font-size: 11px;
+    color: #888;
     margin: 0;
   }

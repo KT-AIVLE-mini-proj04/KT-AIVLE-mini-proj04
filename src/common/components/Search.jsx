@@ -1,5 +1,5 @@
-import style from "./Search.module.css";
-import Button from "./Button";
+import style from "@/common/components/Search.module.css";
+import Button from "@/common/components/Button";
 import { Link } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { hookBookList } from "@hooks/bookList.hook.js";
@@ -9,7 +9,7 @@ import { searchBooks } from "@utils/searchBooks.js";
 export default function Search() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-	const  [books, setBooks] = useState([]);
+  const [books, setBooks] = useState([]);
 
   const [searchText, setSearchText] = useState("");
   const [searchQuery, setSearchQuery] = useState([]);
@@ -40,18 +40,17 @@ export default function Search() {
     console.log("검색 결과:", res);
   };
 
-	useEffect(() => {
+  useEffect(() => {
+    const getBooks = async () => {
+      const data = await hookBookList();
+      setBooks(data);
+    };
+    getBooks();
 
-		const getBooks = async () => {
-			const data = await hookBookList();
-			setBooks(data);
-		};
-		getBooks();
-
-		if (isSearchOpen) {
-			searchInputRef.current?.focus();
-		}
-	}, [isSearchOpen]);
+    if (isSearchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [isSearchOpen]);
 
   useEffect(() => {
     const handleClickOutsideResult = (event) => {
@@ -71,8 +70,6 @@ export default function Search() {
       document.removeEventListener("mousedown", handleClickOutsideResult);
     };
   }, []);
-
-
 
   return (
     <div className={style.searchWrap}>
