@@ -57,7 +57,6 @@ function BookListScreen() {
               <p>{book.updatedAt?.slice(0, 10)}</p>
             </div>
           ))}
-          
 
           <Link to={"submit"}>
             <div className="book-card">
