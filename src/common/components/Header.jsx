@@ -74,6 +74,32 @@ function HeaderBtn({ type, children }) {
     setSearchText("");
     setSearchQuery([]);
   };
+
+  const renderAlarmContent = (alarm) => {
+    return (
+      <span className={searchStyle.alarmContent}>
+        {alarm.content.split(/(<book>.*?<\/book>)/g).map((part, index) => {
+          const bookMatch = part.match(/<book>(.*?)<\/book>/);
+
+          if (bookMatch) {
+            return (
+              <Link
+                key={`${alarm.id}-link-${index}`}
+                className={searchStyle.alarmLink}
+                to={`/books/${alarm.bookId}`}
+                onClick={() => {
+                  handleResultClick();
+                }}>
+                {bookMatch[1]}
+              </Link>
+            );
+          }
+
+          return <span key={`${alarm.id}-text-${index}`}>{part}</span>;
+        })}
+      </span>
+    );
+  };
   return (
     <div ref={rootRef}>
       <div style={{ position: "relative" }}>
@@ -133,11 +159,25 @@ function HeaderBtn({ type, children }) {
           <ul
             className={`${searchStyle.searchResult} ${searchStyle.alarmResult}`}>
             {alarms.length > 0 ? (
-              alarms.map((alarm, index) => (
-                <li key={`${alarm}-${index}`} className={searchStyle.alarmItem}>
-                  <span>{alarm}</span>
-                </li>
-              ))
+              alarms.flatMap((alarm, index) => {
+                const alarmItems = [
+                  <li key={alarm.id} className={searchStyle.alarmItem}>
+                    {renderAlarmContent(alarm)}
+                  </li>,
+                ];
+
+                if (index < alarms.length - 1) {
+                  alarmItems.push(
+                    <li
+                      key={`${alarm.id}-divider`}
+                      className={searchStyle.alarmDivider}
+                      aria-hidden="true"
+                    />,
+                  );
+                }
+
+                return alarmItems;
+              })
             ) : (
               <li className={searchStyle.alarmItem}>
                 <span>알림이 없습니다.</span>

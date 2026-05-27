@@ -98,10 +98,6 @@
   text-decoration: none;
 }
 
-/* .resultLink:hover span:first-child {
-  text-decoration: underline;
-} */
-
 .searchResult span {
   color: #7a6868;
   font-size: 0.7rem;
@@ -122,10 +118,34 @@
   font-weight: 700;
 }
 
-.alarmItem span {
+.alarmDivider {
+  height: 1px;
+  margin: 0 6px;
+  background: rgba(122, 104, 104, 0.18);
+  list-style: none;
+  padding: 0;
+}
+
+.alarmContent {
   display: block;
   color: #7a6868;
-  font-size: 0.8rem;
   line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.alarmContent span {
+  font-size: 12px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.alarmLink {
+  display: inline;
+  color: #995349;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
   white-space: normal;
 }
