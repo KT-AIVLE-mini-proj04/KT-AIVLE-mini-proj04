@@ -14,21 +14,29 @@ function HeaderBtn({ type, children }) {
   const [books, setBooks] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchQuery, setSearchQuery] = useState([]);
+  const [alarms, setAlarms] = useState([]);
   const searchInputRef = useRef(null);
-  const searchResultRef = useRef(null);
   const hasSearchResult = searchQuery.length > 0;
   const buttonClassName = `${style["header-btn"]} ${
     isSearch && clicked ? style["search-active"] : ""
   }`;
+
   useEffect(() => {
-    if (!isSearch) {
-      return;
-    }
-    const getBooks = async () => {
-      const data = await hookBookList();
-      setBooks(data);
+    const loadAlarms = async () => {
+      const response = await fetch("/alarm_data.json");
+      const data = await response.json();
+      setAlarms(data.alarms ?? []);
     };
-    getBooks();
+
+    loadAlarms();
+
+    if (isSearch) {
+      const getBooks = async () => {
+        const data = await hookBookList();
+        setBooks(data);
+      };
+      getBooks();
+    }
 
     const handleOutsideClick = (event) => {
       if (!rootRef.current || rootRef.current.contains(event.target)) {
@@ -66,16 +74,44 @@ function HeaderBtn({ type, children }) {
     setSearchText("");
     setSearchQuery([]);
   };
+
+  const renderAlarmContent = (alarm) => {
+    return (
+      <span className={searchStyle.alarmContent}>
+        {alarm.content.split(/(<book>.*?<\/book>)/g).map((part, index) => {
+          const bookMatch = part.match(/<book>(.*?)<\/book>/);
+
+          if (bookMatch) {
+            return (
+              <Link
+                key={`${alarm.id}-link-${index}`}
+                className={searchStyle.alarmLink}
+                to={`/books/${alarm.bookId}`}
+                onClick={() => {
+                  handleResultClick();
+                }}>
+                {bookMatch[1]}
+              </Link>
+            );
+          }
+
+          return <span key={`${alarm.id}-text-${index}`}>{part}</span>;
+        })}
+      </span>
+    );
+  };
   return (
     <div ref={rootRef}>
       <div style={{ position: "relative" }}>
         <Button
           className={buttonClassName}
           onClick={() => {
-            // 검색 모드일 때는 이미 열린 상태(clicked === true)라면 버튼 클릭으로 닫지 않음
             if (isSearch) {
               if (!clicked) setClicked(true);
+              return;
             }
+
+            setClicked((prev) => !prev);
           }}>
           <div className={style["header-icon-wrap"]}>
             <img
@@ -97,8 +133,8 @@ function HeaderBtn({ type, children }) {
           <span className={`${style["header-btn-text"]}`}>{children}</span>
         </Button>
 
-        {searchText.trim() && (
-          <ul ref={searchResultRef} className={searchStyle.searchResult}>
+        {isSearch && searchText.trim() && (
+          <ul className={searchStyle.searchResult}>
             {hasSearchResult ? (
               searchQuery.map((book) => (
                 <li key={book.id}>
@@ -114,6 +150,37 @@ function HeaderBtn({ type, children }) {
             ) : (
               <li className={searchStyle.resultLink}>
                 <span>찾으시는 검색어 결과가 없습니다.</span>
+              </li>
+            )}
+          </ul>
+        )}
+
+        {!isSearch && clicked && (
+          <ul
+            className={`${searchStyle.searchResult} ${searchStyle.alarmResult}`}>
+            {alarms.length > 0 ? (
+              alarms.flatMap((alarm, index) => {
+                const alarmItems = [
+                  <li key={alarm.id} className={searchStyle.alarmItem}>
+                    {renderAlarmContent(alarm)}
+                  </li>,
+                ];
+
+                if (index < alarms.length - 1) {
+                  alarmItems.push(
+                    <li
+                      key={`${alarm.id}-divider`}
+                      className={searchStyle.alarmDivider}
+                      aria-hidden="true"
+                    />,
+                  );
+                }
+
+                return alarmItems;
+              })
+            ) : (
+              <li className={searchStyle.alarmItem}>
+                <span>알림이 없습니다.</span>
               </li>
             )}
           </ul>

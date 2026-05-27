@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import "./booklist.screen.css";
 import { hookBookList } from "../hooks/booklist.hook";
-import { Link, useOutletContext } from "react-router";
+import { Link, useOutletContext, useNavigate } from "react-router";
 
 function BookListScreen() {
   const [bookList, setBookList] = useState([]);
   const { changeLoading } = useOutletContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -57,7 +58,6 @@ function BookListScreen() {
               <p>{book.updatedAt?.slice(0, 10)}</p>
             </div>
           ))}
-          
 
           <Link to={"submit"}>
             <div className="book-card">

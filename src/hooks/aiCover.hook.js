@@ -86,8 +86,6 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
     throw new Error('OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.');
   }
 
-
-  console.log('hookAiCover 호출:', { book, options });
   const {
     model = 'gpt-image-2',
     size = '1024x1536',
@@ -106,7 +104,6 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
     },
     body: JSON.stringify({ model, prompt, n: 1, size, quality, output_format: 'png' }),
   });
-
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
     const status = res.status;
@@ -120,7 +117,7 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
   const b64Json = data.data?.[0]?.b64_json;
   if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
   const imageSrc = `data:image/png;base64,${b64Json}`;
-  const compressedSrc = await compressImage(imageSrc, 512); // 용량 줄이기 위해 최대 너비 512px로 압축
+  const compressedSrc = await compressImage(imageSrc, 300); // 용량 줄이기 위해 최대 너비 512px로 압축
 
   // 4. json-server에 coverImageUrl PATCH 저장
   return compressedSrc;

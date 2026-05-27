@@ -14,7 +14,6 @@ function SubmitEdit() {
   });
   const [savedBook, setSavedBook] = useState(null);
   const [audioUrl, setAudioUrl]   = useState('');
-  const [apiKey, setApiKey]       = useState('');
   const [loading, setLoading]     = useState(false);
 
   const location = useLocation();
@@ -176,28 +175,11 @@ function SubmitEdit() {
             <div className="form-title">AI 표지 생성</div>
 
             <div className="ai-body">
-              <div className="ai-field">
-                <label htmlFor="shared-api-key">OpenAI API Key</label>
-                <input
-                  id="shared-api-key"
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
-                />
-              </div>
 
               <AICoverGenerator
                 book={savedBook || { title: form.title, author: form.author, content: form.content }}
                 setForm={setForm}
-                apiKey={apiKey}
               />
-
-              <div className="result-box">
-                {form.coverImageUrl
-                  ? <img src={form.coverImageUrl} alt="AI 생성 표지" />
-                  : <p>(결과물)</p>}
-              </div>
             </div>
           </section>
         </section>
