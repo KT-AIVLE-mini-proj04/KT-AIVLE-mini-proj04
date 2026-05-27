@@ -86,6 +86,7 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
     throw new Error('VITE_OPENAI_API_KEY가 설정되지 않았습니다. .env 설정과 dev 서버 재시작을 확인하세요.');
   }
 
+
   console.log('hookAiCover 호출:', { book, options });
   const {
     model = 'gpt-image-2',
