@@ -18,7 +18,9 @@ export default function AICoverGenerator({ book, setForm }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError]       = useState('');
   const [imageSrc, setImageSrc]   = useState('');
+  const [apiKey, setApiKey]     = useState('');
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setImageSrc(book.coverImageUrl || '');
   }, [book.coverImageUrl]);
 
@@ -29,7 +31,7 @@ export default function AICoverGenerator({ book, setForm }) {
     setError('');
 
     try {
-      const imageSrc = await hookAiCover(book, { model, size, quality });
+      const imageSrc = await hookAiCover(book, { apiKey,model, size, quality });
       console.log('생성된 이미지 URL:', imageSrc);
       setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
       setImageSrc(imageSrc);
@@ -47,6 +49,19 @@ export default function AICoverGenerator({ book, setForm }) {
       <div className="ai-result">
         {imageSrc && <img src={imageSrc} alt="AI 생성 표지" />}
       </div>
+            <div className="ai-field" style={{ marginBottom: '16px' }}>
+              <label htmlFor="shared-api-key">OpenAI API Key</label>
+              <input
+                id="shared-api-key"
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-..."
+                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+              />
+            </div>
+
+
       {/* 옵션 선택 */}
       <div className="ai-options">
         <div className="ai-field">

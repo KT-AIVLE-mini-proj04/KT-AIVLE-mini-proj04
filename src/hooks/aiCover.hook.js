@@ -81,8 +81,7 @@ export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject
  *   console.error(err.message);
  * }
  */
-export const hookAiCover = async (book, options = {}) => {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+export const hookAiCover = async (apiKey, book, options = {}) => {
   if (!apiKey) {
     throw new Error('VITE_OPENAI_API_KEY가 설정되지 않았습니다. .env 설정과 dev 서버 재시작을 확인하세요.');
   }
