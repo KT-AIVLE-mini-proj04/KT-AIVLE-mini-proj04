@@ -17,13 +17,12 @@ export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
 
   const handleGenerate = async () => {
     if (!apiKey?.trim()) { setError('OpenAI API Key를 입력해주세요.'); return; }
-    if (book.title.length > 20) { setError('제목은 20자 이하로 입력해야 TTS를 생성할 수 있습니다.'); return; }
-    if (book.author.length > 10) { setError('저자는 10자 이하로 입력해야 TTS를 생성할 수 있습니다.'); return; }
-    if (book.content.length > 43) { setError('내용은 43자 이하로 입력해야 TTS를 생성할 수 있습니다.'); return; }
     setIsLoading(true);
     setError('');
     try {
-      const script = `${book.title}. 저자 ${book.author}. ${book.content}`;
+      // 제목+저자+내용 합쳐서 80자로 트리밍
+      const full = `${book.title}. 저자 ${book.author}. ${book.content}`;
+      const script = full.slice(0, 80);
       const base64Url = await hookAITTS(apiKey.trim(), script, voice);
 
       if (book.id) {

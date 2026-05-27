@@ -44,9 +44,9 @@ function SubmitEdit() {
         setAudioUrl(res.audioUrl || localStorage.getItem(`audio_${res.id}`) || '');
         // 로드된 데이터로 카운터 초기화 (onInput 없이도 표시)
         requestAnimationFrame(() => {
-          syncCounter(titleCountRef,   res.title   || '', 20, false);
-          syncCounter(authorCountRef,  res.author  || '', 10, false);
-          syncCounter(contentCountRef, res.content || '', 43, true);
+          syncCounter(titleCountRef,   res.title   || '', 100,  false);
+          syncCounter(authorCountRef,  res.author  || '', 50,   false);
+          syncCounter(contentCountRef, res.content || '', 1000, true);
         });
       } catch (error) {
         console.error('도서 정보 불러오기 실패:', error);
@@ -68,10 +68,10 @@ function SubmitEdit() {
     if (!form.title.trim()) { alert('제목을 입력하세요.'); return; }
     if (!form.author.trim()) { alert('저자를 입력하세요.'); return; }
     if (!form.content.trim()) { alert('내용을 입력하세요.'); return; }
-    if (form.title.trim().length > 20) { alert('제목은 20자 이하로 입력하세요.'); return; }
-    if (form.author.trim().length > 10) { alert('저자는 10자 이하로 입력하세요.'); return; }
+    if (form.title.trim().length > 100) { alert('제목은 100자 이하로 입력하세요.'); return; }
+    if (form.author.trim().length > 50) { alert('저자는 50자 이하로 입력하세요.'); return; }
     if (form.content.trim().length < 10) { alert('내용을 10자 이상 입력하세요.'); return; }
-    if (form.content.trim().length > 43) { alert('내용은 43자 이하로 입력하세요.'); return; }
+    if (form.content.trim().length > 1000) { alert('내용은 1000자 이하로 입력하세요.'); return; }
 
     try {
       setLoading(true);
@@ -131,10 +131,10 @@ function SubmitEdit() {
                   value={form.title}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
-                  onInput={(e) => syncCounter(titleCountRef, e.target.value, 20, false)}
-                  placeholder="제목을 입력하세요 (최대 20자)"
+                  onInput={(e) => syncCounter(titleCountRef, e.target.value, 100, false)}
+                  placeholder="제목을 입력하세요 (최대 100자)"
                 />
-                <span ref={titleCountRef} className={`char-counter${form.title.length > 20 ? ' over' : ''}`}>{form.title.length}/20</span>
+                <span ref={titleCountRef} className={`char-counter${form.title.length > 100 ? ' over' : ''}`}>{form.title.length}/100</span>
               </div>
 
               <div className="form-field">
@@ -146,10 +146,10 @@ function SubmitEdit() {
                   value={form.author}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
-                  onInput={(e) => syncCounter(authorCountRef, e.target.value, 10, false)}
-                  placeholder="저자를 입력하세요 (최대 10자)"
+                  onInput={(e) => syncCounter(authorCountRef, e.target.value, 50, false)}
+                  placeholder="저자를 입력하세요 (최대 50자)"
                 />
-                <span ref={authorCountRef} className={`char-counter${form.author.length > 10 ? ' over' : ''}`}>{form.author.length}/10</span>
+                <span ref={authorCountRef} className={`char-counter${form.author.length > 50 ? ' over' : ''}`}>{form.author.length}/50</span>
               </div>
 
               <div className="form-field">
@@ -160,10 +160,10 @@ function SubmitEdit() {
                   value={form.content}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
-                  onInput={(e) => syncCounter(contentCountRef, e.target.value, 43, true)}
-                  placeholder="내용을 입력하세요 (10자 이상, 최대 43자)"
+                  onInput={(e) => syncCounter(contentCountRef, e.target.value, 1000, true)}
+                  placeholder="내용을 입력하세요 (10자 이상, 최대 1000자)"
                 />
-                <span ref={contentCountRef} className={`char-counter${form.content.length > 43 ? ' over' : form.content.length < 10 && form.content.length > 0 ? ' under' : ''}`}>{form.content.length}/43</span>
+                <span ref={contentCountRef} className={`char-counter${form.content.length > 1000 ? ' over' : form.content.length < 10 && form.content.length > 0 ? ' under' : ''}`}>{form.content.length}/1000</span>
               </div>
 
               <div className="form-buttons">
