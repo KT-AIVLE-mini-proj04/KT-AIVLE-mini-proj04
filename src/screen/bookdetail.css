@@ -1,10 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap");
 
-body:has(.book-detail-page) {
-  background-color: #995349;
-}
-
-:root {
+.book-detail-page {
   --mocha: #995349;
   --mocha-dark: #7a4239;
   --mocha-darker: #5c2f28;
@@ -14,25 +10,6 @@ body:has(.book-detail-page) {
   --subtle: #6b6b6b;
   --shadow-card: 0 20px 40px rgba(0, 0, 0, 0.15);
   --shadow-book: 12px 12px 24px rgba(0, 0, 0, 0.35);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: "Nanum Gothic", sans-serif;
-  color: var(--ink);
-}
-
-/* body 클래스 토글 (JSX에서 처리) */
-body.mocha-bg {
-  background-color: var(--mocha);
-}
-
-/* ===== 페이지 전체 (모카 배경) ===== */
-.book-detail-page {
   min-height: 100vh;
   background: var(--mocha);
   padding: 60px 40px 80px;
@@ -600,7 +577,9 @@ body.mocha-bg {
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .tts-delete-btn:hover:not(:disabled) {

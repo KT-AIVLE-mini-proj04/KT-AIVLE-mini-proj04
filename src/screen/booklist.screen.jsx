@@ -30,7 +30,7 @@ function BookListScreen() {
   }, []);
 
   return (
-    <div className="app">
+    <div className="book-list-page">
       <main className="book-main">
         <div className="book-main-top">
           <h2>도서 목록</h2>

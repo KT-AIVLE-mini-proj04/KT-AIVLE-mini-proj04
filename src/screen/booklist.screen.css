@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap");
 
-:root {
+.book-list-page {
   --page-bg: #d8d8d8;
   --panel-bg: #ffffff;
   --bar-bg: #cfcfcf;
@@ -14,26 +14,14 @@
   --shell-width: 1120px;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: 'Nanum Gothic', 'Apple SD Gothic Neo', sans-serif;
-  color: var(--ink);
-}
-
-
-.app {
+.book-list-page {
   min-height: 100vh;
   width: 100%;
   background: linear-gradient(180deg, #dadada 0%, #cfcfcf 100%);
   display: flex;
   flex-direction: column;
-  font-family: 'Nanum Gothic', 'Apple SD Gothic Neo', sans-serif;
+  font-family: "Nanum Gothic", "Apple SD Gothic Neo", sans-serif;
 }
-
 
 .book-main {
   flex: 1;
@@ -42,7 +30,6 @@ body {
   padding: 40px 28px 64px;
   box-sizing: border-box;
 }
-
 
 .book-main-top {
   display: flex;
@@ -54,7 +41,7 @@ body {
 }
 
 .book-main-top h2 {
-  font-family: 'Gowun Batang', 'Nanum Gothic', serif;
+  font-family: "Gowun Batang", "Nanum Gothic", serif;
   font-size: 28px;
   font-weight: 700;
   margin: 0;
@@ -63,9 +50,8 @@ body {
   padding-left: 18px;
 }
 
-
 .book-main-top h2::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 50%;
@@ -75,7 +61,6 @@ body {
   background: var(--accent);
   border-radius: 3px;
 }
-
 
 .search-box {
   width: 240px;
@@ -90,7 +75,10 @@ body {
   font-family: inherit;
   cursor: pointer;
   box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .search-box:hover {
@@ -104,14 +92,12 @@ body {
   outline-offset: 2px;
 }
 
-
 .book-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 28px;
   animation: fade-up 0.6s ease forwards;
 }
-
 
 /* JSX에서 <Link>로 카드를 감싸면 기본 a 태그 스타일(밑줄, 파란색)이 들어감 */
 .book-list a {
@@ -120,7 +106,6 @@ body {
   display: block;
 }
 
-
 .book-card {
   background: var(--panel-bg);
   padding: 20px;
@@ -128,7 +113,9 @@ body {
   text-align: center;
   box-shadow: var(--shadow-soft);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   height: 100%; /* Link 안에서 카드 높이 동일하게 */
 }
 
@@ -136,7 +123,6 @@ body {
   transform: translateY(-4px);
   box-shadow: var(--shadow);
 }
-
 
 .book-cover {
   width: 100%;
@@ -172,7 +158,7 @@ body {
 
 /* 책 정보 */
 .book-card h3 {
-  font-family: 'Gowun Batang', serif;
+  font-family: "Gowun Batang", serif;
   font-size: 15px;
   font-weight: 700;
   margin: 0 0 6px 0;
@@ -199,7 +185,9 @@ body {
   justify-content: center;
   background: var(--band-bg);
   border: 2px dashed var(--accent);
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .add-cover:hover {
@@ -226,7 +214,6 @@ body {
   margin: 0;
 }
 
-
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -237,7 +224,6 @@ body {
     transform: translateY(0);
   }
 }
-
 
 @media (max-width: 900px) {
   .book-main {

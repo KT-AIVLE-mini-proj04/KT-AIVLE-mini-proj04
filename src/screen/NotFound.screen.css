@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap");
 
-:root {
+.not-found-page {
   --page-bg: #d8d8d8;
   --panel-bg: #ffffff;
   --bar-bg: #cfcfcf;
@@ -12,9 +12,6 @@
   --shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
   --shadow-soft: 0 6px 12px rgba(0, 0, 0, 0.12);
   --shell-width: 1120px;
-}
-
-.not-found-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #dadada 0%, #cfcfcf 100%);
   color: var(--ink);
