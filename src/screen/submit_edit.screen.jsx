@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { hookBooks } from '../hooks/books.hook.js';
 import AICoverGenerator from './AICoverGenerator';
-import TtsGenerator from './tts_mp3';
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -173,7 +172,7 @@ function SubmitEdit() {
           </section>
 
           <section className="ai-section">
-            <div className="ai-field" style={{ marginBottom: '16px' }}>
+            <div className="ai-field">
               <label htmlFor="shared-api-key">OpenAI API Key</label>
               <input
                 id="shared-api-key"
@@ -181,7 +180,6 @@ function SubmitEdit() {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="sk-..."
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
               />
             </div>
 
@@ -194,15 +192,6 @@ function SubmitEdit() {
             <AICoverGenerator
               book={savedBook || { title: form.title, author: form.author, content: form.content }}
               setForm={setForm}
-              apiKey={apiKey}
-            />
-
-            <TtsGenerator
-              book={savedBook || { title: form.title, author: form.author, content: form.content }}
-              onAudioUpdate={(url) => {
-                setAudioUrl(url);
-                if (savedBook) setSavedBook(prev => ({ ...prev, audioUrl: url }));
-              }}
               apiKey={apiKey}
             />
           </section>
