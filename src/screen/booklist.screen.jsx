@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./booklist.screen.css";
 import { hookBookList } from "../hooks/booklist.hook";
-import { Link, useOutletContext } from "react-router";
+import { Link, useOutletContext } from "react-router-dom";
 
 function BookListScreen() {
   const [bookList, setBookList] = useState([]);
@@ -40,9 +40,7 @@ function BookListScreen() {
           {bookList?.map((book, index) => (
             <div className="book-card" key={`${book.id}-${index}`}>
               <Link to={`${book.id}`}>
-                <div
-                  className="book-cover"
-                  onClick={() => navigate(`/book-detail/${book.id}`)}>
+                <div className="book-cover">
                   {book.coverImageUrl ? (
                     <img src={book.coverImageUrl} alt={book.title} />
                   ) : (
