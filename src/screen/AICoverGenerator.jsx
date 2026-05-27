@@ -24,32 +24,29 @@ const SIZE_OPTIONS = [
   { label: '512×341 (가로 소형)',               apiSize: '1536x1024', w: 512,  h: 341  },
 ];
 
-export default function AICoverGenerator({ book, setForm }) {
+export default function AICoverGenerator({ book, setForm, isGenerating, setIsGenerating }) {
   const model                   = 'gpt-image-2';
   const [sizeKey, setSizeKey]   = useState('1024×1536 (세로 대형 · 도서표지)');
   const [quality, setQuality]   = useState('medium');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError]       = useState('');
-  const [imageSrc, setImageSrc]   = useState('');
+  const [imageSrc, setImageSrc] = useState('');
   const [apiKey, setApiKey]     = useState('');
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setImageSrc(book.coverImageUrl || '');
   }, [book.coverImageUrl]);
-
 
   const handleGenerateCover = async () => {
     setIsGenerating(true);
     setError('');
     try {
       const opt = SIZE_OPTIONS.find(o => o.label === sizeKey) || SIZE_OPTIONS[0];
-      const imageSrc = await hookAiCover(apiKey, book, {
+      const result = await hookAiCover(apiKey, book, {
         model, size: opt.apiSize, quality,
         compressWidth: opt.w, compressHeight: opt.h,
       });
-      setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
-      setImageSrc(imageSrc);
-
+      setForm((prev) => ({ ...prev, coverImageUrl: result }));
+      setImageSrc(result);
     } catch (err) {
       setError(err.message || '표지 생성에 실패했습니다.');
     } finally {
