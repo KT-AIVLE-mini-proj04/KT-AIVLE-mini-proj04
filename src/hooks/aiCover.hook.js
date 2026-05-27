@@ -81,11 +81,11 @@ export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject
  *   console.error(err.message);
  * }
  */
-export const hookAiCover = async (book, options = {}, apiKeyOverride) => {
-  const apiKey = apiKeyOverride || import.meta.env.VITE_OPENAI_API_KEY;
+export const hookAiCover = async (apiKey, book, options = {}) => {
   if (!apiKey) {
     throw new Error('OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.');
   }
+
 
   console.log('hookAiCover 호출:', { book, options });
   const {
