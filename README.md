@@ -1,4 +1,4 @@
-# 📚 AI 도서관리 시스템
+# 📚 Pic:Story
 
 > AIVLE EDU 4차 미니 프로젝트 — AI 기반 도서 표지 자동 생성 기능을 탑재한 단일 페이지 도서 관리 애플리케이션
 
@@ -9,9 +9,11 @@
 | 항목 | 내용 |
 |:---:|---|
 | **주제** | 도서관리 시스템 개발 + AI 활용 도서 표지 생성 |
+| **목적** | 작가를위한~ |
 | **진행 기간** | 3일 |
 | **차수** | 미니 프로젝트 4차 |
 | **플랫폼** | AIVLE EDU |
+
 
 ### 주요 목표
 
@@ -25,7 +27,7 @@
 
 | 레이어 | 기술 |
 |:---:|---|
-| **Frontend** | React 19, Vite, fetch API |
+| **Frontend** | React 19, Vite, axios |
 | **Mock Backend** | json-server (로컬 REST API) |
 | **AI** | OpenAI API (GPT Image 2) |
 | **UI 라이브러리** | MUI (Material UI) |
