@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import coverLogo from "../assets/sample_img.png";
-import "./main.screen.css";
+import coverLogo from "@assets/sample_img.png";
+import "@screen/main.screen.css";
 
 const stats = [
   { value: "99", label: "등록 도서" },

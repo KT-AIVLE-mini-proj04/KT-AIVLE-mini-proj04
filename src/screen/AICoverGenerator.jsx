@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import './AICoverGenerator.css';
-import { hookAiCover } from '../hooks/aiCover.hook';
+import { useState, useEffect } from "react";
+import "@screen/AICoverGenerator.css";
+import { hookAiCover } from "@hooks/aiCover.hook";
 
 /**
  * AI 표지 생성 컴포넌트 (M5 · M6)
@@ -33,12 +33,13 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
   const [apiKey, setApiKey]     = useState('');
 
   useEffect(() => {
-    setImageSrc(book.coverImageUrl || '');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setImageSrc(book.coverImageUrl || "");
   }, [book.coverImageUrl]);
 
   const handleGenerateCover = async () => {
     setIsGenerating(true);
-    setError('');
+    setError("");
     try {
       const opt = SIZE_OPTIONS.find(o => o.label === sizeKey) || SIZE_OPTIONS[0];
       const result = await hookAiCover(apiKey, book, {
@@ -48,7 +49,7 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
       setForm((prev) => ({ ...prev, coverImageUrl: result }));
       setImageSrc(result);
     } catch (err) {
-      setError(err.message || '표지 생성에 실패했습니다.');
+      setError(err.message || "표지 생성에 실패했습니다.");
     } finally {
       setIsGenerating(false);
     }
@@ -83,7 +84,10 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
 
         <div className="cover-opt">
           <label htmlFor="ai-quality">품질</label>
-          <select id="ai-quality" value={quality} onChange={(e) => setQuality(e.target.value)}>
+          <select
+            id="ai-quality"
+            value={quality}
+            onChange={(e) => setQuality(e.target.value)}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -95,9 +99,8 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
         <button
           onClick={handleGenerateCover}
           disabled={isGenerating}
-          className="ai-generate-btn"
-        >
-          {isGenerating ? '생성 중...' : '생성'}
+          className="ai-generate-btn">
+          {isGenerating ? "생성 중..." : "생성"}
         </button>
       </div>
 

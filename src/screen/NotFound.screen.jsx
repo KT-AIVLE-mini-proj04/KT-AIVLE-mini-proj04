@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import "./NotFound.screen.css";
+import "@screen/NotFound.screen.css";
 
 function NotFound() {
   return (

@@ -1,9 +1,9 @@
-import style from "./Header.module.css";
-import Button from "./Button";
+import style from "@/common/components/Header.module.css";
+import Button from "@/common/components/Button";
 import { Link } from "react-router";
-import ServiceLogo from "./ServiceLogo";
+import ServiceLogo from "@/common/components/ServiceLogo";
 import { useEffect, useRef, useState } from "react";
-import searchStyle from "./Search.module.css";
+import searchStyle from "@/common/components/Search.module.css";
 import { hookBookList } from "@hooks/bookList.hook.js";
 import { searchBooks } from "@utils/searchBooks.js";
 

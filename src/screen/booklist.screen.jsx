@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import "./booklist.screen.css";
-import { hookBookList } from "../hooks/booklist.hook";
+import "@screen/booklist.screen.css";
+import { hookBookList } from "@hooks/bookList.hook.js";
 import { Link, useOutletContext, useNavigate } from "react-router";
 
 function BookListScreen() {

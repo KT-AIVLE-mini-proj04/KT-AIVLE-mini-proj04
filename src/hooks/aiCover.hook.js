@@ -1,4 +1,4 @@
-const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
+const OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
 
 // Canvas API로 이미지를 지정 크기로 압축 (JPEG 70%) → json-server 저장 크기 절감
 export const compressImage = (dataUrl, targetWidth, targetHeight) => new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ export const compressImage = (dataUrl, targetWidth, targetHeight) => new Promise
  * ─────────────────────────────────────────
  * 사용 예시
  * ─────────────────────────────────────────
- * import { hookAiCover } from '../hooks/aiCover.hook';
+ * import { hookAiCover } from '@hooks/aiCover.hook';
  *
  * // 기본 옵션으로 호출
  * const imageSrc = await hookAiCover(apiKey, book);
@@ -82,7 +82,9 @@ export const compressImage = (dataUrl, targetWidth, targetHeight) => new Promise
  */
 export const hookAiCover = async (apiKey, book, options = {}) => {
   if (!apiKey) {
-    throw new Error('OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.');
+    throw new Error(
+      "OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.",
+    );
   }
 
   const {
@@ -98,25 +100,36 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
 
   // 2. OpenAI Image API 호출 (POST)
   const res = await fetch(OPENAI_API_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ model, prompt, n: 1, size, quality, output_format: 'png' }),
+    body: JSON.stringify({
+      model,
+      prompt,
+      n: 1,
+      size,
+      quality,
+      output_format: "png",
+    }),
   });
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
     const status = res.status;
-    if (status === 401) throw new Error('API Key가 유효하지 않습니다. [401 Unauthorized]');
-    if (status === 429) throw new Error('요청 한도 초과입니다. 잠시 후 재시도하세요. [429 Too Many Requests]');
+    if (status === 401)
+      throw new Error("API Key가 유효하지 않습니다. [401 Unauthorized]");
+    if (status === 429)
+      throw new Error(
+        "요청 한도 초과입니다. 잠시 후 재시도하세요. [429 Too Many Requests]",
+      );
     throw new Error(errData.error?.message || `OpenAI 오류 [${status}]`);
   }
 
   // 3. b64_json → Data URL 변환
   const data = await res.json();
   const b64Json = data.data?.[0]?.b64_json;
-  if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
+  if (!b64Json) throw new Error("이미지 데이터를 받지 못했습니다.");
   const imageSrc = `data:image/png;base64,${b64Json}`;
   const compressedSrc = await compressImage(imageSrc, compressWidth, compressHeight);
 

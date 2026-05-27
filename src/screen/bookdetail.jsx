@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from 'react-router';
-import { hookBooks } from '../hooks/books.hook';
-import { hookAITTS } from '../hooks/tts_mp3.hook';
-import './bookdetail.css';
-
+import { useParams, useNavigate, useLocation } from "react-router";
+import { hookBooks } from "@hooks/books.hook";
+import { hookAITTS } from "@hooks/tts_mp3.hook";
+import { hookLike } from "@hooks/like.hook";
+import HeartIcon from "@/assets/heart.svg?react";
+import "./bookdetail.css";
 
 function BookDetailPage() {
   const { id } = useParams();
@@ -14,8 +15,8 @@ function BookDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
-  const [commentInput, setCommentInput] = useState('');
-  const [commentError, setCommentError] = useState('');
+  const [commentInput, setCommentInput] = useState("");
+  const [commentError, setCommentError] = useState("");
 
   const commentStorageKey = `book_comments_${id}`;
 
@@ -24,7 +25,7 @@ function BookDetailPage() {
       const stored = localStorage.getItem(commentStorageKey);
       return stored ? JSON.parse(stored) : [];
     } catch (err) {
-      console.error('댓글 불러오기 오류:', err);
+      console.error("댓글 불러오기 오류:", err);
       return [];
     }
   };
@@ -33,27 +34,29 @@ function BookDetailPage() {
     try {
       localStorage.setItem(commentStorageKey, JSON.stringify(newComments));
     } catch (err) {
-      console.error('댓글 저장 오류:', err);
+      console.error("댓글 저장 오류:", err);
     }
   };
 
-  const [apiKey, setApiKey]         = useState('');
-  const [voice, setVoice]           = useState('alloy');
-  const [audioSrc, setAudioSrc]     = useState('');
+  const [apiKey, setApiKey] = useState("");
+  const [voice, setVoice] = useState("alloy");
+  const [audioSrc, setAudioSrc] = useState("");
   const [isTtsLoading, setIsTtsLoading] = useState(false);
-  const [ttsError, setTtsError]     = useState('');
+  const [ttsError, setTtsError] = useState("");
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const result = await hookBooks('GET', { id });
+        const result = await hookBooks("GET", { id });
         setBookData(result);
         setComments(loadComments());
-        const saved = result.audioUrl || localStorage.getItem(`audio_${result.id}`) || '';
+        const saved =
+          result.audioUrl || localStorage.getItem(`audio_${result.id}`) || "";
         setAudioSrc(saved);
       } catch (err) {
-        console.error('도서 조회 실패:', err);
-        setError('해당 도서를 찾을 수 없습니다.');
+        console.error("도서 조회 실패:", err);
+        setError("해당 도서를 찾을 수 없습니다.");
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +65,7 @@ function BookDetailPage() {
   }, [id, location.key]);
 
   const handleBack = () => {
-    navigate('/books');
+    navigate("/books");
   };
 
   const handleEdit = () => {
@@ -75,12 +78,12 @@ function BookDetailPage() {
     }
 
     try {
-      await hookBooks('DELETE', { id: bookData.id });
-      alert('삭제되었습니다.');
-      navigate('/books');
+      await hookBooks("DELETE", { id: bookData.id });
+      alert("삭제되었습니다.");
+      navigate("/books");
     } catch (err) {
-      console.error('삭제 중 오류:', err);
-      alert('삭제 중 오류가 발생했습니다.');
+      console.error("삭제 중 오류:", err);
+      alert("삭제 중 오류가 발생했습니다.");
     }
   };
 
@@ -88,7 +91,7 @@ function BookDetailPage() {
     event.preventDefault();
     const trimmed = commentInput.trim();
     if (!trimmed) {
-      setCommentError('댓글 내용을 입력해주세요.');
+      setCommentError("댓글 내용을 입력해주세요.");
       return;
     }
 
@@ -101,42 +104,74 @@ function BookDetailPage() {
     const updatedComments = [newComment, ...comments];
     setComments(updatedComments);
     saveComments(updatedComments);
-    setCommentInput('');
-    setCommentError('');
+    setCommentInput("");
+    setCommentError("");
   };
 
   const handleCommentDelete = (commentId) => {
-    const updatedComments = comments.filter((comment) => comment.id !== commentId);
+    const updatedComments = comments.filter(
+      (comment) => comment.id !== commentId,
+    );
     setComments(updatedComments);
     saveComments(updatedComments);
   };
 
-
   const handleTtsDelete = async () => {
     localStorage.removeItem(`audio_${bookData.id}`);
-    setAudioSrc('');
-    setTtsError('');
-    try { await hookBooks('PATCH', { id: bookData.id, audioUrl: '' }); } catch (_) {}
+    setAudioSrc("");
+    setTtsError("");
+    try {
+      await hookBooks("PATCH", { id: bookData.id, audioUrl: "" });
+    } catch (_) {}
   };
 
   const handleTtsGenerate = async () => {
-    if (!apiKey.trim()) { setTtsError('OpenAI API Key를 입력해주세요.'); return; }
+    if (!apiKey.trim()) {
+      setTtsError("OpenAI API Key를 입력해주세요.");
+      return;
+    }
     setIsTtsLoading(true);
-    setTtsError('');
+    setTtsError("");
     try {
       const script = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
       const url = await hookAITTS(apiKey.trim(), script, voice);
       localStorage.setItem(`audio_${bookData.id}`, url);
       setAudioSrc(url);
-      try { await hookBooks('PATCH', { id: bookData.id, audioUrl: url }); } catch (_) {}
+      try {
+        await hookBooks("PATCH", { id: bookData.id, audioUrl: url });
+      } catch (_) {}
     } catch (err) {
-      setTtsError(err.message || 'TTS 생성에 실패했습니다.');
+      setTtsError(err.message || "TTS 생성에 실패했습니다.");
     } finally {
       setIsTtsLoading(false);
     }
   };
 
-  const formatDate = (isoString) => {  // 날짜
+  const handleLikeToggle = async () => {
+    if (!bookData || isLikeLoading) {
+      return;
+    }
+
+    const nextLike = !Boolean(bookData.like);
+    setIsLikeLoading(true);
+
+    try {
+      await hookLike({ id: bookData.id, like: nextLike });
+      setBookData((prev) =>
+        prev
+          ? { ...prev, like: nextLike, updatedAt: new Date().toISOString() }
+          : prev,
+      );
+    } catch (err) {
+      console.error("좋아요 변경 실패:", err);
+      alert("좋아요 상태 변경 중 오류가 발생했습니다.");
+    } finally {
+      setIsLikeLoading(false);
+    }
+  };
+
+  const formatDate = (isoString) => {
+    // 날짜
     if (!isoString) return "";
     return new Date(isoString).toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -145,42 +180,47 @@ function BookDetailPage() {
     });
   };
 
+  // 로딩 중 표시
+  if (isLoading) {
+    return (
+      <div className="book-detail-page">
+        <main className="main-content">
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: "20px",
+              marginTop: "60px",
+            }}>
+            도서 정보를 불러오는 중...
+          </p>
+        </main>
+      </div>
+    );
+  }
 
-
-
-// 로딩 중 표시
-if (isLoading) {
-  return (
-    <div className="book-detail-page">
-      <main className="main-content">
-        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
-          도서 정보를 불러오는 중...
-        </p>
-      </main>
-    </div>
-  );
-}
-
-// 에러 또는 책 없음
-if (error || !bookData) {
-  return (
-    <div className="book-detail-page">
-      <main className="main-content">
-        <button className="back-button" onClick={handleBack}>
-          ← 뒤로 가기
-        </button>
-        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
-          {error || '해당 도서를 찾을 수 없습니다.'}
-        </p>
-      </main>
-    </div>
-  );
-}
-
-
+  // 에러 또는 책 없음
+  if (error || !bookData) {
+    return (
+      <div className="book-detail-page">
+        <main className="main-content">
+          <button className="back-button" onClick={handleBack}>
+            ← 뒤로 가기
+          </button>
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: "20px",
+              marginTop: "60px",
+            }}>
+            {error || "해당 도서를 찾을 수 없습니다."}
+          </p>
+        </main>
+      </div>
+    );
+  }
 
   const hasCoverImage =
-  bookData.coverImageUrl && bookData.coverImageUrl.trim() !== '';
+    bookData.coverImageUrl && bookData.coverImageUrl.trim() !== "";
 
   return (
     <div className="book-detail-page">
@@ -188,7 +228,6 @@ if (error || !bookData) {
         <button className="back-button" onClick={handleBack}>
           ← 뒤로 가기
         </button>
-
 
         <div className="book-detail-Card">
           <div className="book-cover">
@@ -214,9 +253,20 @@ if (error || !bookData) {
               <p>{bookData.content}</p>
             </div>
 
-            <p className="book-date">
-              등록일: {formatDate(bookData.createdAt)}
-            </p>
+            <div className="book-date-like">
+              <p className="book-date">
+                등록일: {formatDate(bookData.createdAt)}
+              </p>
+              <button
+                type="button"
+                className={`like-button ${bookData.like ? "liked" : ""}`}
+                aria-label={bookData.like ? "좋아요 취소" : "좋아요"}
+                title={bookData.like ? "좋아요 취소" : "좋아요"}
+                onClick={handleLikeToggle}
+                disabled={isLikeLoading}>
+                <HeartIcon aria-hidden="true" focusable="false" />
+              </button>
+            </div>
 
             <div className="action-buttons">
               <button className="btn-edit" onClick={handleEdit}>
@@ -240,8 +290,7 @@ if (error || !bookData) {
                 <select
                   className="tts-voice-select"
                   value={voice}
-                  onChange={(e) => setVoice(e.target.value)}
-                >
+                  onChange={(e) => setVoice(e.target.value)}>
                   <option value="alloy">Alloy (중성)</option>
                   <option value="ash">Ash (중성)</option>
                   <option value="ballad">Ballad (부드러운 남성)</option>
@@ -257,16 +306,14 @@ if (error || !bookData) {
                 <button
                   className="tts-generate-btn"
                   onClick={handleTtsGenerate}
-                  disabled={isTtsLoading}
-                >
-                  {isTtsLoading ? '생성 중...' : '생성'}
+                  disabled={isTtsLoading}>
+                  {isTtsLoading ? "생성 중..." : "생성"}
                 </button>
                 {audioSrc && (
                   <button
                     className="tts-delete-btn"
                     onClick={handleTtsDelete}
-                    disabled={isTtsLoading}
-                  >
+                    disabled={isTtsLoading}>
                     삭제
                   </button>
                 )}
@@ -277,7 +324,7 @@ if (error || !bookData) {
               )}
               <p className="tts-notice">* TTS 생성 시 OpenAI API 비용이 발생합니다.</p>
             </div>
-                        <section className="comments-section">
+            <section className="comments-section">
               <div className="comments-header">
                 <h3>댓글</h3>
                 <span>{comments.length}개</span>
@@ -291,7 +338,9 @@ if (error || !bookData) {
                   rows={4}
                   className="comment-input"
                 />
-                {commentError && <p className="comment-error">{commentError}</p>}
+                {commentError && (
+                  <p className="comment-error">{commentError}</p>
+                )}
                 <button type="submit" className="btn-edit comment-submit">
                   댓글 등록
                 </button>
@@ -305,19 +354,18 @@ if (error || !bookData) {
                     <article key={comment.id} className="comment-item">
                       <div className="comment-meta">
                         <span className="comment-date">
-                          {new Date(comment.createdAt).toLocaleString('ko-KR', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
+                          {new Date(comment.createdAt).toLocaleString("ko-KR", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })}
                         </span>
                         <button
                           type="button"
                           className="comment-delete"
-                          onClick={() => handleCommentDelete(comment.id)}
-                        >
+                          onClick={() => handleCommentDelete(comment.id)}>
                           삭제
                         </button>
                       </div>

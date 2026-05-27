@@ -1,5 +1,5 @@
-import style from "./Search.module.css";
-import Button from "./Button";
+import style from "@/common/components/Search.module.css";
+import Button from "@/common/components/Button";
 import { Link } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { hookBookList } from "@hooks/bookList.hook.js";
