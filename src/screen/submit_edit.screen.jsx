@@ -1,25 +1,26 @@
 import "./submit_edit.screen.css";
 
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router";
+import { useState, useRef } from "react";
+import { useEffect } from "react";
+
+import "./submit_edit.screen.css";
+import { Link } from "react-router";
 import { hookBooks } from '../hooks/books.hook.js';
-import { compressImage } from '../hooks/aiCover.hook.js';
-import AICoverGenerator from './AICoverGenerator';
-import TtsGenerator from './tts_mp3';
+import { useNavigate } from 'react-router-dom';
+import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 
 function SubmitEdit() {
-  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    title: "",
+    author: "",
+    content: "",
+    coverImageUrl: "",
+  });
   const location = useLocation();
   const id = location.state?.id;
-
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   // 팀 main 패턴: form 객체 state
-  const [form, setForm] = useState({ title: '', author: '', content: '' });
-  // AI 기능용 state
-  const [savedBook, setSavedBook]       = useState(null);
-  const [coverImageUrl, setCoverImageUrl] = useState('');
-  const [audioUrl, setAudioUrl]         = useState('');
-  const [apiKey, setApiKey]             = useState('');
-  const [loading, setLoading]           = useState(false);
 
   // 글자수 카운터 ref (onInput DOM 직접 조작 → IME 방해 없음)
   const titleCountRef   = useRef(null);
@@ -35,6 +36,7 @@ function SubmitEdit() {
 
   useEffect(() => {
     if (!id) return;
+
     const fetchBook = async () => {
       try {
         const res = await hookBooks('GET', { id });
@@ -75,28 +77,24 @@ function SubmitEdit() {
 
     try {
       setLoading(true);
-      // 팀 main 패턴: id 유무로 PATCH/POST 분기
-      const book = await hookBooks(id ? 'PATCH' : 'POST', {
+      const res = await hookBooks(id ? 'PATCH' : 'POST', {
         id,
         title: form.title,
         author: form.author,
         content: form.content,
+        coverImageUrl: form.coverImageUrl || '',
       });
 
-      console.log(id ? '수정 성공:' : '등록 성공:', book);
+      console.log(id ? '수정 성공:' : '등록 성공:', res);
       alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
-      if (!id && book) {
-        // 새 등록: AI 에셋 저장 후 폼 초기화, 페이지 유지 (AI 생성 계속 사용 가능)
-        if (coverImageUrl) {
-          const thumb = await compressImage(coverImageUrl, 300);
-          await hookBooks('PATCH', { id: book.id, coverImageUrl: thumb });
-        }
-        if (audioUrl) {
-          await hookBooks('PATCH', { id: book.id, audioUrl });
-        }
-        setForm({ title: '', author: '', content: '' });
-        setSavedBook(book);
+      if (!id) {
+        setForm({
+          title: '',
+          author: '',
+          content: '',
+          coverImageUrl: '',
+        });
       }
     } catch (error) {
       console.error(id ? '수정 실패:' : '등록 실패:', error);
@@ -171,8 +169,14 @@ function SubmitEdit() {
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={() => setForm({ title: '', author: '', content: '' })}
-                >
+                  onClick={() =>
+                    setForm({
+                      title: "",
+                      author: "",
+                      content: "",
+                      coverImageUrl: "",
+                    })
+                  }>
                   취소
                 </button>
                 {/* 팀 main 패턴: 수정/저장 텍스트 분기 */}
@@ -188,45 +192,10 @@ function SubmitEdit() {
           </section>
 
           <section className="ai-section">
-            <h2>AI 생성</h2>
-
-            <div className="ai-field" style={{ marginBottom: '16px' }}>
-              <label htmlFor="shared-api-key">OpenAI API Key</label>
-              <input
-                id="shared-api-key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-              />
-            </div>
-
-            <div className="result-box">
-              {coverImageUrl
-                ? <img src={coverImageUrl} alt="AI 생성 표지"
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                : <p>(결과물)</p>
-              }
-            </div>
-
-            <AICoverGenerator
-              book={savedBook || { title: form.title, author: form.author, content: form.content }}
-              onCoverUpdate={(url) => {
-                setCoverImageUrl(url);
-                if (savedBook) setSavedBook(prev => ({ ...prev, coverImageUrl: url }));
-              }}
-              apiKey={apiKey}
-            />
-
-            <TtsGenerator
-              book={savedBook || { title: form.title, author: form.author, content: form.content }}
-              onAudioUpdate={(url) => {
-                setAudioUrl(url);
-                if (savedBook) setSavedBook(prev => ({ ...prev, audioUrl: url }));
-              }}
-              apiKey={apiKey}
-            />
+            <AICoverGenerator book={form} setForm={setForm} />
+            {/*<div className="result-box">
+              <p>(결과물)</p>
+            </div>*/}
           </section>
         </section>
       </main>

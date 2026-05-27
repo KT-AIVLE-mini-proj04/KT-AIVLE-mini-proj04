@@ -1,5 +1,3 @@
-import { hookBooks } from './books.hook';
-
 const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
 
 // Canvas API로 이미지를 maxWidth px 너비로 압축 (JPEG 70%) → json-server 저장 크기 절감
@@ -83,7 +81,13 @@ export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject
  *   console.error(err.message);
  * }
  */
-export const hookAiCover = async (apiKey, book, options = {}) => {
+export const hookAiCover = async (book, options = {}) => {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('VITE_OPENAI_API_KEY가 설정되지 않았습니다. .env 설정과 dev 서버 재시작을 확인하세요.');
+  }
+
+  console.log('hookAiCover 호출:', { book, options });
   const {
     model = 'gpt-image-2',
     size = '1024x1536',
@@ -116,12 +120,8 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
   const b64Json = data.data?.[0]?.b64_json;
   if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
   const imageSrc = `data:image/png;base64,${b64Json}`;
+  const compressedSrc = await compressImage(imageSrc, 512); // 용량 줄이기 위해 최대 너비 512px로 압축
 
-  // 4. book.id가 있을 때만 서버에 저장 (없으면 부모 컴포넌트에서 POST 후 PATCH)
-  if (book.id) {
-    const thumb = await compressImage(imageSrc, 300);
-    await hookBooks('PATCH', { id: book.id, coverImageUrl: thumb });
-  }
-
-  return imageSrc;
+  // 4. json-server에 coverImageUrl PATCH 저장
+  return compressedSrc;
 };
