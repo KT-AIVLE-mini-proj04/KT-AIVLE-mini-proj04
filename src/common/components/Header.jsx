@@ -20,15 +20,23 @@ function HeaderBtn({ type, children }) {
   const buttonClassName = `${style["header-btn"]} ${
     isSearch && clicked ? style["search-active"] : ""
   }`;
+
   useEffect(() => {
-    if (!isSearch) {
-      return;
-    }
-    const getBooks = async () => {
-      const data = await hookBookList();
-      setBooks(data);
+    const loadAlarms = async () => {
+      const response = await fetch("/alarm_data.json");
+      const data = await response.json();
+      setAlarms(data.alarms ?? []);
     };
-    getBooks();
+
+    loadAlarms();
+
+    if (isSearch) {
+      const getBooks = async () => {
+        const data = await hookBookList();
+        setBooks(data);
+      };
+      getBooks();
+    }
 
     const handleOutsideClick = (event) => {
       if (!rootRef.current || rootRef.current.contains(event.target)) {
@@ -40,12 +48,6 @@ function HeaderBtn({ type, children }) {
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
-    fetch("/alarm_data.json")
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response.alarms);
-        setAlarms(response.alarms);
-      });
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
@@ -78,10 +80,12 @@ function HeaderBtn({ type, children }) {
         <Button
           className={buttonClassName}
           onClick={() => {
-            // 검색 모드일 때는 이미 열린 상태(clicked === true)라면 버튼 클릭으로 닫지 않음
             if (isSearch) {
               if (!clicked) setClicked(true);
+              return;
             }
+
+            setClicked((prev) => !prev);
           }}>
           <div className={style["header-icon-wrap"]}>
             <img
@@ -103,7 +107,7 @@ function HeaderBtn({ type, children }) {
           <span className={`${style["header-btn-text"]}`}>{children}</span>
         </Button>
 
-        {searchText.trim() && (
+        {isSearch && searchText.trim() && (
           <ul className={searchStyle.searchResult}>
             {hasSearchResult ? (
               searchQuery.map((book) => (
@@ -120,6 +124,23 @@ function HeaderBtn({ type, children }) {
             ) : (
               <li className={searchStyle.resultLink}>
                 <span>찾으시는 검색어 결과가 없습니다.</span>
+              </li>
+            )}
+          </ul>
+        )}
+
+        {!isSearch && clicked && (
+          <ul
+            className={`${searchStyle.searchResult} ${searchStyle.alarmResult}`}>
+            {alarms.length > 0 ? (
+              alarms.map((alarm, index) => (
+                <li key={`${alarm}-${index}`} className={searchStyle.alarmItem}>
+                  <span>{alarm}</span>
+                </li>
+              ))
+            ) : (
+              <li className={searchStyle.alarmItem}>
+                <span>알림이 없습니다.</span>
               </li>
             )}
           </ul>

@@ -107,3 +107,25 @@
   font-size: 0.7rem;
   white-space: nowrap;
 }
+
+.alarmResult {
+  max-height: 260px;
+  width: 300px;
+  left: auto;
+  right: 0;
+  overflow-y: auto;
+}
+
+.alarmItem {
+  padding: 10px 6px;
+  color: #2f2a2a;
+  font-weight: 700;
+}
+
+.alarmItem span {
+  display: block;
+  color: #7a6868;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: normal;
+}
