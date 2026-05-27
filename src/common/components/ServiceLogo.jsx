@@ -1,4 +1,4 @@
-import style from "./ServiceLogo.module.css";
+import style from "@/common/components/ServiceLogo.module.css";
 
 function TextLogo({ className, children }) {
   const classes = className

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import './AICoverGenerator.css';
-import { hookAiCover } from '../hooks/aiCover.hook';
+import { useState, useEffect } from "react";
+import "@screen/AICoverGenerator.css";
+import { hookAiCover } from "@hooks/aiCover.hook";
 
 /**
  * AI 표지 생성 컴포넌트 (M5 · M6)
@@ -11,31 +11,38 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, setForm, isGenerating, setIsGenerating }) {
-  const model                   = 'gpt-image-2';
-  const [size, setSize]         = useState('1024x1536');
-  const [quality, setQuality]   = useState('medium');
+export default function AICoverGenerator({
+  book,
+  setForm,
+  isGenerating,
+  setIsGenerating,
+}) {
+  const model = "gpt-image-2";
+  const [size, setSize] = useState("1024x1536");
+  const [quality, setQuality] = useState("medium");
 
-  const [error, setError]       = useState('');
-  const [imageSrc, setImageSrc]   = useState('');
-  const [apiKey, setApiKey]     = useState('');
+  const [error, setError] = useState("");
+  const [imageSrc, setImageSrc] = useState("");
+  const [apiKey, setApiKey] = useState("");
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setImageSrc(book.coverImageUrl || '');
+    setImageSrc(book.coverImageUrl || "");
   }, [book.coverImageUrl]);
-
 
   const handleGenerateCover = async () => {
     setIsGenerating(true);
-    setError('');
+    setError("");
     try {
-      const imageSrc = await hookAiCover(apiKey, book, { model, size, quality });
-      console.log('생성된 이미지 URL:', imageSrc);
+      const imageSrc = await hookAiCover(apiKey, book, {
+        model,
+        size,
+        quality,
+      });
+      console.log("생성된 이미지 URL:", imageSrc);
       setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
       setImageSrc(imageSrc);
-
     } catch (err) {
-      setError(err.message || '표지 생성에 실패했습니다.');
+      setError(err.message || "표지 생성에 실패했습니다.");
     } finally {
       setIsGenerating(false);
     }
@@ -61,7 +68,10 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
       <div className="ai-options">
         <div className="cover-opt">
           <label htmlFor="ai-size">이미지 크기</label>
-          <select id="ai-size" value={size} onChange={(e) => setSize(e.target.value)}>
+          <select
+            id="ai-size"
+            value={size}
+            onChange={(e) => setSize(e.target.value)}>
             <option value="1024x1536">1024x1536 (도서표지)</option>
             <option value="1024x1024">1024x1024 (정사각형)</option>
           </select>
@@ -69,7 +79,10 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
 
         <div className="cover-opt">
           <label htmlFor="ai-quality">품질</label>
-          <select id="ai-quality" value={quality} onChange={(e) => setQuality(e.target.value)}>
+          <select
+            id="ai-quality"
+            value={quality}
+            onChange={(e) => setQuality(e.target.value)}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -81,9 +94,8 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
         <button
           onClick={handleGenerateCover}
           disabled={isGenerating}
-          className="ai-generate-btn"
-        >
-          {isGenerating ? '생성 중...' : '생성'}
+          className="ai-generate-btn">
+          {isGenerating ? "생성 중..." : "생성"}
         </button>
       </div>
 

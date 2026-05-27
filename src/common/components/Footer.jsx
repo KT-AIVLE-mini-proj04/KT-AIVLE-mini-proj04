@@ -1,5 +1,5 @@
-import style from "./Footer.module.css";
-import ServiceLogo from "./ServiceLogo";
+import style from "@/common/components/Footer.module.css";
+import ServiceLogo from "@/common/components/ServiceLogo";
 
 function CompanyInfo() {
   return (
