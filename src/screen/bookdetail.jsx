@@ -65,7 +65,6 @@ function BookDetailPage() {
     navigate('/books');
   };
 
-
   const handleEdit = () => {
     navigate("/books/submit", { state: { id: bookData.id } });
   };
