@@ -400,6 +400,30 @@ body.mocha-bg {
   cursor: not-allowed;
 }
 
+.tts-delete-btn {
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tts-delete-btn:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.tts-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .tts-player {
   width: 100%;
   border-radius: 6px;

@@ -62,6 +62,13 @@ const handleDelete = async () => {
 };
 
 
+  const handleTtsDelete = async () => {
+    localStorage.removeItem(`audio_${bookData.id}`);
+    setAudioSrc('');
+    setTtsError('');
+    try { await hookBooks('PATCH', { id: bookData.id, audioUrl: '' }); } catch (_) {}
+  };
+
   const handleTtsGenerate = async () => {
     if (!apiKey.trim()) { setTtsError('OpenAI API Key를 입력해주세요.'); return; }
     setIsTtsLoading(true);
@@ -186,8 +193,17 @@ if (error || !bookData) {
                   onClick={handleTtsGenerate}
                   disabled={isTtsLoading}
                 >
-                  {isTtsLoading ? '생성 중...' : audioSrc ? '재생성' : '생성'}
+                  {isTtsLoading ? '생성 중...' : '생성'}
                 </button>
+                {audioSrc && (
+                  <button
+                    className="tts-delete-btn"
+                    onClick={handleTtsDelete}
+                    disabled={isTtsLoading}
+                  >
+                    삭제
+                  </button>
+                )}
               </div>
               {ttsError && <p className="tts-error">{ttsError}</p>}
               {audioSrc && (
