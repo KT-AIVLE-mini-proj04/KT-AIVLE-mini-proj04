@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap");
 
 body:has(.book-detail-page) {
   background-color: #995349;
@@ -22,7 +22,7 @@ body:has(.book-detail-page) {
 
 body {
   margin: 0;
-  font-family: 'Nanum Gothic', sans-serif;
+  font-family: "Nanum Gothic", sans-serif;
   color: var(--ink);
 }
 
@@ -59,7 +59,9 @@ body.mocha-bg {
   align-items: center;
   gap: 8px;
   border-radius: 4px;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
   font-family: inherit;
   white-space: nowrap;
 }
@@ -118,7 +120,7 @@ body.mocha-bg {
 }
 
 .placeholder-text {
-  font-family: 'Gowun Batang', serif;
+  font-family: "Gowun Batang", serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--cream);
@@ -187,6 +189,12 @@ body.mocha-bg {
   font-size: 14px;
 }
 
+.book-date-like {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* 등록일 (제목 옆 작은 배지) */
 .book-date {
   font-size: 12px;
@@ -198,6 +206,54 @@ body.mocha-bg {
   font-weight: 500;
   letter-spacing: 0.3px;
   align-self: flex-start;
+}
+
+.like-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1e1e1e;
+  transition: transform 0.15s ease;
+}
+
+.like-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.like-button svg path {
+  fill: transparent;
+  stroke: currentColor;
+}
+
+.like-button.liked {
+  color: #e53935;
+}
+
+.like-button.liked svg path {
+  fill: currentColor;
+  stroke: none;
+}
+
+.like-button:hover {
+  transform: scale(1.08);
+}
+
+.like-button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.like-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* ===== 수정/삭제 버튼 ===== */
@@ -219,7 +275,11 @@ body.mocha-bg {
   cursor: pointer;
   letter-spacing: 3px;
   border-radius: 4px;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, letter-spacing 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    letter-spacing 0.2s ease;
   min-width: 140px;
   text-transform: uppercase;
 }
@@ -387,7 +447,9 @@ body.mocha-bg {
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    transform 0.15s;
 }
 
 .tts-generate-btn:hover:not(:disabled) {
