@@ -1,4 +1,4 @@
-import style from "./Loading.module.css";
+import style from "@/common/components/Loading.module.css";
 
 function Spinner() {
   return <div className={style.spinner}></div>;

@@ -1,19 +1,20 @@
-const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
+const OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
 
 // Canvas API로 이미지를 maxWidth px 너비로 압축 (JPEG 70%) → json-server 저장 크기 절감
-export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject) => {
-  const img = new Image();
-  img.onload = () => {
-    const scale = Math.min(1, maxWidth / img.width);
-    const canvas = document.createElement('canvas');
-    canvas.width  = Math.round(img.width  * scale);
-    canvas.height = Math.round(img.height * scale);
-    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-    resolve(canvas.toDataURL('image/jpeg', 0.7));
-  };
-  img.onerror = reject;
-  img.src = dataUrl;
-});
+export const compressImage = (dataUrl, maxWidth) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", 0.7));
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
 
 /**
  * hookAiCover — AI 표지 생성 hook
@@ -62,7 +63,7 @@ export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject
  * ─────────────────────────────────────────
  * 사용 예시
  * ─────────────────────────────────────────
- * import { hookAiCover } from '../hooks/aiCover.hook';
+ * import { hookAiCover } from '@hooks/aiCover.hook';
  *
  * // 기본 옵션으로 호출
  * const imageSrc = await hookAiCover(apiKey, book);
@@ -83,15 +84,15 @@ export const compressImage = (dataUrl, maxWidth) => new Promise((resolve, reject
  */
 export const hookAiCover = async (apiKey, book, options = {}) => {
   if (!apiKey) {
-    throw new Error('OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.');
+    throw new Error(
+      "OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.",
+    );
   }
 
-  console.log()
-  console.log('hookAiCover 호출:', { book, options, apiKey });
   const {
-    model = 'gpt-image-2',
-    size = '1024x1536',
-    quality = 'medium',
+    model = "gpt-image-2",
+    size = "1024x1536",
+    quality = "medium",
   } = options;
 
   // 1. 도서 제목·내용으로 프롬프트 구성
@@ -99,26 +100,36 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
 
   // 2. OpenAI Image API 호출 (POST)
   const res = await fetch(OPENAI_API_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ model, prompt, n: 1, size, quality, output_format: 'png' }),
+    body: JSON.stringify({
+      model,
+      prompt,
+      n: 1,
+      size,
+      quality,
+      output_format: "png",
+    }),
   });
-  console.log(res)
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
     const status = res.status;
-    if (status === 401) throw new Error('API Key가 유효하지 않습니다. [401 Unauthorized]');
-    if (status === 429) throw new Error('요청 한도 초과입니다. 잠시 후 재시도하세요. [429 Too Many Requests]');
+    if (status === 401)
+      throw new Error("API Key가 유효하지 않습니다. [401 Unauthorized]");
+    if (status === 429)
+      throw new Error(
+        "요청 한도 초과입니다. 잠시 후 재시도하세요. [429 Too Many Requests]",
+      );
     throw new Error(errData.error?.message || `OpenAI 오류 [${status}]`);
   }
 
   // 3. b64_json → Data URL 변환
   const data = await res.json();
   const b64Json = data.data?.[0]?.b64_json;
-  if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
+  if (!b64Json) throw new Error("이미지 데이터를 받지 못했습니다.");
   const imageSrc = `data:image/png;base64,${b64Json}`;
   const compressedSrc = await compressImage(imageSrc, 300); // 용량 줄이기 위해 최대 너비 512px로 압축
 

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import "./booklist.screen.css";
-import { hookBookList } from "../hooks/booklist.hook";
-import { Link, useOutletContext } from "react-router";
+import "@screen/booklist.screen.css";
+import { hookBookList } from "@hooks/bookList.hook.js";
+import { Link, useOutletContext, useNavigate } from "react-router";
 
 function BookListScreen() {
   const [bookList, setBookList] = useState([]);
   const { changeLoading } = useOutletContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -39,9 +40,7 @@ function BookListScreen() {
           {bookList?.map((book, index) => (
             <div className="book-card" key={`${book.id}-${index}`}>
               <Link to={`${book.id}`}>
-                <div
-                  className="book-cover"
-                  onClick={() => navigate(`/book-detail/${book.id}`)}>
+                <div className="book-cover">
                   {book.coverImageUrl ? (
                     <img src={book.coverImageUrl} alt={book.title} />
                   ) : (
