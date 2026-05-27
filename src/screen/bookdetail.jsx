@@ -15,6 +15,7 @@ function BookDetailPage() {
   const [error, setError] = useState(null);
 
   const [apiKey, setApiKey]         = useState('');
+  const [voice, setVoice]           = useState('alloy');
   const [audioSrc, setAudioSrc]     = useState('');
   const [isTtsLoading, setIsTtsLoading] = useState(false);
   const [ttsError, setTtsError]     = useState('');
@@ -75,7 +76,7 @@ const handleDelete = async () => {
     setTtsError('');
     try {
       const script = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
-      const url = await hookAITTS(apiKey.trim(), script);
+      const url = await hookAITTS(apiKey.trim(), script, voice);
       localStorage.setItem(`audio_${bookData.id}`, url);
       setAudioSrc(url);
       try { await hookBooks('PATCH', { id: bookData.id, audioUrl: url }); } catch (_) {}
@@ -187,6 +188,18 @@ if (error || !bookData) {
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                 />
+                <select
+                  className="tts-voice-select"
+                  value={voice}
+                  onChange={(e) => setVoice(e.target.value)}
+                >
+                  <option value="alloy">Alloy (중성)</option>
+                  <option value="echo">Echo (남성)</option>
+                  <option value="fable">Fable (영국 남성)</option>
+                  <option value="onyx">Onyx (저음 남성)</option>
+                  <option value="nova">Nova (여성)</option>
+                  <option value="shimmer">Shimmer (부드러운 여성)</option>
+                </select>
                 <button
                   className="tts-generate-btn"
                   onClick={handleTtsGenerate}

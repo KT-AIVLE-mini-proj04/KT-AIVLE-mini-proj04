@@ -376,6 +376,19 @@ body.mocha-bg {
   border-color: var(--mocha);
 }
 
+.tts-voice-select {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .tts-generate-btn {
   padding: 8px 20px;
   background: var(--mocha);
