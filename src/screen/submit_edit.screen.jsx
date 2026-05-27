@@ -83,7 +83,9 @@ function SubmitEdit() {
       console.log(id ? '수정 성공:' : '등록 성공:', res);
       alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
-      if (!id) {
+      if (id) {
+        navigate(-1);
+      } else {
         setSavedBook(res);
         if (audioUrl) {
           await hookBooks('PATCH', { id: res.id, audioUrl });
@@ -95,7 +97,6 @@ function SubmitEdit() {
       alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
-      if (id) navigate(-1);
     }
   };
 

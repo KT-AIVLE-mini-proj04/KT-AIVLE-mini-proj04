@@ -20,8 +20,7 @@ export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
     setIsLoading(true);
     setError('');
     try {
-      const full = `${book.title}. 저자 ${book.author}. ${book.content}`;
-      const script = full.slice(0, 80);
+      const script = `${book.title}. 저자 ${book.author}. ${book.content}`;
       const base64Url = await hookAITTS(apiKey.trim(), script, voice);
 
       if (book.id) {

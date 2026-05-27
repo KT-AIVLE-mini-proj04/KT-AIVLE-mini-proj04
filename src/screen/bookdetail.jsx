@@ -74,8 +74,7 @@ const handleDelete = async () => {
     setIsTtsLoading(true);
     setTtsError('');
     try {
-      const full = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
-      const script = full.slice(0, 80);
+      const script = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
       const url = await hookAITTS(apiKey.trim(), script);
       localStorage.setItem(`audio_${bookData.id}`, url);
       setAudioSrc(url);
