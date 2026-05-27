@@ -3,7 +3,7 @@
     {
       "id": 1,
       "bookId": 1,
-      "content": "User1 님이 등록한 <book>별빛 아래의 서점1</book> 도서가 주목 받고 있어요."
+      "content": "User1 님이 등록한 <book>별빛 아래의 서점</book> 도서가 주목 받고 있어요."
     },
     {
       "id": 2,
@@ -12,8 +12,8 @@
     },
     {
       "id": 3,
-      "bookId": "z7IwryJCpDk",
-      "content": "User1 님의 등록 도서 <book>별빛 아래의 서점 테스트</book>에 누군가가 좋아요❤️를 남겼습니다."
+      "bookId": "u44ysusb9CQ",
+      "content": "User1 님의 등록 도서 <book>창민이의 모험</book>에 누군가가 좋아요❤️를 남겼습니다."
     }
   ]
 }
