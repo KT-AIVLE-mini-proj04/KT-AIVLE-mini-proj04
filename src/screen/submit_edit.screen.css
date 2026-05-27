@@ -41,7 +41,6 @@ body {
 .form-card,
 .ai-section {
   width: 620px;
-  min-height: 540px;
   background-color: #fff0ee;
   border: 1.5px solid #222;
   border-radius: 20px;
