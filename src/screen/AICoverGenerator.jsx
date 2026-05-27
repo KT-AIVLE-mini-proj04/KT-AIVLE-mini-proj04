@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import './AICoverGenerator.css';
 import { hookAiCover } from '../hooks/aiCover.hook';
 
@@ -26,12 +26,10 @@ export default function AICoverGenerator({ book, setForm }) {
 
 
   const handleGenerateCover = async () => {
-    // 1. API Key 유효성 검사
     setIsGenerating(true);
     setError('');
-
     try {
-      const imageSrc = await hookAiCover(book, { apiKey,model, size, quality });
+      const imageSrc = await hookAiCover(apiKey, book, { model, size, quality });
       console.log('생성된 이미지 URL:', imageSrc);
       setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
       setImageSrc(imageSrc);
@@ -64,7 +62,7 @@ export default function AICoverGenerator({ book, setForm }) {
 
       {/* 옵션 선택 */}
       <div className="ai-options">
-        <div className="ai-field">
+        <div className="cover-opt">
           <label htmlFor="ai-size">이미지 크기</label>
           <select id="ai-size" value={size} onChange={(e) => setSize(e.target.value)}>
             <option value="1024x1536">1024x1536 (도서표지)</option>
@@ -72,7 +70,7 @@ export default function AICoverGenerator({ book, setForm }) {
           </select>
         </div>
 
-        <div className="ai-field">
+        <div className="cover-opt">
           <label htmlFor="ai-quality">품질</label>
           <select id="ai-quality" value={quality} onChange={(e) => setQuality(e.target.value)}>
             <option value="low">Low</option>
@@ -82,20 +80,17 @@ export default function AICoverGenerator({ book, setForm }) {
         </div>
       </div>
 
-      {/* 생성 버튼 */}
-      <button
-        onClick={handleGenerateCover}
-        disabled={isGenerating}
-        className="ai-generate-btn"
-      >
-        {isGenerating ? '생성 중...' : 'AI 표지 생성'}
-      </button>
+      <div className="ai-btn-row">
+        <button
+          onClick={handleGenerateCover}
+          disabled={isGenerating}
+          className="ai-generate-btn"
+        >
+          {isGenerating ? '생성 중...' : '생성'}
+        </button>
+      </div>
 
-      {/* 에러 메시지 */}
       {error && <p className="ai-error">{error}</p>}
-
-      {/* 비용 안내 */}
-      <p className="ai-notice">* AI 표지 생성 시 OpenAI API 비용이 발생합니다.</p>
     </div>
   );
 }
