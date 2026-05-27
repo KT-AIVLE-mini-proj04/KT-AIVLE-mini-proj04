@@ -13,7 +13,7 @@ export default function AICoverGenerator({ book, setForm, apiKey }) {
     setIsGenerating(true);
     setError('');
     try {
-      const url = await hookAiCover(book, { model, size, quality }, apiKey?.trim() || undefined);
+      const url = await hookAiCover(apiKey?.trim(), book, { model, size, quality });
       setForm((prev) => ({ ...prev, coverImageUrl: url }));
     } catch (err) {
       setError(err.message || '표지 생성에 실패했습니다.');
