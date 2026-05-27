@@ -42,6 +42,12 @@ function SubmitEdit() {
         setSavedBook(res);
         setCoverImageUrl(res.coverImageUrl || '');
         setAudioUrl(res.audioUrl || localStorage.getItem(`audio_${res.id}`) || '');
+        // 로드된 데이터로 카운터 초기화 (onInput 없이도 표시)
+        requestAnimationFrame(() => {
+          syncCounter(titleCountRef,   res.title   || '', 20, false);
+          syncCounter(authorCountRef,  res.author  || '', 10, false);
+          syncCounter(contentCountRef, res.content || '', 43, true);
+        });
       } catch (error) {
         console.error('도서 정보 불러오기 실패:', error);
         alert('도서 정보를 불러오는 데 실패했습니다.');
