@@ -53,13 +53,15 @@ export default function AICoverGenerator({ book, setForm, apiKey }) {
         </div>
       </div>
 
-      <button
-        onClick={handleGenerateCover}
-        disabled={isGenerating}
-        className="ai-generate-btn"
-      >
-        {isGenerating ? '생성 중...' : 'AI 표지 생성'}
-      </button>
+      <div className="ai-btn-row">
+        <button
+          onClick={handleGenerateCover}
+          disabled={isGenerating}
+          className="ai-generate-btn"
+        >
+          {isGenerating ? '생성 중...' : '생성'}
+        </button>
+      </div>
 
       {error && <p className="ai-error">{error}</p>}
     </div>
