@@ -16,6 +16,8 @@ function SubmitEdit() {
   const [audioUrl, setAudioUrl]   = useState('');
   const [loading, setLoading]     = useState(false);
 
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const location = useLocation();
   const id = location.state?.id;
   const navigate = useNavigate();
@@ -118,6 +120,7 @@ function SubmitEdit() {
                   id="title"
                   type="text"
                   name="title"
+                  disabled={isGenerating}
                   value={form.title}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
@@ -134,6 +137,7 @@ function SubmitEdit() {
                   type="text"
                   name="author"
                   value={form.author}
+                  disabled={isGenerating}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
                   onInput={(e) => syncCounter(authorCountRef, e.target.value, 50, false)}
@@ -148,6 +152,7 @@ function SubmitEdit() {
                   id="content"
                   name="content"
                   value={form.content}
+                  disabled={isGenerating}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
                   onInput={(e) => syncCounter(contentCountRef, e.target.value, 1000, true)}
@@ -160,11 +165,11 @@ function SubmitEdit() {
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={() => setForm({ title: "", author: "", content: "", coverImageUrl: "" })}>
+                  onClick={() => navigate(-1)}>
                   취소
                 </button>
-                <button type="submit" className="save-btn" disabled={loading}>
-                  {loading ? '저장 중...' : id ? '수정' : '저장'}
+                <button type="submit" className="save-btn" disabled={loading || isGenerating}>
+                  {loading ? '저장 중...' : isGenerating ? '생성 중...' : id ? '수정' : '저장'}
                 </button>
               </div>
             </form>
@@ -178,6 +183,8 @@ function SubmitEdit() {
               <AICoverGenerator
                 book={savedBook || { title: form.title, author: form.author, content: form.content }}
                 setForm={setForm}
+                isGenerating={isGenerating}
+                setIsGenerating={setIsGenerating}
               />
             </div>
           </section>

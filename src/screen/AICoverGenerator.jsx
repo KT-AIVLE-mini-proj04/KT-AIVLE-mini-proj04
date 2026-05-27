@@ -11,11 +11,11 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, setForm }) {
+export default function AICoverGenerator({ book, setForm, isGenerating, setIsGenerating }) {
   const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
   const [quality, setQuality]   = useState('medium');
-  const [isGenerating, setIsGenerating] = useState(false);
+
   const [error, setError]       = useState('');
   const [imageSrc, setImageSrc]   = useState('');
   const [apiKey, setApiKey]     = useState('');
