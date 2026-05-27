@@ -194,11 +194,16 @@ if (error || !bookData) {
                   onChange={(e) => setVoice(e.target.value)}
                 >
                   <option value="alloy">Alloy (중성)</option>
+                  <option value="ash">Ash (중성)</option>
+                  <option value="ballad">Ballad (부드러운 남성)</option>
+                  <option value="coral">Coral (여성)</option>
                   <option value="echo">Echo (남성)</option>
                   <option value="fable">Fable (영국 남성)</option>
-                  <option value="onyx">Onyx (저음 남성)</option>
                   <option value="nova">Nova (여성)</option>
+                  <option value="onyx">Onyx (저음 남성)</option>
+                  <option value="sage">Sage (차분한 여성)</option>
                   <option value="shimmer">Shimmer (부드러운 여성)</option>
+                  <option value="verse">Verse (표현력 있는 중성)</option>
                 </select>
                 <button
                   className="tts-generate-btn"
