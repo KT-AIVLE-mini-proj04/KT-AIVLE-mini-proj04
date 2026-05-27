@@ -212,7 +212,8 @@ body {
 }
 
 .btn-edit,
-.btn-delete {
+.btn-delete,
+.comment-submit {
   border: 0;
   padding: 10px 24px;
   font-size: 14px;
@@ -229,7 +230,8 @@ body {
   color: var(--ink);
 }
 
-.btn-edit:hover {
+.btn-edit:hover,
+.comment-submit:hover {
   background: var(--accent-strong);
   transform: translateY(-1px);
   box-shadow: var(--shadow);
@@ -247,9 +249,121 @@ body {
 }
 
 .btn-edit:focus-visible,
-.btn-delete:focus-visible {
+.btn-delete:focus-visible,
+.comment-submit:focus-visible {
   outline: 2px solid #2d2d2d;
   outline-offset: 2px;
+}
+
+.comments-section {
+  margin-top: 32px;
+  padding: 28px;
+  background: #faf3f3;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.comments-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.comments-header span {
+  font-size: 14px;
+  color: var(--subtle);
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.comment-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+}
+
+.comment-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(244, 180, 180, 0.18);
+}
+
+.comment-error {
+  margin: 0;
+  color: #d45d5d;
+  font-size: 13px;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.comment-item {
+  padding: 18px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.comment-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.comment-date {
+  font-size: 13px;
+  color: var(--subtle);
+}
+
+.comment-delete {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.comment-delete:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--accent);
+}
+
+.comment-text {
+  margin: 0;
+  line-height: 1.75;
+  color: var(--ink);
+  white-space: pre-line;
+}
+
+.no-comments {
+  margin: 0;
+  font-size: 14px;
+  color: var(--subtle);
 }
 
 /* 책 없을 때 화면 */

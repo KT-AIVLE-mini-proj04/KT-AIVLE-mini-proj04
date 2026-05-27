@@ -13,6 +13,29 @@ function BookDetailPage() {
   const [bookData, setBookData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState('');
+  const [commentError, setCommentError] = useState('');
+
+  const commentStorageKey = `book_comments_${id}`;
+
+  const loadComments = () => {
+    try {
+      const stored = localStorage.getItem(commentStorageKey);
+      return stored ? JSON.parse(stored) : [];
+    } catch (err) {
+      console.error('댓글 불러오기 오류:', err);
+      return [];
+    }
+  };
+
+  const saveComments = (newComments) => {
+    try {
+      localStorage.setItem(commentStorageKey, JSON.stringify(newComments));
+    } catch (err) {
+      console.error('댓글 저장 오류:', err);
+    }
+  };
 
   // 페이지 진입 시 책 정보 가져오기
   useEffect(() => {
@@ -20,6 +43,7 @@ function BookDetailPage() {
       try {
         const result = await hookBooks('GET', { id });
         setBookData(result);
+        setComments(loadComments());
       } catch (err) {
         console.error('도서 조회 실패:', err);
         setError('해당 도서를 찾을 수 없습니다.');
@@ -39,21 +63,47 @@ function BookDetailPage() {
     navigate("/books/submit", { state: { id: bookData.id } });
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
+      return;
+    }
 
-const handleDelete = async () => {
-  if (!window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) {
-    return;
-  }
+    try {
+      await hookBooks('DELETE', { id: bookData.id });
+      alert('삭제되었습니다.');
+      navigate('/books');
+    } catch (err) {
+      console.error('삭제 중 오류:', err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
 
-  try {
-    await hookBooks('DELETE', { id: bookData.id });
-    alert('삭제되었습니다.');
-    navigate('/books');
-  } catch (err) {
-    console.error('삭제 중 오류:', err);
-    alert('삭제 중 오류가 발생했습니다.');
-  }
-};
+  const handleCommentSubmit = (event) => {
+    event.preventDefault();
+    const trimmed = commentInput.trim();
+    if (!trimmed) {
+      setCommentError('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    const newComment = {
+      id: `${Date.now()}`,
+      text: trimmed,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedComments = [newComment, ...comments];
+    setComments(updatedComments);
+    saveComments(updatedComments);
+    setCommentInput('');
+    setCommentError('');
+  };
+
+  const handleCommentDelete = (commentId) => {
+    const updatedComments = comments.filter((comment) => comment.id !== commentId);
+    setComments(updatedComments);
+    saveComments(updatedComments);
+  };
 
 
   const formatDate = (isoString) => {  // 날짜
@@ -157,6 +207,57 @@ if (error || !bookData) {
                 />
               </div>
             )}
+
+            <section className="comments-section">
+              <div className="comments-header">
+                <h3>댓글</h3>
+                <span>{comments.length}개</span>
+              </div>
+
+              <form className="comment-form" onSubmit={handleCommentSubmit}>
+                <textarea
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                  placeholder="댓글을 입력하세요."
+                  rows={4}
+                  className="comment-input"
+                />
+                {commentError && <p className="comment-error">{commentError}</p>}
+                <button type="submit" className="btn-edit comment-submit">
+                  댓글 등록
+                </button>
+              </form>
+
+              <div className="comment-list">
+                {comments.length === 0 ? (
+                  <p className="no-comments">첫 번째 댓글을 남겨보세요.</p>
+                ) : (
+                  comments.map((comment) => (
+                    <article key={comment.id} className="comment-item">
+                      <div className="comment-meta">
+                        <span className="comment-date">
+                          {new Date(comment.createdAt).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                        <button
+                          type="button"
+                          className="comment-delete"
+                          onClick={() => handleCommentDelete(comment.id)}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                      <p className="comment-text">{comment.text}</p>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
           </div>
         </div>
       </main>
