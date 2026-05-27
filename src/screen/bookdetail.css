@@ -78,7 +78,7 @@ body.mocha-bg {
 .book-detail-Card {
   display: flex;
   gap: 48px;
-  align-items: center; /* 표지와 카드를 세로 중앙 정렬 */
+  align-items: flex-start;
   animation: fade-in 0.6s ease forwards;
 }
 
