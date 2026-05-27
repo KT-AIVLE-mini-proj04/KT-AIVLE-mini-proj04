@@ -1,13 +1,9 @@
 import "./submit_edit.screen.css";
 
-import { useState, useRef } from "react";
-import { useEffect } from "react";
-
-import "./submit_edit.screen.css";
-import { Link } from "react-router";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router";
 import { hookBooks } from '../hooks/books.hook.js';
-import { useNavigate } from 'react-router-dom';
-import AICoverGenerator from "@screen/AICoverGenerator.jsx";
+import AICoverGenerator from './AICoverGenerator';
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -16,13 +12,15 @@ function SubmitEdit() {
     content: "",
     coverImageUrl: "",
   });
+  const [savedBook, setSavedBook] = useState(null);
+  const [audioUrl, setAudioUrl]   = useState('');
+  const [apiKey, setApiKey]       = useState('');
+  const [loading, setLoading]     = useState(false);
+
   const location = useLocation();
   const id = location.state?.id;
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  // 팀 main 패턴: form 객체 state
 
-  // 글자수 카운터 ref (onInput DOM 직접 조작 → IME 방해 없음)
   const titleCountRef   = useRef(null);
   const authorCountRef  = useRef(null);
   const contentCountRef = useRef(null);
@@ -40,11 +38,9 @@ function SubmitEdit() {
     const fetchBook = async () => {
       try {
         const res = await hookBooks('GET', { id });
-        setForm({ title: res.title, author: res.author, content: res.content });
+        setForm({ title: res.title, author: res.author, content: res.content, coverImageUrl: res.coverImageUrl || '' });
         setSavedBook(res);
-        setCoverImageUrl(res.coverImageUrl || '');
         setAudioUrl(res.audioUrl || localStorage.getItem(`audio_${res.id}`) || '');
-        // 로드된 데이터로 카운터 초기화 (onInput 없이도 표시)
         requestAnimationFrame(() => {
           syncCounter(titleCountRef,   res.title   || '', 100,  false);
           syncCounter(authorCountRef,  res.author  || '', 50,   false);
@@ -58,7 +54,6 @@ function SubmitEdit() {
     fetchBook();
   }, [id]);
 
-  // 팀 main 패턴: handleChange (name/value)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -89,19 +84,17 @@ function SubmitEdit() {
       alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
       if (!id) {
-        setForm({
-          title: '',
-          author: '',
-          content: '',
-          coverImageUrl: '',
-        });
+        setSavedBook(res);
+        if (audioUrl) {
+          await hookBooks('PATCH', { id: res.id, audioUrl });
+        }
+        setForm({ title: '', author: '', content: '', coverImageUrl: '' });
       }
     } catch (error) {
       console.error(id ? '수정 실패:' : '등록 실패:', error);
       alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
-      // 팀 main 패턴: 수정 완료 후 뒤로 이동 (등록은 페이지 유지)
       if (id) navigate(-1);
     }
   };
@@ -165,26 +158,13 @@ function SubmitEdit() {
               </div>
 
               <div className="form-buttons">
-                {/* 팀 main 패턴: 취소 = 폼 초기화 */}
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={() =>
-                    setForm({
-                      title: "",
-                      author: "",
-                      content: "",
-                      coverImageUrl: "",
-                    })
-                  }>
+                  onClick={() => setForm({ title: "", author: "", content: "", coverImageUrl: "" })}>
                   취소
                 </button>
-                {/* 팀 main 패턴: 수정/저장 텍스트 분기 */}
-                <button
-                  type="submit"
-                  className="save-btn"
-                  disabled={loading}
-                >
+                <button type="submit" className="save-btn" disabled={loading}>
                   {loading ? '저장 중...' : id ? '수정' : '저장'}
                 </button>
               </div>
@@ -192,10 +172,32 @@ function SubmitEdit() {
           </section>
 
           <section className="ai-section">
-            <AICoverGenerator book={form} setForm={setForm} />
-            {/*<div className="result-box">
-              <p>(결과물)</p>
-            </div>*/}
+            <div className="form-title">AI 표지 생성</div>
+
+            <div className="ai-body">
+              <div className="ai-field">
+                <label htmlFor="shared-api-key">OpenAI API Key</label>
+                <input
+                  id="shared-api-key"
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-..."
+                />
+              </div>
+
+              <AICoverGenerator
+                book={savedBook || { title: form.title, author: form.author, content: form.content }}
+                setForm={setForm}
+                apiKey={apiKey}
+              />
+
+              <div className="result-box">
+                {form.coverImageUrl
+                  ? <img src={form.coverImageUrl} alt="AI 생성 표지" />
+                  : <p>(결과물)</p>}
+              </div>
+            </div>
           </section>
         </section>
       </main>

@@ -20,7 +20,6 @@ export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
     setIsLoading(true);
     setError('');
     try {
-      // 제목+저자+내용 합쳐서 80자로 트리밍
       const full = `${book.title}. 저자 ${book.author}. ${book.content}`;
       const script = full.slice(0, 80);
       const base64Url = await hookAITTS(apiKey.trim(), script, voice);
