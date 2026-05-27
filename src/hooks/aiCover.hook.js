@@ -86,8 +86,6 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
     throw new Error('OpenAI API Key가 필요합니다. 입력창에 sk-... 키를 입력하거나 .env에 VITE_OPENAI_API_KEY를 설정하세요.');
   }
 
-  console.log()
-  console.log('hookAiCover 호출:', { book, options, apiKey });
   const {
     model = 'gpt-image-2',
     size = '1024x1536',
@@ -106,7 +104,6 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
     },
     body: JSON.stringify({ model, prompt, n: 1, size, quality, output_format: 'png' }),
   });
-  console.log(res)
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
     const status = res.status;
