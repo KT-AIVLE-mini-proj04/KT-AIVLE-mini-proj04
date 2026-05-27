@@ -63,3 +63,9 @@
     margin: 0;
     text-align: left;
   }
+
+  .ai-notice {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+  }

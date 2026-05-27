@@ -80,7 +80,7 @@ body.mocha-bg {
 .book-detail-Card {
   display: flex;
   gap: 48px;
-  align-items: center; /* 표지와 카드를 세로 중앙 정렬 */
+  align-items: flex-start;
   animation: fade-in 0.6s ease forwards;
 }
 
@@ -550,6 +550,19 @@ body.mocha-bg {
   border-color: var(--mocha);
 }
 
+.tts-voice-select {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .tts-generate-btn {
   padding: 8px 20px;
   background: var(--mocha);
@@ -576,6 +589,30 @@ body.mocha-bg {
   cursor: not-allowed;
 }
 
+.tts-delete-btn {
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tts-delete-btn:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.tts-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .tts-player {
   width: 100%;
   border-radius: 6px;
@@ -585,4 +622,10 @@ body.mocha-bg {
   margin: 0;
   font-size: 12px;
   color: #e53e3e;
+}
+
+.tts-notice {
+  margin: 0;
+  font-size: 11px;
+  color: var(--subtle);
 }
