@@ -33,7 +33,6 @@ function BookListScreen() {
       <main className="book-main">
         <div className="book-main-top">
           <h2>도서 목록</h2>
-          <button className="search-box">🔍 제목, 저자 검색</button>
         </div>
 
         <section className="book-list">
