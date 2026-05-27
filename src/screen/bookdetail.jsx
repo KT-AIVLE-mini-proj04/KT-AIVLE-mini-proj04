@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { hookBooks } from '../hooks/books.hook';
+import { hookAITTS } from '../hooks/tts_mp3.hook';
 import './bookdetail.css';
 
 
@@ -9,7 +10,6 @@ function BookDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 상태 3종 세트
   const [bookData, setBookData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,13 +37,20 @@ function BookDetailPage() {
     }
   };
 
-  // 페이지 진입 시 책 정보 가져오기
+  const [apiKey, setApiKey]         = useState('');
+  const [voice, setVoice]           = useState('alloy');
+  const [audioSrc, setAudioSrc]     = useState('');
+  const [isTtsLoading, setIsTtsLoading] = useState(false);
+  const [ttsError, setTtsError]     = useState('');
+
   useEffect(() => {
     const fetchBook = async () => {
       try {
         const result = await hookBooks('GET', { id });
         setBookData(result);
         setComments(loadComments());
+        const saved = result.audioUrl || localStorage.getItem(`audio_${result.id}`) || '';
+        setAudioSrc(saved);
       } catch (err) {
         console.error('도서 조회 실패:', err);
         setError('해당 도서를 찾을 수 없습니다.');
@@ -52,7 +59,7 @@ function BookDetailPage() {
       }
     };
     fetchBook();
-  }, [id, location.key]); // location.key가 바뀌면(navigate(-1) 포함) 재fetch
+  }, [id, location.key]);
 
   const handleBack = () => {
     navigate('/books');
@@ -105,6 +112,30 @@ function BookDetailPage() {
     saveComments(updatedComments);
   };
 
+
+  const handleTtsDelete = async () => {
+    localStorage.removeItem(`audio_${bookData.id}`);
+    setAudioSrc('');
+    setTtsError('');
+    try { await hookBooks('PATCH', { id: bookData.id, audioUrl: '' }); } catch (_) {}
+  };
+
+  const handleTtsGenerate = async () => {
+    if (!apiKey.trim()) { setTtsError('OpenAI API Key를 입력해주세요.'); return; }
+    setIsTtsLoading(true);
+    setTtsError('');
+    try {
+      const script = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
+      const url = await hookAITTS(apiKey.trim(), script, voice);
+      localStorage.setItem(`audio_${bookData.id}`, url);
+      setAudioSrc(url);
+      try { await hookBooks('PATCH', { id: bookData.id, audioUrl: url }); } catch (_) {}
+    } catch (err) {
+      setTtsError(err.message || 'TTS 생성에 실패했습니다.');
+    } finally {
+      setIsTtsLoading(false);
+    }
+  };
 
   const formatDate = (isoString) => {  // 날짜
     if (!isoString) return "";
@@ -197,18 +228,56 @@ if (error || !bookData) {
               </button>
             </div>
 
-            {(bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)) && (
-              <div style={{ marginTop: '20px' }}>
-                <h4 style={{ margin: '0 0 8px', fontSize: '15px' }}>🎧 오디오북</h4>
-                <audio
-                  controls
-                  src={bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)}
-                  style={{ width: '100%' }}
+            <div className="tts-section">
+              <h4 className="tts-title">🎧 오디오북</h4>
+              <div className="tts-key-row">
+                <input
+                  type="password"
+                  className="tts-key-input"
+                  placeholder="OpenAI API Key (sk-...)"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
                 />
+                <select
+                  className="tts-voice-select"
+                  value={voice}
+                  onChange={(e) => setVoice(e.target.value)}
+                >
+                  <option value="alloy">Alloy (중성)</option>
+                  <option value="ash">Ash (중성)</option>
+                  <option value="ballad">Ballad (부드러운 남성)</option>
+                  <option value="coral">Coral (여성)</option>
+                  <option value="echo">Echo (남성)</option>
+                  <option value="fable">Fable (영국 남성)</option>
+                  <option value="nova">Nova (여성)</option>
+                  <option value="onyx">Onyx (저음 남성)</option>
+                  <option value="sage">Sage (차분한 여성)</option>
+                  <option value="shimmer">Shimmer (부드러운 여성)</option>
+                  <option value="verse">Verse (표현력 있는 중성)</option>
+                </select>
+                <button
+                  className="tts-generate-btn"
+                  onClick={handleTtsGenerate}
+                  disabled={isTtsLoading}
+                >
+                  {isTtsLoading ? '생성 중...' : '생성'}
+                </button>
+                {audioSrc && (
+                  <button
+                    className="tts-delete-btn"
+                    onClick={handleTtsDelete}
+                    disabled={isTtsLoading}
+                  >
+                    삭제
+                  </button>
+                )}
               </div>
-            )}
-
-            <section className="comments-section">
+              {ttsError && <p className="tts-error">{ttsError}</p>}
+              {audioSrc && (
+                <audio controls src={audioSrc} className="tts-player" />
+              )}
+            </div>
+                        <section className="comments-section">
               <div className="comments-header">
                 <h3>댓글</h3>
                 <span>{comments.length}개</span>

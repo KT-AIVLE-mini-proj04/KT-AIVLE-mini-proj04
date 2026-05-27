@@ -1,10 +1,8 @@
 import "./submit_edit.screen.css";
 
-import { useState, useRef } from "react";
-import { useEffect } from "react";
-
-import { hookBooks } from "../hooks/books.hook.js";
-import { useLocation, useNavigate } from "react-router";
+import { useState, useEffect, useRef } from "react";
+import { hookBooks } from '../hooks/books.hook.js';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 
 function SubmitEdit() {
@@ -14,13 +12,16 @@ function SubmitEdit() {
     content: "",
     coverImageUrl: "",
   });
+  const [savedBook, setSavedBook] = useState(null);
+  const [audioUrl, setAudioUrl]   = useState('');
+  const [loading, setLoading]     = useState(false);
+
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const location = useLocation();
   const id = location.state?.id;
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  // 팀 main 패턴: form 객체 state
 
-  // 글자수 카운터 ref (onInput DOM 직접 조작 → IME 방해 없음)
   const titleCountRef   = useRef(null);
   const authorCountRef  = useRef(null);
   const contentCountRef = useRef(null);
@@ -38,13 +39,13 @@ function SubmitEdit() {
     const fetchBook = async () => {
       try {
         const res = await hookBooks('GET', { id });
-        console.log('도서 정보:', res);
-        setForm({
-          id: res.id,
-          title: res.title,
-          author: res.author,
-          content: res.content,
-          coverImageUrl: res.coverImageUrl,
+        setForm({ title: res.title, author: res.author, content: res.content, coverImageUrl: res.coverImageUrl || '' });
+        setSavedBook(res);
+        setAudioUrl(res.audioUrl || localStorage.getItem(`audio_${res.id}`) || '');
+        requestAnimationFrame(() => {
+          syncCounter(titleCountRef,   res.title   || '', 100,  false);
+          syncCounter(authorCountRef,  res.author  || '', 50,   false);
+          syncCounter(contentCountRef, res.content || '', 5000, true);
         });
       } catch (error) {
         console.error('도서 정보 불러오기 실패:', error);
@@ -54,7 +55,6 @@ function SubmitEdit() {
     fetchBook();
   }, [id]);
 
-  // 팀 main 패턴: handleChange (name/value)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -66,10 +66,10 @@ function SubmitEdit() {
     if (!form.title.trim()) { alert('제목을 입력하세요.'); return; }
     if (!form.author.trim()) { alert('저자를 입력하세요.'); return; }
     if (!form.content.trim()) { alert('내용을 입력하세요.'); return; }
-    if (form.title.trim().length > 20) { alert('제목은 20자 이하로 입력하세요.'); return; }
-    if (form.author.trim().length > 10) { alert('저자는 10자 이하로 입력하세요.'); return; }
+    if (form.title.trim().length > 100) { alert('제목은 100자 이하로 입력하세요.'); return; }
+    if (form.author.trim().length > 50) { alert('저자는 50자 이하로 입력하세요.'); return; }
     if (form.content.trim().length < 10) { alert('내용을 10자 이상 입력하세요.'); return; }
-    if (form.content.trim().length > 43) { alert('내용은 43자 이하로 입력하세요.'); return; }
+    if (form.content.trim().length > 5000) { alert('내용은 5000자 이하로 입력하세요.'); return; }
 
     try {
       setLoading(true);
@@ -84,21 +84,20 @@ function SubmitEdit() {
       console.log(id ? '수정 성공:' : '등록 성공:', res);
       alert(id ? '도서가 수정되었습니다.' : '도서가 등록되었습니다.');
 
-      if (!id) {
-        setForm({
-          title: '',
-          author: '',
-          content: '',
-          coverImageUrl: '',
-        });
+      if (id) {
+        navigate(-1);
+      } else {
+        setSavedBook(res);
+        if (audioUrl) {
+          await hookBooks('PATCH', { id: res.id, audioUrl });
+        }
+        setForm({ title: '', author: '', content: '', coverImageUrl: '' });
       }
     } catch (error) {
       console.error(id ? '수정 실패:' : '등록 실패:', error);
       alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
-      // 팀 main 패턴: 수정 완료 후 뒤로 이동 (등록은 페이지 유지)
-      if (id) navigate(-1);
     }
   };
 
@@ -122,13 +121,14 @@ function SubmitEdit() {
                   id="title"
                   type="text"
                   name="title"
+                  disabled={isGenerating}
                   value={form.title}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
-                  onInput={(e) => syncCounter(titleCountRef, e.target.value, 20, false)}
-                  placeholder="제목을 입력하세요 (최대 20자)"
+                  onInput={(e) => syncCounter(titleCountRef, e.target.value, 100, false)}
+                  placeholder="제목을 입력하세요 (최대 100자)"
                 />
-                <span ref={titleCountRef} className={`char-counter${form.title.length > 20 ? ' over' : ''}`}>{form.title.length}/20</span>
+                <span ref={titleCountRef} className={`char-counter${form.title.length > 100 ? ' over' : ''}`}>{form.title.length}/100</span>
               </div>
 
               <div className="form-field">
@@ -138,12 +138,13 @@ function SubmitEdit() {
                   type="text"
                   name="author"
                   value={form.author}
+                  disabled={isGenerating}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
-                  onInput={(e) => syncCounter(authorCountRef, e.target.value, 10, false)}
-                  placeholder="저자를 입력하세요 (최대 10자)"
+                  onInput={(e) => syncCounter(authorCountRef, e.target.value, 50, false)}
+                  placeholder="저자를 입력하세요 (최대 50자)"
                 />
-                <span ref={authorCountRef} className={`char-counter${form.author.length > 10 ? ' over' : ''}`}>{form.author.length}/10</span>
+                <span ref={authorCountRef} className={`char-counter${form.author.length > 50 ? ' over' : ''}`}>{form.author.length}/50</span>
               </div>
 
               <div className="form-field">
@@ -152,46 +153,41 @@ function SubmitEdit() {
                   id="content"
                   name="content"
                   value={form.content}
+                  disabled={isGenerating}
                   onChange={handleChange}
                   onCompositionEnd={handleChange}
-                  onInput={(e) => syncCounter(contentCountRef, e.target.value, 43, true)}
-                  placeholder="내용을 입력하세요 (10자 이상, 최대 43자)"
+                  onInput={(e) => syncCounter(contentCountRef, e.target.value, 5000, true)}
+                  placeholder="내용을 입력하세요 (10자 이상, 최대 5000자)"
                 />
-                <span ref={contentCountRef} className={`char-counter${form.content.length > 43 ? ' over' : form.content.length < 10 && form.content.length > 0 ? ' under' : ''}`}>{form.content.length}/43</span>
+                <span ref={contentCountRef} className={`char-counter${form.content.length > 5000 ? ' over' : form.content.length < 10 && form.content.length > 0 ? ' under' : ''}`}>{form.content.length}/5000</span>
               </div>
 
               <div className="form-buttons">
-                {/* 팀 main 패턴: 취소 = 폼 초기화 */}
                 <button
                   type="button"
                   className="cancel-btn"
-                  onClick={() =>
-                    setForm({
-                      title: "",
-                      author: "",
-                      content: "",
-                      coverImageUrl: "",
-                    })
-                  }>
+                  onClick={() => navigate(-1)}>
                   취소
                 </button>
-                {/* 팀 main 패턴: 수정/저장 텍스트 분기 */}
-                <button
-                  type="submit"
-                  className="save-btn"
-                  disabled={loading}
-                >
-                  {loading ? '저장 중...' : id ? '수정' : '저장'}
+                <button type="submit" className="save-btn" disabled={loading || isGenerating}>
+                  {loading ? '저장 중...' : isGenerating ? '생성 중...' : id ? '수정' : '저장'}
                 </button>
               </div>
             </form>
           </section>
 
           <section className="ai-section">
-            <AICoverGenerator book={form} setForm={setForm} />
-            {/*<div className="result-box">
-              <p>(결과물)</p>
-            </div>*/}
+            <div className="form-title">AI 표지 생성</div>
+
+            <div className="ai-body">
+
+              <AICoverGenerator
+                book={savedBook || { title: form.title, author: form.author, content: form.content }}
+                setForm={setForm}
+                isGenerating={isGenerating}
+                setIsGenerating={setIsGenerating}
+              />
+            </div>
           </section>
         </section>
       </main>
