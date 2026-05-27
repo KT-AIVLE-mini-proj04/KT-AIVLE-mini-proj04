@@ -1,18 +1,19 @@
 footer {
   width: 100%;
-  background: #d9d9d9;
-  padding: 48px 75px;
+  background: #995349;
+  padding: 50px 75px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 footer span {
+  color: #f7f7f7;
   font-size: 12px;
   font-weight: 500;
 }
 
-#company-info {
+.company-info {
   display: flex;
   flex-direction: column;
   gap: 8px;

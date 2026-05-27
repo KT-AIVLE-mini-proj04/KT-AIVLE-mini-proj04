@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { hookBooks } from '../hooks/books.hook';
 import './bookdetail.css';
 
@@ -7,6 +7,7 @@ import './bookdetail.css';
 function BookDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 상태 3종 세트
   const [bookData, setBookData] = useState(null);
@@ -27,16 +28,16 @@ function BookDetailPage() {
       }
     };
     fetchBook();
-  }, [id]);
+  }, [id, location.key]); // location.key가 바뀌면(navigate(-1) 포함) 재fetch
 
   const handleBack = () => {
     navigate('/books');
   };
 
 
-const handleEdit = () => {
-  navigate("/books/submit", { state: { id: bookData.id } }); // submit으로 수정, 파람으로 id 자체를 넘겨야 함
-};
+  const handleEdit = () => {
+    navigate("/books/submit", { state: { id: bookData.id } });
+  };
 
 
 const handleDelete = async () => {
@@ -98,7 +99,7 @@ if (error || !bookData) {
 
 
 
-  const hasCoverImage = 
+  const hasCoverImage =
   bookData.coverImageUrl && bookData.coverImageUrl.trim() !== '';
 
   return (
@@ -117,7 +118,6 @@ if (error || !bookData) {
                 alt={`${bookData.title} 표지`}
               />
             ) : (
-              // Placeholder: 이미지 없을 때 보여줄 대체 UI
               <div className="book-cover-placeholder">
                 <span className="placeholder-icon">📖</span>
                 <span className="placeholder-text">{bookData.title}</span>
@@ -146,6 +146,17 @@ if (error || !bookData) {
                 삭제
               </button>
             </div>
+
+            {(bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)) && (
+              <div style={{ marginTop: '20px' }}>
+                <h4 style={{ margin: '0 0 8px', fontSize: '15px' }}>🎧 오디오북</h4>
+                <audio
+                  controls
+                  src={bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </main>
