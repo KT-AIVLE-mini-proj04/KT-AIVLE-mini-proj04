@@ -34,5 +34,13 @@
       "like": false
     }
   ],
+  "replay": [
+    {
+      "id": 1,
+      "book_id": "1",
+      "user": "Replay 1",
+      "comment": "This is the first replay."
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

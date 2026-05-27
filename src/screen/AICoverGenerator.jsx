@@ -11,11 +11,11 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, setForm }) {
+export default function AICoverGenerator({ book, setForm, isGenerating, setIsGenerating }) {
   const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
   const [quality, setQuality]   = useState('medium');
-  const [isGenerating, setIsGenerating] = useState(false);
+
   const [error, setError]       = useState('');
   const [imageSrc, setImageSrc]   = useState('');
   const [apiKey, setApiKey]     = useState('');
@@ -43,24 +43,21 @@ export default function AICoverGenerator({ book, setForm }) {
 
   return (
     <div className="ai-cover-generator">
-      <h2>AI 표지 생성</h2>
+      <div className="ai-field">
+        <label htmlFor="shared-api-key">OpenAI API Key</label>
+        <input
+          id="shared-api-key"
+          type="password"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="sk-..."
+        />
+      </div>
+
       <div className="ai-result">
         {imageSrc && <img src={imageSrc} alt="AI 생성 표지" />}
       </div>
-            <div className="ai-field" style={{ marginBottom: '16px' }}>
-              <label htmlFor="shared-api-key">OpenAI API Key</label>
-              <input
-                id="shared-api-key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-              />
-            </div>
 
-
-      {/* 옵션 선택 */}
       <div className="ai-options">
         <div className="cover-opt">
           <label htmlFor="ai-size">이미지 크기</label>
