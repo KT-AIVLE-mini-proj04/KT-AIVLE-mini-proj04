@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { hookBooks } from '../hooks/books.hook';
-import AudioBookPlayer from '../common/components/AudioBookPlayer';
+import { hookAITTS } from '../hooks/tts_mp3.hook';
 import './bookdetail.css';
 
 
@@ -10,17 +10,22 @@ function BookDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 상태 3종 세트
   const [bookData, setBookData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 페이지 진입 시 책 정보 가져오기
+  const [apiKey, setApiKey]         = useState('');
+  const [audioSrc, setAudioSrc]     = useState('');
+  const [isTtsLoading, setIsTtsLoading] = useState(false);
+  const [ttsError, setTtsError]     = useState('');
+
   useEffect(() => {
     const fetchBook = async () => {
       try {
         const result = await hookBooks('GET', { id });
         setBookData(result);
+        const saved = result.audioUrl || localStorage.getItem(`audio_${result.id}`) || '';
+        setAudioSrc(saved);
       } catch (err) {
         console.error('도서 조회 실패:', err);
         setError('해당 도서를 찾을 수 없습니다.');
@@ -29,7 +34,7 @@ function BookDetailPage() {
       }
     };
     fetchBook();
-  }, [id, location.key]); // location.key가 바뀌면(navigate(-1) 포함) 재fetch
+  }, [id, location.key]);
 
   const handleBack = () => {
     navigate('/books');
@@ -56,6 +61,24 @@ const handleDelete = async () => {
   }
 };
 
+
+  const handleTtsGenerate = async () => {
+    if (!apiKey.trim()) { setTtsError('OpenAI API Key를 입력해주세요.'); return; }
+    setIsTtsLoading(true);
+    setTtsError('');
+    try {
+      const full = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
+      const script = full.slice(0, 80);
+      const url = await hookAITTS(apiKey.trim(), script);
+      localStorage.setItem(`audio_${bookData.id}`, url);
+      setAudioSrc(url);
+      try { await hookBooks('PATCH', { id: bookData.id, audioUrl: url }); } catch (_) {}
+    } catch (err) {
+      setTtsError(err.message || 'TTS 생성에 실패했습니다.');
+    } finally {
+      setIsTtsLoading(false);
+    }
+  };
 
   const formatDate = (isoString) => {  // 날짜
     if (!isoString) return "";
@@ -148,7 +171,29 @@ if (error || !bookData) {
               </button>
             </div>
 
-            <AudioBookPlayer audioUrl={bookData.audioUrl} bookId={bookData.id} />
+            <div className="tts-section">
+              <h4 className="tts-title">🎧 오디오북</h4>
+              <div className="tts-key-row">
+                <input
+                  type="password"
+                  className="tts-key-input"
+                  placeholder="OpenAI API Key (sk-...)"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+                <button
+                  className="tts-generate-btn"
+                  onClick={handleTtsGenerate}
+                  disabled={isTtsLoading}
+                >
+                  {isTtsLoading ? '생성 중...' : audioSrc ? '재생성' : '생성'}
+                </button>
+              </div>
+              {ttsError && <p className="tts-error">{ttsError}</p>}
+              {audioSrc && (
+                <audio controls src={audioSrc} className="tts-player" />
+              )}
+            </div>
           </div>
         </div>
       </main>

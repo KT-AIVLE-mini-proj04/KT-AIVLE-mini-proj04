@@ -334,3 +334,79 @@ body.mocha-bg {
     padding: 32px 20px;
   }
 }
+
+/* ===== 오디오북 TTS 섹션 ===== */
+.tts-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cream-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tts-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.5px;
+}
+
+.tts-key-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tts-key-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.tts-key-input:focus {
+  border-color: var(--mocha);
+}
+
+.tts-generate-btn {
+  padding: 8px 20px;
+  background: var(--mocha);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.tts-generate-btn:hover:not(:disabled) {
+  background: var(--mocha-dark);
+  transform: translateY(-1px);
+}
+
+.tts-generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tts-player {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.tts-error {
+  margin: 0;
+  font-size: 12px;
+  color: #e53e3e;
+}
