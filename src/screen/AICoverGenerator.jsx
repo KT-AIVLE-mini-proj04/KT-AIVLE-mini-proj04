@@ -2,15 +2,6 @@ import { useState, useEffect } from 'react';
 import './AICoverGenerator.css';
 import { hookAiCover } from '../hooks/aiCover.hook';
 
-/**
- * AI 표지 생성 컴포넌트 (M5 · M6)
- *
- * 사용법:
- *   <AICoverGenerator
- *     book={{ id, title, author, content }}
- *     onCoverUpdate={(imageSrc) => { ... }}
- *   />
- */
 export default function AICoverGenerator({ book, setForm }) {
   const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
