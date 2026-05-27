@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from 'react-router';
-import { hookBooks } from '../hooks/books.hook';
-import { hookAITTS } from '../hooks/tts_mp3.hook';
-import './bookdetail.css';
-
+import { useParams, useNavigate, useLocation } from "react-router";
+import { hookBooks } from "../hooks/books.hook";
+import { hookAITTS } from "../hooks/tts_mp3.hook";
+import { hookLike } from "../hooks/like.hook";
+import HeartIcon from "../assets/heart.svg?react";
+import "./bookdetail.css";
 
 function BookDetailPage() {
   const { id } = useParams();
@@ -41,19 +42,20 @@ function BookDetailPage() {
   const [voice, setVoice]           = useState('alloy');
   const [audioSrc, setAudioSrc]     = useState('');
   const [isTtsLoading, setIsTtsLoading] = useState(false);
-  const [ttsError, setTtsError]     = useState('');
+  const [ttsError, setTtsError] = useState("");
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const result = await hookBooks('GET', { id });
+        const result = await hookBooks("GET", { id });
         setBookData(result);
         setComments(loadComments());
         const saved = result.audioUrl || localStorage.getItem(`audio_${result.id}`) || '';
         setAudioSrc(saved);
       } catch (err) {
-        console.error('도서 조회 실패:', err);
-        setError('해당 도서를 찾을 수 없습니다.');
+        console.error("도서 조회 실패:", err);
+        setError("해당 도서를 찾을 수 없습니다.");
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +64,7 @@ function BookDetailPage() {
   }, [id, location.key]);
 
   const handleBack = () => {
-    navigate('/books');
+    navigate("/books");
   };
 
   const handleEdit = () => {
@@ -120,23 +122,52 @@ function BookDetailPage() {
   };
 
   const handleTtsGenerate = async () => {
-    if (!apiKey.trim()) { setTtsError('OpenAI API Key를 입력해주세요.'); return; }
+    if (!apiKey.trim()) {
+      setTtsError("OpenAI API Key를 입력해주세요.");
+      return;
+    }
     setIsTtsLoading(true);
-    setTtsError('');
+    setTtsError("");
     try {
       const script = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
       const url = await hookAITTS(apiKey.trim(), script, voice);
       localStorage.setItem(`audio_${bookData.id}`, url);
       setAudioSrc(url);
-      try { await hookBooks('PATCH', { id: bookData.id, audioUrl: url }); } catch (_) {}
+      try {
+        await hookBooks("PATCH", { id: bookData.id, audioUrl: url });
+      } catch (_) {}
     } catch (err) {
-      setTtsError(err.message || 'TTS 생성에 실패했습니다.');
+      setTtsError(err.message || "TTS 생성에 실패했습니다.");
     } finally {
       setIsTtsLoading(false);
     }
   };
 
-  const formatDate = (isoString) => {  // 날짜
+  const handleLikeToggle = async () => {
+    if (!bookData || isLikeLoading) {
+      return;
+    }
+
+    const nextLike = !Boolean(bookData.like);
+    setIsLikeLoading(true);
+
+    try {
+      await hookLike({ id: bookData.id, like: nextLike });
+      setBookData((prev) =>
+        prev
+          ? { ...prev, like: nextLike, updatedAt: new Date().toISOString() }
+          : prev,
+      );
+    } catch (err) {
+      console.error("좋아요 변경 실패:", err);
+      alert("좋아요 상태 변경 중 오류가 발생했습니다.");
+    } finally {
+      setIsLikeLoading(false);
+    }
+  };
+
+  const formatDate = (isoString) => {
+    // 날짜
     if (!isoString) return "";
     return new Date(isoString).toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -145,42 +176,47 @@ function BookDetailPage() {
     });
   };
 
+  // 로딩 중 표시
+  if (isLoading) {
+    return (
+      <div className="book-detail-page">
+        <main className="main-content">
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: "20px",
+              marginTop: "60px",
+            }}>
+            도서 정보를 불러오는 중...
+          </p>
+        </main>
+      </div>
+    );
+  }
 
-
-
-// 로딩 중 표시
-if (isLoading) {
-  return (
-    <div className="book-detail-page">
-      <main className="main-content">
-        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
-          도서 정보를 불러오는 중...
-        </p>
-      </main>
-    </div>
-  );
-}
-
-// 에러 또는 책 없음
-if (error || !bookData) {
-  return (
-    <div className="book-detail-page">
-      <main className="main-content">
-        <button className="back-button" onClick={handleBack}>
-          ← 뒤로 가기
-        </button>
-        <p style={{ textAlign: 'center', fontSize: '20px', marginTop: '60px' }}>
-          {error || '해당 도서를 찾을 수 없습니다.'}
-        </p>
-      </main>
-    </div>
-  );
-}
-
-
+  // 에러 또는 책 없음
+  if (error || !bookData) {
+    return (
+      <div className="book-detail-page">
+        <main className="main-content">
+          <button className="back-button" onClick={handleBack}>
+            ← 뒤로 가기
+          </button>
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: "20px",
+              marginTop: "60px",
+            }}>
+            {error || "해당 도서를 찾을 수 없습니다."}
+          </p>
+        </main>
+      </div>
+    );
+  }
 
   const hasCoverImage =
-  bookData.coverImageUrl && bookData.coverImageUrl.trim() !== '';
+    bookData.coverImageUrl && bookData.coverImageUrl.trim() !== "";
 
   return (
     <div className="book-detail-page">
@@ -188,7 +224,6 @@ if (error || !bookData) {
         <button className="back-button" onClick={handleBack}>
           ← 뒤로 가기
         </button>
-
 
         <div className="book-detail-Card">
           <div className="book-cover">
@@ -214,9 +249,20 @@ if (error || !bookData) {
               <p>{bookData.content}</p>
             </div>
 
-            <p className="book-date">
-              등록일: {formatDate(bookData.createdAt)}
-            </p>
+            <div className="book-date-like">
+              <p className="book-date">
+                등록일: {formatDate(bookData.createdAt)}
+              </p>
+              <button
+                type="button"
+                className={`like-button ${bookData.like ? "liked" : ""}`}
+                aria-label={bookData.like ? "좋아요 취소" : "좋아요"}
+                title={bookData.like ? "좋아요 취소" : "좋아요"}
+                onClick={handleLikeToggle}
+                disabled={isLikeLoading}>
+                <HeartIcon aria-hidden="true" focusable="false" />
+              </button>
+            </div>
 
             <div className="action-buttons">
               <button className="btn-edit" onClick={handleEdit}>
@@ -257,9 +303,8 @@ if (error || !bookData) {
                 <button
                   className="tts-generate-btn"
                   onClick={handleTtsGenerate}
-                  disabled={isTtsLoading}
-                >
-                  {isTtsLoading ? '생성 중...' : '생성'}
+                  disabled={isTtsLoading}>
+                  {isTtsLoading ? "생성 중..." : audioSrc ? "재생성" : "생성"}
                 </button>
                 {audioSrc && (
                   <button
