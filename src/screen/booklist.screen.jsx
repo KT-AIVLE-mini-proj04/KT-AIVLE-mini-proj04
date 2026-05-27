@@ -41,7 +41,7 @@ function BookListScreen() {
               <Link to={`${book.id}`}>
                 <div
                   className="book-cover"
-                  onClick={() => navigate(`/book-detail/${book.id}`)}>
+                  >
                   {book.coverImageUrl ? (
                     <img src={book.coverImageUrl} alt={book.title} />
                   ) : (
