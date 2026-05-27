@@ -7,8 +7,6 @@ import "./submit_edit.screen.css";
 import { Link } from "react-router";
 import { hookBooks } from '../hooks/books.hook.js';
 import { useNavigate } from 'react-router-dom';
-import { hookBooks } from "../hooks/books.hook.js";
-import { useLocation, useNavigate } from "react-router";
 import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 
 function SubmitEdit() {
