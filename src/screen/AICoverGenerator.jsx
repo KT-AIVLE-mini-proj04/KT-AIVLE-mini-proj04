@@ -28,9 +28,8 @@ export default function AICoverGenerator({ book, setForm }) {
   const handleGenerateCover = async () => {
     setIsGenerating(true);
     setError('');
-
     try {
-      const imageSrc = await hookAiCover(book, { apiKey, model, size, quality });
+      const imageSrc = await hookAiCover(apiKey, book, { model, size, quality });
       console.log('생성된 이미지 URL:', imageSrc);
       setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
       setImageSrc(imageSrc);
