@@ -30,7 +30,6 @@ export default function AICoverGenerator({ book, setForm }) {
     setError('');
     try {
       const imageSrc = await hookAiCover(apiKey, book, { model, size, quality });
-      console.log('생성된 이미지 URL:', imageSrc);
       setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
       setImageSrc(imageSrc);
 
@@ -88,6 +87,7 @@ export default function AICoverGenerator({ book, setForm }) {
       </div>
 
       {error && <p className="ai-error">{error}</p>}
+      <p className="ai-notice">* 이미지 생성 시 OpenAI API 비용이 발생합니다.</p>
     </div>
   );
 }
