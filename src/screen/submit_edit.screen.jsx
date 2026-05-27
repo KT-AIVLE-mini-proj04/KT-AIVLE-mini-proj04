@@ -172,28 +172,32 @@ function SubmitEdit() {
           </section>
 
           <section className="ai-section">
-            <div className="ai-field">
-              <label htmlFor="shared-api-key">OpenAI API Key</label>
-              <input
-                id="shared-api-key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
+            <div className="form-title">AI 표지 생성</div>
+
+            <div className="ai-body">
+              <div className="ai-field">
+                <label htmlFor="shared-api-key">OpenAI API Key</label>
+                <input
+                  id="shared-api-key"
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-..."
+                />
+              </div>
+
+              <AICoverGenerator
+                book={savedBook || { title: form.title, author: form.author, content: form.content }}
+                setForm={setForm}
+                apiKey={apiKey}
               />
-            </div>
 
-            <div className="result-box">
-              {form.coverImageUrl
-                ? <img src={form.coverImageUrl} alt="AI 생성 표지" />
-                : <p>(결과물)</p>}
+              <div className="result-box">
+                {form.coverImageUrl
+                  ? <img src={form.coverImageUrl} alt="AI 생성 표지" />
+                  : <p>(결과물)</p>}
+              </div>
             </div>
-
-            <AICoverGenerator
-              book={savedBook || { title: form.title, author: form.author, content: form.content }}
-              setForm={setForm}
-              apiKey={apiKey}
-            />
           </section>
         </section>
       </main>

@@ -34,10 +34,8 @@ export default function AICoverGenerator({ book, setForm, apiKey }) {
 
   return (
     <div className="ai-cover-generator">
-      <h2>AI 표지 생성</h2>
-      {/* 옵션 선택 */}
       <div className="ai-options">
-        <div className="ai-field">
+        <div className="cover-opt">
           <label htmlFor="ai-size">이미지 크기</label>
           <select id="ai-size" value={size} onChange={(e) => setSize(e.target.value)}>
             <option value="1024x1536">1024x1536 (도서표지)</option>
@@ -45,7 +43,7 @@ export default function AICoverGenerator({ book, setForm, apiKey }) {
           </select>
         </div>
 
-        <div className="ai-field">
+        <div className="cover-opt">
           <label htmlFor="ai-quality">품질</label>
           <select id="ai-quality" value={quality} onChange={(e) => setQuality(e.target.value)}>
             <option value="low">Low</option>
@@ -55,7 +53,6 @@ export default function AICoverGenerator({ book, setForm, apiKey }) {
         </div>
       </div>
 
-      {/* 생성 버튼 */}
       <button
         onClick={handleGenerateCover}
         disabled={isGenerating}
@@ -64,11 +61,7 @@ export default function AICoverGenerator({ book, setForm, apiKey }) {
         {isGenerating ? '생성 중...' : 'AI 표지 생성'}
       </button>
 
-      {/* 에러 메시지 */}
       {error && <p className="ai-error">{error}</p>}
-
-      {/* 비용 안내 */}
-      <p className="ai-notice">* AI 표지 생성 시 OpenAI API 비용이 발생합니다.</p>
     </div>
   );
 }
