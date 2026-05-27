@@ -14,8 +14,8 @@ function HeaderBtn({ type, children }) {
   const [books, setBooks] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchQuery, setSearchQuery] = useState([]);
+  const [alarms, setAlarms] = useState([]);
   const searchInputRef = useRef(null);
-  const searchResultRef = useRef(null);
   const hasSearchResult = searchQuery.length > 0;
   const buttonClassName = `${style["header-btn"]} ${
     isSearch && clicked ? style["search-active"] : ""
@@ -40,6 +40,12 @@ function HeaderBtn({ type, children }) {
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
+    fetch("/alarm_data.json")
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response.alarms);
+        setAlarms(response.alarms);
+      });
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
@@ -98,7 +104,7 @@ function HeaderBtn({ type, children }) {
         </Button>
 
         {searchText.trim() && (
-          <ul ref={searchResultRef} className={searchStyle.searchResult}>
+          <ul className={searchStyle.searchResult}>
             {hasSearchResult ? (
               searchQuery.map((book) => (
                 <li key={book.id}>
