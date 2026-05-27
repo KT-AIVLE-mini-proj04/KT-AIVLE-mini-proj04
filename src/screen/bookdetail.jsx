@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
-import { hookBooks } from "../hooks/books.hook";
-import { hookAITTS } from "../hooks/tts_mp3.hook";
-import { hookLike } from "../hooks/like.hook";
-import HeartIcon from "../assets/heart.svg?react";
+import { hookBooks } from "@hooks/books.hook";
+import { hookAITTS } from "@hooks/tts_mp3.hook";
+import { hookLike } from "@hooks/like.hook";
+import HeartIcon from "@/assets/heart.svg?react";
 import "./bookdetail.css";
 
 function BookDetailPage() {
