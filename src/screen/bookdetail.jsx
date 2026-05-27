@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { hookBooks } from '../hooks/books.hook';
+import AudioBookPlayer from '../common/components/AudioBookPlayer';
 import './bookdetail.css';
 
 
@@ -147,16 +148,7 @@ if (error || !bookData) {
               </button>
             </div>
 
-            {(bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)) && (
-              <div style={{ marginTop: '20px' }}>
-                <h4 style={{ margin: '0 0 8px', fontSize: '15px' }}>🎧 오디오북</h4>
-                <audio
-                  controls
-                  src={bookData.audioUrl || localStorage.getItem(`audio_${bookData.id}`)}
-                  style={{ width: '100%' }}
-                />
-              </div>
-            )}
+            <AudioBookPlayer audioUrl={bookData.audioUrl} bookId={bookData.id} />
           </div>
         </div>
       </main>
