@@ -1,4 +1,4 @@
-import { commonPostHook } from "./common.hook";
+import { commonPostHook } from "@hooks/common.hook";
 
 export const hookLike = async (data) => {
   const url = import.meta.env.VITE_API_URL + `/books/${data.id}`;

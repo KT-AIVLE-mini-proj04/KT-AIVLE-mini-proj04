@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
-import { hookBooks } from "../hooks/books.hook";
-import { hookAITTS } from "../hooks/tts_mp3.hook";
-import { hookLike } from "../hooks/like.hook";
-import HeartIcon from "../assets/heart.svg?react";
-import "./bookdetail.css";
+import { hookBooks } from "@hooks/books.hook";
+import { hookAITTS } from "@hooks/tts_mp3.hook";
+import { hookLike } from "@hooks/like.hook";
+import HeartIcon from "@assets/heart.svg?react";
+import "@screen/bookdetail.css";
 
 function BookDetailPage() {
   const { id } = useParams();
@@ -15,9 +15,9 @@ function BookDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [apiKey, setApiKey]         = useState('');
-  const [voice, setVoice]           = useState('alloy');
-  const [audioSrc, setAudioSrc]     = useState('');
+  const [apiKey, setApiKey] = useState("");
+  const [voice, setVoice] = useState("alloy");
+  const [audioSrc, setAudioSrc] = useState("");
   const [isTtsLoading, setIsTtsLoading] = useState(false);
   const [ttsError, setTtsError] = useState("");
   const [isLikeLoading, setIsLikeLoading] = useState(false);
@@ -61,6 +61,15 @@ function BookDetailPage() {
       console.error("삭제 중 오류:", err);
       alert("삭제 중 오류가 발생했습니다.");
     }
+  };
+
+  const handleTtsDelete = async () => {
+    localStorage.removeItem(`audio_${bookData.id}`);
+    setAudioSrc("");
+    setTtsError("");
+    try {
+      await hookBooks("PATCH", { id: bookData.id, audioUrl: "" });
+    } catch (_) {}
   };
 
   const handleTtsGenerate = async () => {
@@ -228,8 +237,7 @@ function BookDetailPage() {
                 <select
                   className="tts-voice-select"
                   value={voice}
-                  onChange={(e) => setVoice(e.target.value)}
-                >
+                  onChange={(e) => setVoice(e.target.value)}>
                   <option value="alloy">Alloy (중성)</option>
                   <option value="ash">Ash (중성)</option>
                   <option value="ballad">Ballad (부드러운 남성)</option>
@@ -252,8 +260,7 @@ function BookDetailPage() {
                   <button
                     className="tts-delete-btn"
                     onClick={handleTtsDelete}
-                    disabled={isTtsLoading}
-                  >
+                    disabled={isTtsLoading}>
                     삭제
                   </button>
                 )}
