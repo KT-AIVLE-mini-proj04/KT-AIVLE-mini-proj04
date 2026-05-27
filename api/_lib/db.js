@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -6,12 +7,28 @@ const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const dbFilePath = path.join(rootDir, "db.json");
+const seedDbFilePath = path.join(rootDir, "db.json");
+const runtimeDbFilePath = process.env.VERCEL ? "/tmp/db.json" : seedDbFilePath;
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
+const ensureRuntimeDb = async () => {
+  if (!process.env.VERCEL) {
+    return;
+  }
+
+  try {
+    await access(runtimeDbFilePath);
+  } catch {
+    const seedRaw = await readFile(seedDbFilePath, "utf8");
+    await mkdir(path.dirname(runtimeDbFilePath), { recursive: true });
+    await writeFile(runtimeDbFilePath, seedRaw, "utf8");
+  }
+};
+
 export const loadDb = async () => {
-  const raw = await readFile(dbFilePath, "utf8");
+  await ensureRuntimeDb();
+  const raw = await readFile(runtimeDbFilePath, "utf8");
   return JSON.parse(raw);
 };
 
@@ -67,4 +84,10 @@ export const normalizeBook = (book) => {
 export const getBooksFromDb = async () => {
   const db = await loadDb();
   return clone(db.books ?? []).map(normalizeBook);
+};
+
+export const persistBooks = async (books) => {
+  const payload = JSON.stringify({ books }, null, 2);
+  await ensureRuntimeDb();
+  await writeFile(runtimeDbFilePath, payload, "utf8");
 };

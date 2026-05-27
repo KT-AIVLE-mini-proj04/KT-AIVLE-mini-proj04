@@ -3,22 +3,9 @@ import {
   makeNextId,
   normalizeBook,
   readJsonBody,
+  persistBooks,
   sendJson,
 } from "./_lib/db.js";
-import { writeFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const rootDir = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-);
-const dbFilePath = path.join(rootDir, "db.json");
-
-const tryPersist = async (books) => {
-  const payload = JSON.stringify({ books }, null, 2);
-  await writeFile(dbFilePath, payload, "utf8").catch(() => {});
-};
 
 export default async function handler(req, res) {
   const books = await getBooksFromDb();
@@ -36,7 +23,7 @@ export default async function handler(req, res) {
       updatedAt: new Date().toISOString(),
     });
     const nextBooks = [nextBook, ...books];
-    await tryPersist(nextBooks);
+    await persistBooks(nextBooks);
     return sendJson(res, nextBook, 201);
   }
 
