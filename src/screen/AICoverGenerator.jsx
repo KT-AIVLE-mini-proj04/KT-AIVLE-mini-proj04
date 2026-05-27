@@ -11,7 +11,7 @@ import { hookAiCover } from '../hooks/aiCover.hook';
  *     onCoverUpdate={(imageSrc) => { ... }}
  *   />
  */
-export default function AICoverGenerator({ book, setForm }) {
+export default function AICoverGenerator({ book, setForm, apiKey }) {
   const model                   = 'gpt-image-2';
   const [size, setSize]         = useState('1024x1536');
   const [quality, setQuality]   = useState('medium');
@@ -29,7 +29,7 @@ export default function AICoverGenerator({ book, setForm }) {
     setError('');
 
     try {
-      const imageSrc = await hookAiCover(book, { model, size, quality });
+      const imageSrc = await hookAiCover(book, { model, size, quality }, apiKey?.trim() || undefined);
       console.log('생성된 이미지 URL:', imageSrc);
       setForm((prev) => ({ ...prev, coverImageUrl: imageSrc }));
       setImageSrc(imageSrc);
