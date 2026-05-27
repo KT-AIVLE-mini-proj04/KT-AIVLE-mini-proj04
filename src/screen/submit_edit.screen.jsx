@@ -1,20 +1,38 @@
 import "./submit_edit.screen.css";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useEffect } from "react";
-import { Link } from "react-router";
 
-import { hookBooks } from "../hooks/books.hook.js";
-import { useLocation, useNavigate } from "react-router";
+import "./submit_edit.screen.css";
+import { Link } from "react-router";
+import { hookBooks } from '../hooks/books.hook.js';
+import { useNavigate, useLocation } from 'react-router-dom';
+import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
     title: "",
     author: "",
     content: "",
+    coverImageUrl: "",
   });
   const location = useLocation();
   const id = location.state?.id;
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  // 팀 main 패턴: form 객체 state
+
+  // 글자수 카운터 ref (onInput DOM 직접 조작 → IME 방해 없음)
+  const titleCountRef   = useRef(null);
+  const authorCountRef  = useRef(null);
+  const contentCountRef = useRef(null);
+
+  const syncCounter = (ref, value, max, isContent) => {
+    if (!ref.current) return;
+    const len = value.length;
+    ref.current.textContent = `${len}/${max}`;
+    ref.current.className = `char-counter${len > max ? ' over' : isContent && len < 10 && len > 0 ? ' under' : ''}`;
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -22,10 +40,13 @@ function SubmitEdit() {
     const fetchBook = async () => {
       try {
         const res = await hookBooks('GET', { id });
+        console.log('도서 정보:', res);
         setForm({
+          id: res.id,
           title: res.title,
           author: res.author,
           content: res.content,
+          coverImageUrl: res.coverImageUrl,
         });
       } catch (error) {
         console.error('도서 정보 불러오기 실패:', error);
@@ -35,43 +56,31 @@ function SubmitEdit() {
     fetchBook();
   }, [id]);
 
-  const [loading, setLoading] = useState(false);
-
+  // 팀 main 패턴: handleChange (name/value)
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setForm({
-      ...form,
-      [name]: value,
-    });
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title.trim()) {
-      alert("제목을 입력하세요.");
-      return;
-    }
-
-    if (!form.author.trim()) {
-      alert("저자를 입력하세요.");
-      return;
-    }
-
-    if (!form.content.trim()) {
-      alert("내용을 입력하세요.");
-      return;
-    }
+    if (!form.title.trim()) { alert('제목을 입력하세요.'); return; }
+    if (!form.author.trim()) { alert('저자를 입력하세요.'); return; }
+    if (!form.content.trim()) { alert('내용을 입력하세요.'); return; }
+    if (form.title.trim().length > 20) { alert('제목은 20자 이하로 입력하세요.'); return; }
+    if (form.author.trim().length > 10) { alert('저자는 10자 이하로 입력하세요.'); return; }
+    if (form.content.trim().length < 10) { alert('내용을 10자 이상 입력하세요.'); return; }
+    if (form.content.trim().length > 43) { alert('내용은 43자 이하로 입력하세요.'); return; }
 
     try {
       setLoading(true);
-
       const res = await hookBooks(id ? 'PATCH' : 'POST', {
         id,
         title: form.title,
         author: form.author,
         content: form.content,
+        coverImageUrl: form.coverImageUrl || '',
       });
 
       console.log(id ? '수정 성공:' : '등록 성공:', res);
@@ -82,6 +91,7 @@ function SubmitEdit() {
           title: '',
           author: '',
           content: '',
+          coverImageUrl: '',
         });
       }
     } catch (error) {
@@ -89,61 +99,71 @@ function SubmitEdit() {
       alert(id ? '도서 수정에 실패했습니다.' : '도서 등록에 실패했습니다.');
     } finally {
       setLoading(false);
-      navigate(-1);
+      // 팀 main 패턴: 수정 완료 후 뒤로 이동 (등록은 페이지 유지)
+      if (id) navigate(-1);
     }
   };
-
-  const navigate = useNavigate();
 
   return (
     <div className="page">
       <main className="main">
         <div>
-          <button onClick={() => navigate(-1)}>
+          <button className="back-btn" onClick={() => navigate(-1)}>
             ← 뒤로가기
           </button>
         </div>
 
         <section className="content">
           <section className="form-card">
-            <div className="form-title">
-              {id ? '도서 수정' : '새 도서 등록'}
-            </div>
+            <div className="form-title">{id ? '도서 수정' : '새 도서 등록'}</div>
 
             <form className="book-form" onSubmit={handleSubmit}>
-              <label>
-                제목
+              <div className="form-field">
+                <label htmlFor="title">제목</label>
                 <input
+                  id="title"
                   type="text"
                   name="title"
                   value={form.title}
                   onChange={handleChange}
-                  placeholder="제목을 입력하세요"
+                  onCompositionEnd={handleChange}
+                  onInput={(e) => syncCounter(titleCountRef, e.target.value, 20, false)}
+                  placeholder="제목을 입력하세요 (최대 20자)"
                 />
-              </label>
+                <span ref={titleCountRef} className={`char-counter${form.title.length > 20 ? ' over' : ''}`}>{form.title.length}/20</span>
+              </div>
 
-              <label>
-                저자
+              <div className="form-field">
+                <label htmlFor="author">저자</label>
                 <input
+                  id="author"
                   type="text"
                   name="author"
                   value={form.author}
                   onChange={handleChange}
-                  placeholder="저자를 입력하세요"
+                  onCompositionEnd={handleChange}
+                  onInput={(e) => syncCounter(authorCountRef, e.target.value, 10, false)}
+                  placeholder="저자를 입력하세요 (최대 10자)"
                 />
-              </label>
+                <span ref={authorCountRef} className={`char-counter${form.author.length > 10 ? ' over' : ''}`}>{form.author.length}/10</span>
+              </div>
 
-              <label>
-                내용
+              <div className="form-field">
+                <label htmlFor="content">내용</label>
                 <textarea
+                  id="content"
                   name="content"
                   value={form.content}
                   onChange={handleChange}
-                  placeholder="내용을 입력하세요"
+                  onCompositionEnd={handleChange}
+                  onInput={(e) => syncCounter(contentCountRef, e.target.value, 43, true)}
+                  placeholder="내용을 입력하세요 (10자 이상, 최대 43자)"
                 />
-              </label>
+                <span ref={contentCountRef} className={`char-counter${form.content.length > 43 ? ' over' : form.content.length < 10 && form.content.length > 0 ? ' under' : ''}`}>{form.content.length}/43</span>
+              </div>
 
               <div className="form-buttons">
+                {/* 팀 main 패턴: 취소 = 폼 초기화 */}
                 <button
                   type="button"
                   className="cancel-btn"
@@ -152,11 +172,12 @@ function SubmitEdit() {
                       title: "",
                       author: "",
                       content: "",
+                      coverImageUrl: "",
                     })
                   }>
                   취소
                 </button>
-
+                {/* 팀 main 패턴: 수정/저장 텍스트 분기 */}
                 <button
                   type="submit"
                   className="save-btn"
@@ -169,11 +190,10 @@ function SubmitEdit() {
           </section>
 
           <section className="ai-section">
-            <h2>AI 표지 생성</h2>
-
-            <div className="result-box">
+            <AICoverGenerator book={form} setForm={setForm} />
+            {/*<div className="result-box">
               <p>(결과물)</p>
-            </div>
+            </div>*/}
           </section>
         </section>
       </main>
