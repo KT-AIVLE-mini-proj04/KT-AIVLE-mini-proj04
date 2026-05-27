@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
-import { hookBooks } from "@hooks/books.hook";
-import { hookAITTS } from "@hooks/tts_mp3.hook";
-import { hookLike } from "@hooks/like.hook";
-import HeartIcon from "@assets/heart.svg?react";
-import "@screen/bookdetail.css";
+import { hookBooks } from "../hooks/books.hook";
+import { hookAITTS } from "../hooks/tts_mp3.hook";
+import { hookLike } from "../hooks/like.hook";
+import HeartIcon from "../assets/heart.svg?react";
+import "./bookdetail.css";
 
 function BookDetailPage() {
   const { id } = useParams();
@@ -14,6 +14,29 @@ function BookDetailPage() {
   const [bookData, setBookData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState("");
+  const [commentError, setCommentError] = useState("");
+
+  const commentStorageKey = `book_comments_${id}`;
+
+  const loadComments = () => {
+    try {
+      const stored = localStorage.getItem(commentStorageKey);
+      return stored ? JSON.parse(stored) : [];
+    } catch (err) {
+      console.error("댓글 불러오기 오류:", err);
+      return [];
+    }
+  };
+
+  const saveComments = (newComments) => {
+    try {
+      localStorage.setItem(commentStorageKey, JSON.stringify(newComments));
+    } catch (err) {
+      console.error("댓글 저장 오류:", err);
+    }
+  };
 
   const [apiKey, setApiKey] = useState("");
   const [voice, setVoice] = useState("alloy");
@@ -27,6 +50,7 @@ function BookDetailPage() {
       try {
         const result = await hookBooks("GET", { id });
         setBookData(result);
+        setComments(loadComments());
         const saved =
           result.audioUrl || localStorage.getItem(`audio_${result.id}`) || "";
         setAudioSrc(saved);
@@ -61,6 +85,35 @@ function BookDetailPage() {
       console.error("삭제 중 오류:", err);
       alert("삭제 중 오류가 발생했습니다.");
     }
+  };
+
+  const handleCommentSubmit = (event) => {
+    event.preventDefault();
+    const trimmed = commentInput.trim();
+    if (!trimmed) {
+      setCommentError("댓글 내용을 입력해주세요.");
+      return;
+    }
+
+    const newComment = {
+      id: `${Date.now()}`,
+      text: trimmed,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedComments = [newComment, ...comments];
+    setComments(updatedComments);
+    saveComments(updatedComments);
+    setCommentInput("");
+    setCommentError("");
+  };
+
+  const handleCommentDelete = (commentId) => {
+    const updatedComments = comments.filter(
+      (comment) => comment.id !== commentId,
+    );
+    setComments(updatedComments);
+    saveComments(updatedComments);
   };
 
   const handleTtsDelete = async () => {
@@ -254,7 +307,7 @@ function BookDetailPage() {
                   className="tts-generate-btn"
                   onClick={handleTtsGenerate}
                   disabled={isTtsLoading}>
-                  {isTtsLoading ? "생성 중..." : audioSrc ? "재생성" : "생성"}
+                  {isTtsLoading ? "생성 중..." : "생성"}
                 </button>
                 {audioSrc && (
                   <button
@@ -270,6 +323,57 @@ function BookDetailPage() {
                 <audio controls src={audioSrc} className="tts-player" />
               )}
             </div>
+            <section className="comments-section">
+              <div className="comments-header">
+                <h3>댓글</h3>
+                <span>{comments.length}개</span>
+              </div>
+
+              <form className="comment-form" onSubmit={handleCommentSubmit}>
+                <textarea
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                  placeholder="댓글을 입력하세요."
+                  rows={4}
+                  className="comment-input"
+                />
+                {commentError && (
+                  <p className="comment-error">{commentError}</p>
+                )}
+                <button type="submit" className="btn-edit comment-submit">
+                  댓글 등록
+                </button>
+              </form>
+
+              <div className="comment-list">
+                {comments.length === 0 ? (
+                  <p className="no-comments">첫 번째 댓글을 남겨보세요.</p>
+                ) : (
+                  comments.map((comment) => (
+                    <article key={comment.id} className="comment-item">
+                      <div className="comment-meta">
+                        <span className="comment-date">
+                          {new Date(comment.createdAt).toLocaleString("ko-KR", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                        <button
+                          type="button"
+                          className="comment-delete"
+                          onClick={() => handleCommentDelete(comment.id)}>
+                          삭제
+                        </button>
+                      </div>
+                      <p className="comment-text">{comment.text}</p>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
           </div>
         </div>
       </main>
