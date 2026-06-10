@@ -5,10 +5,19 @@ const apiBaseUrl = import.meta.env.PROD
   : import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const hookLike = async (data) => {
-  const url = `${apiBaseUrl}/books/${data.id}`;
+  const { method, likeId, bookId, usersId } = data;
 
-  const now = new Date().toISOString();
-  data = { ...data, updatedAt: now };
-  const res = await commonPostHook("PATCH", url, data);
+  const url = method === "DELETE"
+    ? `${apiBaseUrl}/like/${likeId}`
+    : `${apiBaseUrl}/like`;
+
+  const body = method === "POST" ? { bookId, usersId } : undefined;
+  const res = await commonPostHook(method, url, body);
   return res;
+};
+
+export const hookLikeCount = async (bookId) => {
+  const url = `${apiBaseUrl}/like?bookId=${bookId}`;
+  const res = await commonPostHook("GET", url);
+  return Array.isArray(res) ? res : [];
 };

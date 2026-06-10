@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router";
 import { hookBooks } from "@hooks/books.hook";
-import { hookAITTS } from "@hooks/tts_mp3.hook";
-import { hookLike } from "@hooks/like.hook";
+import { hookEpisodes } from "@hooks/episodes.hook";
+import { hookComment } from "@hooks/comment.hook";
+import { hookLike, hookLikeCount } from "@hooks/like.hook";
+import { getUser } from "@utils/authStore";
 import HeartIcon from "@/assets/heart.svg?react";
 import "./bookdetail.css";
 
@@ -12,57 +14,47 @@ function BookDetailPage() {
   const location = useLocation();
 
   const [bookData, setBookData] = useState(null);
+  const [episodes, setEpisodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState("");
   const [commentError, setCommentError] = useState("");
+  const [commentPage, setCommentPage] = useState(0);
+  const [hasMoreComments, setHasMoreComments] = useState(true);
+  const [editingId, setEditingId] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
+  const [likeCount, setLikeCount] = useState(0);
+  const [likes, setLikes] = useState([]);
 
-  const commentStorageKey = `book_comments_${id}`;
 
-  const loadComments = () => {
-    try {
-      const stored = localStorage.getItem(commentStorageKey);
-      return stored ? JSON.parse(stored) : [];
-    } catch (err) {
-      console.error("댓글 불러오기 오류:", err);
-      return [];
-    }
-  };
-
-  const saveComments = (newComments) => {
-    try {
-      localStorage.setItem(commentStorageKey, JSON.stringify(newComments));
-    } catch (err) {
-      console.error("댓글 저장 오류:", err);
-    }
-  };
-
-  const [apiKey, setApiKey] = useState("");
-  const [voice, setVoice] = useState("alloy");
-  const [audioSrc, setAudioSrc] = useState("");
-  const [isTtsLoading, setIsTtsLoading] = useState(false);
-  const [ttsError, setTtsError] = useState("");
   const [isLikeLoading, setIsLikeLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchBook = async () => {
-      try {
-        const result = await hookBooks("GET", { id });
-        setBookData(result);
-        setComments(loadComments());
-        const saved =
-          result.audioUrl || localStorage.getItem(`audio_${result.id}`) || "";
-        setAudioSrc(saved);
-      } catch (err) {
-        console.error("도서 조회 실패:", err);
-        setError("해당 도서를 찾을 수 없습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchBook();
-  }, [id, location.key]);
+useEffect(() => {
+  const fetchBook = async () => {
+    try {
+      const [bookData, episodes, comments, likes] = await Promise.all([
+        hookBooks("GET", { id }),
+        hookEpisodes("GET", { bookId: id }),
+        hookComment("GET", { bookId: id, page: 0 }),
+        hookLikeCount(id),
+      ]);
+      console.log(comments)
+      setBookData(bookData);
+      setEpisodes(episodes);
+      setComments(comments ?? []);
+      setHasMoreComments((comments?.length ?? 0) === 10);
+      setLikes(likes ?? []);
+      setLikeCount(likes?.length ?? 0);
+    } catch (err) {
+      console.error("도서 조회 실패:", err);
+      setError("해당 도서를 찾을 수 없습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchBook();
+}, [id, location.key]);
 
   const handleBack = () => {
     navigate("/books");
@@ -87,84 +79,88 @@ function BookDetailPage() {
     }
   };
 
-  const handleCommentSubmit = (event) => {
+  const handleCommentSubmit = async (event) => {
     event.preventDefault();
     const trimmed = commentInput.trim();
     if (!trimmed) {
       setCommentError("댓글 내용을 입력해주세요.");
       return;
     }
-
-    const newComment = {
-      id: `${Date.now()}`,
-      text: trimmed,
-      createdAt: new Date().toISOString(),
-    };
-
-    const updatedComments = [newComment, ...comments];
-    setComments(updatedComments);
-    saveComments(updatedComments);
-    setCommentInput("");
-    setCommentError("");
-  };
-
-  const handleCommentDelete = (commentId) => {
-    const updatedComments = comments.filter(
-      (comment) => comment.id !== commentId,
-    );
-    setComments(updatedComments);
-    saveComments(updatedComments);
-  };
-
-  const handleTtsDelete = async () => {
-    localStorage.removeItem(`audio_${bookData.id}`);
-    setAudioSrc("");
-    setTtsError("");
     try {
-      await hookBooks("PATCH", { id: bookData.id, audioUrl: "" });
-    } catch (_) {}
-  };
-
-  const handleTtsGenerate = async () => {
-    if (!apiKey.trim()) {
-      setTtsError("OpenAI API Key를 입력해주세요.");
-      return;
-    }
-    setIsTtsLoading(true);
-    setTtsError("");
-    try {
-      const script = `${bookData.title}. 저자 ${bookData.author}. ${bookData.content}`;
-      const url = await hookAITTS(apiKey.trim(), script, voice);
-      localStorage.setItem(`audio_${bookData.id}`, url);
-      setAudioSrc(url);
-      try {
-        await hookBooks("PATCH", { id: bookData.id, audioUrl: url });
-      } catch (_) {}
+      await hookComment("POST", { bookId: id, content: trimmed, usersId: getUser()?.id });
+      const updated = await hookComment("GET", { bookId: id, page: 0 });
+      setComments(updated ?? []);
+      setCommentPage(0);
+      setHasMoreComments((updated?.length ?? 0) === 10);
+      setCommentInput("");
+      setCommentError("");
     } catch (err) {
-      setTtsError(err.message || "TTS 생성에 실패했습니다.");
-    } finally {
-      setIsTtsLoading(false);
+      console.error("댓글 등록 실패:", err);
+      setCommentError("댓글 등록 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    try {
+      await hookComment("DELETE", { id: commentId });
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (err) {
+      console.error("댓글 삭제 실패:", err);
+    }
+  };
+
+  const handleCommentEdit = (comment) => {
+    setEditingId(comment.id);
+    setEditingContent(comment.content);
+  };
+
+  const handleCommentEditSubmit = async (commentId) => {
+    if (!editingContent.trim()) return;
+    try {
+      await hookComment("PATCH", { id: commentId, content: editingContent.trim() });
+      setComments((prev) =>
+        prev.map((c) => c.id === commentId ? { ...c, content: editingContent.trim() } : c)
+      );
+      setEditingId(null);
+      setEditingContent("");
+    } catch (err) {
+      console.error("댓글 수정 실패:", err);
+    }
+  };
+
+  const handleLoadMoreComments = async () => {
+    const nextPage = commentPage + 1;
+    try {
+      const more = await hookComment("GET", { bookId: id, page: nextPage });
+      setComments((prev) => [...prev, ...(more ?? [])]);
+      setCommentPage(nextPage);
+      setHasMoreComments((more?.length ?? 0) === 10);
+    } catch (err) {
+      console.error("댓글 추가 로드 실패:", err);
     }
   };
 
   const handleLikeToggle = async () => {
-    if (!bookData || isLikeLoading) {
-      return;
-    }
+    const user = getUser();
+    if (!user || !bookData || isLikeLoading) return;
 
-    const nextLike = !Boolean(bookData.like);
+    const myLike = likes.find((l) => l.usersId === user.id);
     setIsLikeLoading(true);
 
     try {
-      await hookLike({ id: bookData.id, like: nextLike });
-      setBookData((prev) =>
-        prev
-          ? { ...prev, like: nextLike, updatedAt: new Date().toISOString() }
-          : prev,
-      );
+      if (myLike) {
+        // 이미 좋아요 → DELETE
+        await hookLike({ method: "DELETE", likeId: myLike.id });
+        setLikes((prev) => prev.filter((l) => l.id !== myLike.id));
+        setLikeCount((prev) => prev - 1);
+      } else {
+        // 좋아요 없음 → POST
+        await hookLike({ method: "POST", bookId: bookData.id, usersId: user.id });
+        setLikes((prev) => [...prev, { usersId: user.id }]);
+        setLikeCount((prev) => prev + 1);
+      }
     } catch (err) {
       console.error("좋아요 변경 실패:", err);
-      alert("좋아요 상태 변경 중 오류가 발생했습니다.");
     } finally {
       setIsLikeLoading(false);
     }
@@ -230,42 +226,69 @@ function BookDetailPage() {
         </button>
 
         <div className="book-detail-Card">
-          <div className="book-cover">
-            {hasCoverImage ? (
-              <img
-                src={bookData.coverImageUrl}
-                alt={`${bookData.title} 표지`}
-              />
-            ) : (
-              <div className="book-cover-placeholder">
-                <span className="placeholder-icon">📖</span>
-                <span className="placeholder-text">{bookData.title}</span>
+          <div className="book-cover-col">
+            <div className="book-cover">
+              {hasCoverImage ? (
+                <img
+                  src={bookData.coverImageUrl}
+                  alt={`${bookData.title} 표지`}
+                />
+              ) : (
+                <div className="book-cover-placeholder">
+                  <span className="placeholder-icon">📖</span>
+                  <span className="placeholder-text">{bookData.title}</span>
+                </div>
+              )}
+            </div>
+
+            <section className="episodes-section">
+              <div className="episodes-header">
+                <h3>에피소드</h3>
+                <span>{episodes?.length ?? 0}화</span>
               </div>
-            )}
+              {!episodes?.length ? (
+                <p className="no-episodes">회차가 등록되지 않았습니다.</p>
+              ) : (
+                <div className="episode-list">
+                  {episodes.map((episode, index) => (
+                    <div
+                      key={episode.episodeId ?? index}
+                      className="episode-item"
+                      onClick={() => navigate(`/episodes/${episode.episodeId}`)}>
+                      <span className="episode-number">{episode.episodeIndex ?? index + 1}화</span>
+                      <span className="episode-title">{episode.episodeTitle ?? "제목 없음"}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
           </div>
 
           <div className="book-info">
-            <h2 className="book-title">제목: {bookData.title}</h2>
+            <h2 className="book-title">{bookData.title}</h2>
             <p className="book-author">저자: {bookData.author}</p>
 
             <h3 className="content-label">내용</h3>
             <div className="content-box">
-              <p>{bookData.content}</p>
+              <p>{bookData.description}</p>
             </div>
 
             <div className="book-date-like">
               <p className="book-date">
                 등록일: {formatDate(bookData.createdAt)}
               </p>
-              <button
-                type="button"
-                className={`like-button ${bookData.like ? "liked" : ""}`}
-                aria-label={bookData.like ? "좋아요 취소" : "좋아요"}
-                title={bookData.like ? "좋아요 취소" : "좋아요"}
-                onClick={handleLikeToggle}
-                disabled={isLikeLoading}>
-                <HeartIcon aria-hidden="true" focusable="false" />
-              </button>
+              <div className="like-wrapper">
+                <button
+                  type="button"
+                  className={`like-button ${likes.some((l) => l.usersId === getUser()?.id) ? "liked" : ""}`}
+                  aria-label="좋아요"
+                  title={!getUser() ? "로그인 후 이용 가능합니다" : "좋아요"}
+                  onClick={handleLikeToggle}
+                  disabled={isLikeLoading || !getUser()}>
+                  <HeartIcon aria-hidden="true" focusable="false" />
+                </button>
+                <span className="like-count">{likeCount}</span>
+              </div>
             </div>
 
             <div className="action-buttons">
@@ -277,6 +300,7 @@ function BookDetailPage() {
               </button>
             </div>
 
+{/*
             <div className="tts-section">
               <h4 className="tts-title">🎧 오디오북</h4>
               <div className="tts-key-row">
@@ -324,27 +348,32 @@ function BookDetailPage() {
               )}
               <p className="tts-notice">* TTS 생성 시 OpenAI API 비용이 발생합니다.</p>
             </div>
+*/}
             <section className="comments-section">
               <div className="comments-header">
                 <h3>댓글</h3>
                 <span>{comments.length}개</span>
               </div>
 
-              <form className="comment-form" onSubmit={handleCommentSubmit}>
-                <textarea
-                  value={commentInput}
-                  onChange={(e) => setCommentInput(e.target.value)}
-                  placeholder="댓글을 입력하세요."
-                  rows={4}
-                  className="comment-input"
-                />
-                {commentError && (
-                  <p className="comment-error">{commentError}</p>
-                )}
-                <button type="submit" className="btn-edit comment-submit">
-                  댓글 등록
-                </button>
-              </form>
+              {getUser() ? (
+                <form className="comment-form" onSubmit={handleCommentSubmit}>
+                  <textarea
+                    value={commentInput}
+                    onChange={(e) => setCommentInput(e.target.value)}
+                    placeholder="댓글을 입력하세요."
+                    rows={4}
+                    className="comment-input"
+                  />
+                  {commentError && (
+                    <p className="comment-error">{commentError}</p>
+                  )}
+                  <button type="submit" className="btn-edit comment-submit">
+                    댓글 등록
+                  </button>
+                </form>
+              ) : (
+                <p className="comment-login-notice">댓글을 작성하려면 <a href="/login">로그인</a>이 필요합니다.</p>
+              )}
 
               <div className="comment-list">
                 {comments.length === 0 ? (
@@ -353,6 +382,7 @@ function BookDetailPage() {
                   comments.map((comment) => (
                     <article key={comment.id} className="comment-item">
                       <div className="comment-meta">
+                        <span className="comment-user">{comment.name}</span>
                         <span className="comment-date">
                           {new Date(comment.createdAt).toLocaleString("ko-KR", {
                             year: "numeric",
@@ -362,19 +392,60 @@ function BookDetailPage() {
                             minute: "2-digit",
                           })}
                         </span>
-                        <button
-                          type="button"
-                          className="comment-delete"
-                          onClick={() => handleCommentDelete(comment.id)}>
-                          삭제
-                        </button>
+                        {getUser()?.id === comment.usersId && (
+                        <div className="comment-actions">
+                          <button
+                            type="button"
+                            className="comment-edit"
+                            onClick={() => handleCommentEdit(comment)}>
+                            수정
+                          </button>
+                          <button
+                            type="button"
+                            className="comment-delete"
+                            onClick={() => handleCommentDelete(comment.id)}>
+                            삭제
+                          </button>
+                        </div>
+                        )}
                       </div>
-                      <p className="comment-text">{comment.text}</p>
+                      {editingId === comment.id ? (
+                        <div className="comment-edit-form">
+                          <textarea
+                            className="comment-input"
+                            value={editingContent}
+                            onChange={(e) => setEditingContent(e.target.value)}
+                            rows={3}
+                          />
+                          <div className="comment-edit-actions">
+                            <button
+                              type="button"
+                              className="btn-edit comment-submit"
+                              onClick={() => handleCommentEditSubmit(comment.id)}>
+                              저장
+                            </button>
+                            <button
+                              type="button"
+                              className="comment-delete"
+                              onClick={() => setEditingId(null)}>
+                              취소
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="comment-text">{comment.content}</p>
+                      )}
                     </article>
                   ))
                 )}
               </div>
+              {hasMoreComments && (
+                <button className="comment-more-btn" onClick={handleLoadMoreComments}>
+                  댓글 더 보기
+                </button>
+              )}
             </section>
+
           </div>
         </div>
       </main>

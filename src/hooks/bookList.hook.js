@@ -6,6 +6,7 @@ const apiBaseUrl = import.meta.env.PROD
 
 export const hookBookList = async () => {
   const baseUrl = `${apiBaseUrl}/books`;
+  console.log("Book List API called", baseUrl);
   const res = await commonPostHook("GET", baseUrl, null);
   return res;
 };

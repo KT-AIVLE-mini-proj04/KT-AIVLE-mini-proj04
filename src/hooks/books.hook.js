@@ -17,5 +17,6 @@ export const hookBooks = async (method, data) => {
     data = { ...data, updatedAt: now };
   }
   const res = await commonPostHook(method, url, data);
+  console.log("Book API response:", res);
   return res;
 };
