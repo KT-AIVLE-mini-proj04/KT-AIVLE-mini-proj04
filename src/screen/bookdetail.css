@@ -61,10 +61,19 @@
   animation: fade-in 0.6s ease forwards;
 }
 
+/* ===== 왼쪽: 표지 + 에피소드 컬럼 ===== */
+.book-cover-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
 /* ===== 왼쪽: 표지 (배경 없이 모카 위에 둠) ===== */
 .book-cover {
-  flex-shrink: 0;
-  width: 280px;
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
 }
 
 .book-cover img {
@@ -185,6 +194,18 @@
   align-self: flex-start;
 }
 
+.like-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.like-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--subtle);
+}
+
 .like-button {
   border: 0;
   background: transparent;
@@ -294,6 +315,75 @@
   outline-offset: 2px;
 }
 
+.episodes-section {
+  margin-top: 32px;
+  padding: 28px;
+  background: #faf3f3;
+  border-radius: 12px;
+}
+
+.episodes-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.episodes-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.episodes-header span {
+  font-size: 14px;
+  color: var(--subtle);
+}
+
+.no-episodes {
+  font-size: 14px;
+  color: var(--subtle);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.episode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.episode-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #ede5dc;
+}
+
+.episode-item:hover {
+  background: var(--cream-soft);
+  transform: translateX(4px);
+  border-color: var(--mocha);
+}
+
+.episode-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mocha);
+  min-width: 36px;
+}
+
+.episode-title {
+  font-size: 15px;
+  color: var(--ink);
+}
+
 .comments-section {
   margin-top: 32px;
   padding: 28px;
@@ -375,6 +465,40 @@
 .comment-date {
   font-size: 13px;
   color: var(--subtle);
+}
+
+.comment-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.comment-edit {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.comment-edit:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--mocha);
+  color: var(--mocha);
+}
+
+.comment-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.comment-edit-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .comment-delete {
