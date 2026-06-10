@@ -7,7 +7,6 @@ const apiBaseUrl = import.meta.env.PROD
 
 export const hookSignup = async (data) => {
   const baseUrl = `${apiBaseUrl}/users`;
-  const res = await commonAuthHook("POST", baseUrl, data);
-  setAccessToken(res.accessToken);
-  setUser({ nickname: res.nickname, id: res.id, email: res.email });
+  console.log("Signup API data:", data);
+  await commonAuthHook("POST", baseUrl, data);
 };

@@ -6,8 +6,11 @@ const apiBaseUrl = import.meta.env.PROD
   : import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const hookLogin = async (data) => {
-  const baseUrl = `${apiBaseUrl}/login`;
+  const baseUrl = `${apiBaseUrl}/auth/login`;
+  console.log("Login API data:", data);
   const res = await commonAuthHook("POST", baseUrl, data);
+  console.log("Login API response:", res);
   setAccessToken(res.accessToken);
-  setUser({ name: res.name, email: res.email, phone: res.phone });
+  console.log("Login res fields:", res);
+  setUser({ usersId: res.usersId, loginId: res.loginId, name: res.name, email: res.email, phone: res.phone });
 };

@@ -39,7 +39,7 @@ function BookListScreen() {
         <section className="book-list">
           {bookList?.map((book, index) => (
             <div className="book-card" key={`${book.id}-${index}`}>
-              <Link to={`${book.id}`}>
+              <Link to={`${book.bookId}`}>
                 <div className="book-cover">
                   {book.coverImageUrl ? (
                     <img src={book.coverImageUrl} alt={book.title} />

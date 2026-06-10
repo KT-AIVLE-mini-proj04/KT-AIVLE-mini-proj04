@@ -1,12 +1,17 @@
 import axios from "axios";
-import { setAccessToken } from "@utils/authStore";
+import { setAccessToken, setUser } from "@utils/authStore";
+
+const apiBaseUrl = import.meta.env.PROD
+  ? import.meta.env.VITE_API_URL || "/api"
+  : import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const refreshAccessToken = async () => {
-  const res = await axios.post("/api/auth/refresh", null, {
-    withCredentials: true, // HttpOnly 쿠키 자동 전송
+  const res = await axios.post(`${apiBaseUrl}/auth/refresh`, null, {
+    withCredentials: true,
   });
-  const newToken = res.data.accessToken;
-  setAccessToken(newToken);
-  return newToken;
+  const { accessToken, loginId, name, email, phone, usersId } = res.data;
+  setAccessToken(accessToken);
+  if (usersId) setUser({ usersId, loginId, name, email, phone });
+  return accessToken;
 };
 

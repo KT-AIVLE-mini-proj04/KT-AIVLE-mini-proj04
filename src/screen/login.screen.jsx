@@ -5,7 +5,7 @@ import "@screen/login.screen.css";
 
 function LoginScreen() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ loginId: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -53,14 +53,14 @@ function LoginScreen() {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="login-field">
-            <label htmlFor="email">이메일</label>
+            <label htmlFor="loginId">아이디</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
+              id="loginId"
+              name="loginId"
+              type="text"
+              value={form.loginId}
               onChange={handleChange}
-              placeholder="이메일을 입력하세요"
+              placeholder="아이디를 입력하세요"
               required
             />
           </div>
@@ -93,7 +93,7 @@ function LoginScreen() {
 
         <p className="login-footer">
           계정이 없으신가요?{" "}
-          <Link to="/signup">회원가입</Link>
+          <Link to="/users">회원가입</Link>
         </p>
       </div>
     </div>

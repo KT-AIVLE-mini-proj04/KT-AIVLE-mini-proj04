@@ -20,6 +20,8 @@ function BookDetailPage() {
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState("");
   const [commentError, setCommentError] = useState("");
+  const [commentPage, setCommentPage] = useState(0);
+  const [hasMoreComments, setHasMoreComments] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
   const [likeCount, setLikeCount] = useState(0);
@@ -34,13 +36,14 @@ useEffect(() => {
       const [bookData, episodes, comments, likes] = await Promise.all([
         hookBooks("GET", { id }),
         hookEpisodes("GET", { bookId: id }),
-        hookComment("GET", { bookId: id }),
+        hookComment("GET", { bookId: id, page: 0 }),
         hookLikeCount(id),
       ]);
-
+      console.log(comments)
       setBookData(bookData);
       setEpisodes(episodes);
       setComments(comments ?? []);
+      setHasMoreComments((comments?.length ?? 0) === 10);
       setLikes(likes ?? []);
       setLikeCount(likes?.length ?? 0);
     } catch (err) {
@@ -84,9 +87,11 @@ useEffect(() => {
       return;
     }
     try {
-      await hookComment("POST", { bookId: id, content: trimmed });
-      const updated = await hookComment("GET", { bookId: id });
+      await hookComment("POST", { bookId: id, content: trimmed, usersId: getUser()?.id });
+      const updated = await hookComment("GET", { bookId: id, page: 0 });
       setComments(updated ?? []);
+      setCommentPage(0);
+      setHasMoreComments((updated?.length ?? 0) === 10);
       setCommentInput("");
       setCommentError("");
     } catch (err) {
@@ -123,12 +128,23 @@ useEffect(() => {
     }
   };
 
+  const handleLoadMoreComments = async () => {
+    const nextPage = commentPage + 1;
+    try {
+      const more = await hookComment("GET", { bookId: id, page: nextPage });
+      setComments((prev) => [...prev, ...(more ?? [])]);
+      setCommentPage(nextPage);
+      setHasMoreComments((more?.length ?? 0) === 10);
+    } catch (err) {
+      console.error("댓글 추가 로드 실패:", err);
+    }
+  };
 
   const handleLikeToggle = async () => {
     const user = getUser();
     if (!user || !bookData || isLikeLoading) return;
 
-    const myLike = likes.find((l) => l.userId === user.id);
+    const myLike = likes.find((l) => l.usersId === user.id);
     setIsLikeLoading(true);
 
     try {
@@ -139,8 +155,8 @@ useEffect(() => {
         setLikeCount((prev) => prev - 1);
       } else {
         // 좋아요 없음 → POST
-        await hookLike({ method: "POST", bookId: bookData.id, userId: user.id });
-        setLikes((prev) => [...prev, { userId: user.id }]);
+        await hookLike({ method: "POST", bookId: bookData.id, usersId: user.id });
+        setLikes((prev) => [...prev, { usersId: user.id }]);
         setLikeCount((prev) => prev + 1);
       }
     } catch (err) {
@@ -254,7 +270,7 @@ useEffect(() => {
 
             <h3 className="content-label">내용</h3>
             <div className="content-box">
-              <p>{bookData.content}</p>
+              <p>{bookData.description}</p>
             </div>
 
             <div className="book-date-like">
@@ -264,7 +280,7 @@ useEffect(() => {
               <div className="like-wrapper">
                 <button
                   type="button"
-                  className={`like-button ${likes.some((l) => l.userId === getUser()?.id) ? "liked" : ""}`}
+                  className={`like-button ${likes.some((l) => l.usersId === getUser()?.id) ? "liked" : ""}`}
                   aria-label="좋아요"
                   title={!getUser() ? "로그인 후 이용 가능합니다" : "좋아요"}
                   onClick={handleLikeToggle}
@@ -339,21 +355,25 @@ useEffect(() => {
                 <span>{comments.length}개</span>
               </div>
 
-              <form className="comment-form" onSubmit={handleCommentSubmit}>
-                <textarea
-                  value={commentInput}
-                  onChange={(e) => setCommentInput(e.target.value)}
-                  placeholder="댓글을 입력하세요."
-                  rows={4}
-                  className="comment-input"
-                />
-                {commentError && (
-                  <p className="comment-error">{commentError}</p>
-                )}
-                <button type="submit" className="btn-edit comment-submit">
-                  댓글 등록
-                </button>
-              </form>
+              {getUser() ? (
+                <form className="comment-form" onSubmit={handleCommentSubmit}>
+                  <textarea
+                    value={commentInput}
+                    onChange={(e) => setCommentInput(e.target.value)}
+                    placeholder="댓글을 입력하세요."
+                    rows={4}
+                    className="comment-input"
+                  />
+                  {commentError && (
+                    <p className="comment-error">{commentError}</p>
+                  )}
+                  <button type="submit" className="btn-edit comment-submit">
+                    댓글 등록
+                  </button>
+                </form>
+              ) : (
+                <p className="comment-login-notice">댓글을 작성하려면 <a href="/login">로그인</a>이 필요합니다.</p>
+              )}
 
               <div className="comment-list">
                 {comments.length === 0 ? (
@@ -372,7 +392,7 @@ useEffect(() => {
                             minute: "2-digit",
                           })}
                         </span>
-                        {getUser()?.id === comment.userId && (
+                        {getUser()?.id === comment.usersId && (
                         <div className="comment-actions">
                           <button
                             type="button"
@@ -419,6 +439,11 @@ useEffect(() => {
                   ))
                 )}
               </div>
+              {hasMoreComments && (
+                <button className="comment-more-btn" onClick={handleLoadMoreComments}>
+                  댓글 더 보기
+                </button>
+              )}
             </section>
 
           </div>

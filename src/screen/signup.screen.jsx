@@ -6,9 +6,10 @@ import "@screen/signup.screen.css";
 function SignupScreen() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    email: "",
+    loginId: "",
     password: "",
     name: "",
+    email: "",
     phone: "",
     address: "",
   });
@@ -25,11 +26,11 @@ function SignupScreen() {
     setLoading(true);
     try {
       await hookSignup(form);
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       const code = err.response?.data?.code;
-      if (code === "DUPLICATE_EMAIL") {
-        setError("이미 사용 중인 이메일입니다.");
+      if (code === "DUPLICATE_LOGIN_ID") {
+        setError("이미 사용 중인 아이디입니다.");
       } else {
         setError("회원가입 중 오류가 발생했습니다.");
       }
@@ -58,14 +59,14 @@ function SignupScreen() {
           </div>
 
           <div className="signup-field">
-            <label htmlFor="email">이메일</label>
+            <label htmlFor="loginId">아이디</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
+              id="loginId"
+              name="loginId"
+              type="text"
+              value={form.loginId}
               onChange={handleChange}
-              placeholder="이메일을 입력하세요"
+              placeholder="아이디를 입력하세요"
               required
             />
           </div>
@@ -79,6 +80,19 @@ function SignupScreen() {
               value={form.password}
               onChange={handleChange}
               placeholder="비밀번호를 입력하세요"
+              required
+            />
+          </div>
+
+          <div className="signup-field">
+            <label htmlFor="email">이메일</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="이메일을 입력하세요"
               required
             />
           </div>
