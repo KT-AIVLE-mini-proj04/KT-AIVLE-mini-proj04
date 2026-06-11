@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { hookBooks } from "@hooks/books.hook.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import AICoverGenerator from "@screen/AICoverGenerator.jsx";
+import { getUser } from "@utils/authStore";
 
 function SubmitEdit() {
   const [form, setForm] = useState({
@@ -40,6 +41,8 @@ function SubmitEdit() {
       try {
         const res = await hookBooks("GET", { id });
         setForm({
+          id,
+          usersId: getUser()?.usersId,
           title: res.title,
           author: res.author,
           content: res.content,
