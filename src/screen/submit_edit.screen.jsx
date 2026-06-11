@@ -104,12 +104,16 @@ function SubmitEdit() {
 
     try {
       setLoading(true);
+      console.log("현재 로그인 유저:", getUser());
+      console.log("현재 usersId:", getUser()?.usersId);
+
       const res = await hookBooks(id ? "PATCH" : "POST", {
         id,
         title: form.title,
         author: form.author,
         content: form.content,
         coverImageUrl: form.coverImageUrl || "",
+        usersId: form.usersId ?? getUser()?.usersId,
       });
 
       console.log(id ? "수정 성공:" : "등록 성공:", res);
