@@ -1,0 +1,74 @@
+.aitts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.aitts-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aitts-field label {
+  font-size: 14px;
+}
+
+.aitts-key-input,
+.aitts-field select {
+  width: 100%;
+  height: 43px;
+  border: none;
+  border-radius: 4px;
+  padding: 0 14px;
+  font-size: 14px;
+  background-color: #ffffff;
+  outline: none;
+}
+
+.aitts-field select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.aitts-btn {
+  border: none;
+  padding: 7px 27px;
+  font-size: 14px;
+  background-color: #ffc0b8;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  align-self: flex-end;
+}
+
+.aitts-btn:hover {
+  background-color: #f4a59b;
+}
+
+.aitts-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.aitts-error {
+  color: #e53e3e;
+  font-size: 12px;
+  margin: 2px 0 0;
+}
+
+.input-error {
+  border: 1px solid #e53e3e !important;
+  outline-color: #e53e3e;
+}
+
+.aitts-player {
+  margin-top: 4px;
+}
+
+.aitts-notice {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+}
