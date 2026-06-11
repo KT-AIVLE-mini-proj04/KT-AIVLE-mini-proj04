@@ -9,7 +9,6 @@ import BookCover from "./BookCover";
 import EpisodeList from "./EpisodeList";
 import BookInfo from "./BookInfo";
 import CommentSection from "./CommentSection";
-import TtsGenerator from "@screen/tts_mp3";
 import "../bookdetail.css";
 
 function BookDetailPage() {
@@ -206,10 +205,12 @@ function BookDetailPage() {
               onDelete={handleDelete}
             />
 
-            <TtsGenerator
-              book={bookData}
-              onAudioUpdate={(url) => setBookData((prev) => ({ ...prev, audioUrl: url }))}
-            />
+{/*
+            <div className="tts-section">
+              <h4 className="tts-title">🎧 오디오북</h4>
+              ...
+            </div>
+*/}
 
             <CommentSection
               comments={comments}

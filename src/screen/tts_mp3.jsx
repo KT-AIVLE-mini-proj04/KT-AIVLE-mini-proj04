@@ -9,33 +9,17 @@ import { hookBooks } from "@hooks/books.hook";
  * 사용법:
  *   <TtsGenerator book={{ id, title, author, content }} onAudioUpdate={(base64Url) => {}} />
  */
-export default function TtsGenerator({ book, onAudioUpdate }) {
-  const [apiKey, setApiKey] = useState("");
+export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
   const [voice, setVoice] = useState("alloy");
-  const [audioUrl, setAudioUrl] = useState(book?.audioUrl || "");
+  const [audioUrl, setAudioUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [apiKeyError, setApiKeyError] = useState("");
-
-  const validateApiKey = (key) => {
-    if (!key || !key.trim()) return 'API Key를 입력해주세요.';
-    if (!key.trim().startsWith('sk-')) return 'API Key는 sk- 로 시작해야 합니다.';
-    return '';
-  };
-
-  const handleApiKeyChange = (e) => {
-    setApiKey(e.target.value);
-    if (apiKeyError) setApiKeyError(validateApiKey(e.target.value));
-  };
-
   const handleGenerate = async () => {
-    const keyValidation = validateApiKey(apiKey);
-    if (keyValidation) {
-      setApiKeyError(keyValidation);
+    if (!apiKey?.trim()) {
+      setError("OpenAI API Key를 입력해주세요.");
       return;
     }
-    setApiKeyError('');
     setIsLoading(true);
     setError("");
     try {
@@ -61,19 +45,6 @@ export default function TtsGenerator({ book, onAudioUpdate }) {
       <h3>🎧 오디오북 생성</h3>
 
       <div className="aitts-field">
-        <label htmlFor="tts-key">OpenAI API Key</label>
-        <input
-          id="tts-key"
-          type="password"
-          className={`aitts-key-input${apiKeyError ? ' input-error' : ''}`}
-          placeholder="sk-..."
-          value={apiKey}
-          onChange={handleApiKeyChange}
-          onBlur={() => setApiKeyError(validateApiKey(apiKey))}
-        />
-      </div>
-
-      <div className="aitts-field">
         <label htmlFor="tts-voice">목소리</label>
         <select
           id="tts-voice"
@@ -95,7 +66,7 @@ export default function TtsGenerator({ book, onAudioUpdate }) {
         {isLoading ? "생성 중..." : "🎙️ 오디오 생성"}
       </button>
 
-      {(apiKeyError || error) && <p className="aitts-error">{apiKeyError || error}</p>}
+      {error && <p className="aitts-error">{error}</p>}
 
       {audioUrl && (
         <div className="aitts-player">
