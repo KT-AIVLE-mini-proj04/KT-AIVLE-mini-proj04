@@ -191,7 +191,7 @@ function BookDetailPage() {
         <div className="book-detail-Card">
           <div className="book-cover-col">
             <BookCover title={bookData.title} coverImageUrl={bookData.coverImageUrl} />
-            <EpisodeList episodes={episodes} />
+            <EpisodeList episodes={episodes} bookId={id} />
           </div>
 
           <div className="book-info">

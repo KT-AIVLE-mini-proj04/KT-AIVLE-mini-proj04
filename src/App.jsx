@@ -10,6 +10,7 @@ import NotFound from "@screen/NotFound.screen.jsx";
 import LoginScreen from "@screen/login.screen.jsx";
 import SignupScreen from "@screen/signup.screen.jsx";
 import EpisodeScreen from "@screen/episode.screen.jsx";
+import EpisodeSubmit from "@screen/episode_submit.screen.jsx";
 import { refreshAccessToken } from "@hooks/auth/refreshAccessToken.hook";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           </Route>
         </Route>
         <Route path="/episodes/:id" element={<EpisodeScreen />} />
+        <Route path="/books/:bookId/episodes/submit" element={<EpisodeSubmit />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

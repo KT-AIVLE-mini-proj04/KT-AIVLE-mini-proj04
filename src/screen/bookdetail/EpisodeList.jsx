@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 
-function EpisodeList({ episodes }) {
+function EpisodeList({ episodes, bookId }) {
   const navigate = useNavigate();
 
   return (
@@ -8,6 +8,11 @@ function EpisodeList({ episodes }) {
       <div className="episodes-header">
         <h3>에피소드</h3>
         <span>{episodes?.length ?? 0}화</span>
+        <button
+          className="episode-add-btn"
+          onClick={() => navigate(`/books/${bookId}/episodes/submit`)}>
+          + 에피소드 추가
+        </button>
       </div>
       {!episodes?.length ? (
         <p className="no-episodes">회차가 등록되지 않았습니다.</p>
