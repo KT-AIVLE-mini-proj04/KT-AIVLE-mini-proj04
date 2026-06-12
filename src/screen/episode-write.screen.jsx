@@ -6,15 +6,12 @@ import TtsGenerator from "@screen/tts_mp3.jsx";
 import "@screen/episode-write.screen.css";
 
 function EpisodeWriteScreen() {
-  // /books/:bookId/episodes/new  → bookId 있음, id 없음
-  // /episodes/:id/edit           → id 있음, bookId 없음
   const { bookId, id } = useParams();
   const navigate = useNavigate();
   const isEdit = !!id;
 
   const [form, setForm] = useState({ episodeTitle: "", episodeIndex: "", content: "", ttsPath: "" });
   const [apiKey, setApiKey] = useState("");
-  // 수정 시 변경 불가 필드 보관
   const episodeMeta = useRef({ episodeId: null, bookId: null, usersId: null, episodeIndex: null });
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
@@ -34,7 +31,6 @@ function EpisodeWriteScreen() {
     const load = async () => {
       try {
         const data = await hookEpisodes("GET", { id });
-        // camelCase(목록) / snake_case(상세) 둘 다 대응
         const title = data.episodeTitle ?? data.episode_title ?? "";
         const content = data.content ?? "";
         const episodeIndex = data.episodeIndex ?? data.episode_index ?? "";
@@ -50,7 +46,6 @@ function EpisodeWriteScreen() {
           syncCounter(contentCountRef, content, 10000);
         });
       } catch (err) {
-        console.error("에피소드 불러오기 실패:", err);
         setFetchError("에피소드를 불러오는 데 실패했습니다.");
       }
     };
@@ -119,7 +114,6 @@ function EpisodeWriteScreen() {
         navigate(`/episodes/${res.episodeId ?? res.id}`);
       }
     } catch (err) {
-      console.error(isEdit ? "수정 실패:" : "등록 실패:", err);
       alert(isEdit ? "수정 중 오류가 발생했습니다." : "등록 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);

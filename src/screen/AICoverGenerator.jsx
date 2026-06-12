@@ -2,15 +2,6 @@ import { useState, useEffect } from "react";
 import "@screen/AICoverGenerator.css";
 import { hookAiCover } from "@hooks/aiCover.hook";
 
-/**
- * AI 표지 생성 컴포넌트 (M5 · M6)
- *
- * 사용법:
- *   <AICoverGenerator
- *     book={{ id, title, author, content }}
- *     onCoverUpdate={(imageSrc) => { ... }}
- *   />
- */
 const SIZE_OPTIONS = [
   { label: '1024×1536 (세로 대형 · 도서표지)', apiSize: '1024x1536', w: 1024, h: 1536 },
   { label: '768×1152 (세로 중형)',              apiSize: '1024x1536', w: 768,  h: 1152 },

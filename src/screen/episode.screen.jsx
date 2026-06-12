@@ -19,7 +19,6 @@ function EpisodeScreen() {
         const data = await hookEpisodes("GET", { id });
         setEpisode(data);
       } catch (err) {
-        console.error("에피소드 조회 실패:", err);
         setError("에피소드를 찾을 수 없습니다.");
       } finally {
         setIsLoading(false);

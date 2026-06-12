@@ -2,12 +2,6 @@ import { useState } from "react";
 import "@screen/tts_mp3.css";
 import { hookAITTS } from "@hooks/tts_mp3.hook";
 
-/**
- * TtsGenerator — 수정 페이지용 TTS 생성 컴포넌트
- *
- * 사용법:
- *   <TtsGenerator book={{ id, title, author, content }} onAudioUpdate={(base64Url) => {}} />
- */
 export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
   const [voice, setVoice] = useState("alloy");
   const [audioUrl, setAudioUrl] = useState("");

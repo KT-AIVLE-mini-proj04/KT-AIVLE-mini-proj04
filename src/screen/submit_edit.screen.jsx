@@ -56,7 +56,6 @@ function SubmitEdit() {
           syncCounter(contentCountRef, res.content || "", 5000, true);
         });
       } catch (error) {
-        console.error("도서 정보 불러오기 실패:", error);
         alert("도서 정보를 불러오는 데 실패했습니다.");
       }
     };
@@ -102,8 +101,6 @@ function SubmitEdit() {
 
     try {
       setLoading(true);
-      console.log("현재 로그인 유저:", getUser());
-      console.log("현재 usersId:", getUser()?.usersId);
 
       const res = await hookBooks(id ? "PATCH" : "POST", {
         id,
@@ -117,7 +114,6 @@ function SubmitEdit() {
         await hookBookCover(res.id, form.cover);
       }
 
-      console.log(id ? "수정 성공:" : "등록 성공:", res);
       alert(id ? "도서가 수정되었습니다." : "도서가 등록되었습니다.");
 
       if (id) {
@@ -129,7 +125,6 @@ function SubmitEdit() {
         setForm({ title: "", author: "", content: "", cover: "" });
       }
     } catch (error) {
-      console.error(id ? "수정 실패:" : "등록 실패:", error);
       alert(id ? "도서 수정에 실패했습니다." : "도서 등록에 실패했습니다.");
     } finally {
       setLoading(false);

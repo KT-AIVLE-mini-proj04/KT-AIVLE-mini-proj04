@@ -30,7 +30,6 @@ function MainScreen() {
         const data = await hookMainStats();
         setStatsData({ ...defaultStats, ...data });
       } catch (error) {
-        console.error("도서 현황 조회 실패:", error);
         setStatsData(defaultStats);
       } finally {
         handleLoading(false);

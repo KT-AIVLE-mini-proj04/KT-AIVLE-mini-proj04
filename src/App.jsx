@@ -22,7 +22,6 @@ function App() {
       try {
         await refreshAccessToken();
       } catch (_) {
-        // 리프레시 토큰 없음 or 만료 → 비로그인 상태로 진행
       } finally {
         setAuthReady(true);
       }

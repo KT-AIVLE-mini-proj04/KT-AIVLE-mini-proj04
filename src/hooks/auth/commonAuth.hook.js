@@ -7,7 +7,7 @@ export const commonAuthHook = async (method, url, data) => {
     headers: {
       "Content-Type": "application/json",
     },
-    ...(data && { data }), // ⬅️ data가 있을 때만 포함
+    ...(data && { data }),
   };
   try {
     const response = await axios(req);
