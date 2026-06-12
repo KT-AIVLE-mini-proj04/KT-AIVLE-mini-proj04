@@ -1,7 +1,8 @@
 import style from "@/common/components/Header.module.css";
 import Button from "@/common/components/Button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import ServiceLogo from "@/common/components/ServiceLogo";
+import { hookUser, clearUser, clearAccessToken } from "@/utils/authStore";
 import { useEffect, useRef, useState } from "react";
 import searchStyle from "@/common/components/Search.module.css";
 import { hookBookList } from "@hooks/bookList.hook.js";
@@ -191,6 +192,15 @@ function HeaderBtn({ type, children }) {
 }
 
 function Header() {
+  const user = hookUser();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearUser();
+    clearAccessToken();
+    navigate("/");
+  };
+
   return (
     <header>
       <Link to={"/"}>
@@ -199,6 +209,15 @@ function Header() {
       <div className={style.btBox}>
         <HeaderBtn type="search">검색</HeaderBtn>
         <HeaderBtn type="alarm">알림</HeaderBtn>
+        {user ? (
+          <Button className={`${style["header-btn"]} ${style["auth-btn"]}`} onClick={handleLogout}>
+            <span className={style["header-btn-text"]}>로그아웃</span>
+          </Button>
+        ) : (
+          <Button className={`${style["header-btn"]} ${style["auth-btn"]}`} onClick={() => navigate("/login")}>
+            <span className={style["header-btn-text"]}>로그인</span>
+          </Button>
+        )}
       </div>
     </header>
   );

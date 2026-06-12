@@ -24,7 +24,7 @@ function BookDetailPage() {
   const [commentInput, setCommentInput] = useState("");
   const [commentError, setCommentError] = useState("");
   const [commentPage, setCommentPage] = useState(0);
-  const [hasMoreComments, setHasMoreComments] = useState(true);
+  const [hasNextPage, setHasNextPage] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
   const [isLiked, setIsLiked] = useState(false);
@@ -45,7 +45,7 @@ function BookDetailPage() {
         setBookData(bookRes);
         setEpisodes(episodesRes);
         setComments(commentsRes ?? []);
-        setHasMoreComments((commentsRes?.length ?? 0) === 10);
+        setHasNextPage((commentsRes?.length ?? 0) === 10);
         setIsLiked(likeRes?.isLiked ?? false);
         setLikeCount(likeRes?.totalLikes ?? 0);
       } catch (err) {
@@ -60,6 +60,16 @@ function BookDetailPage() {
 
   const handleEdit = () => {
     navigate("/books/submit", { state: { id: bookData.id } });
+  };
+
+  const handleEpisodeDelete = async (episodeId) => {
+    try {
+      await hookEpisodes("DELETE", { id: episodeId });
+      setEpisodes((prev) => prev.filter((ep) => ep.episodeId !== episodeId));
+    } catch (err) {
+      console.error("에피소드 삭제 실패:", err);
+      alert("에피소드 삭제 중 오류가 발생했습니다.");
+    }
   };
 
   const handleDelete = async () => {
@@ -87,7 +97,7 @@ function BookDetailPage() {
       const updated = await hookComment("GET", { bookId: id, page: 0 });
       setComments(updated ?? []);
       setCommentPage(0);
-      setHasMoreComments((updated?.length ?? 0) === 10);
+      setHasNextPage((updated?.length ?? 0) === 10);
       setCommentInput("");
       setCommentError("");
     } catch (err) {
@@ -124,15 +134,14 @@ function BookDetailPage() {
     }
   };
 
-  const handleLoadMoreComments = async () => {
-    const nextPage = commentPage + 1;
+  const handlePageChange = async (page) => {
     try {
-      const more = await hookComment("GET", { bookId: id, page: nextPage });
-      setComments((prev) => [...prev, ...(more ?? [])]);
-      setCommentPage(nextPage);
-      setHasMoreComments((more?.length ?? 0) === 10);
+      const res = await hookComment("GET", { bookId: id, page });
+      setComments(res ?? []);
+      setCommentPage(page);
+      setHasNextPage((res?.length ?? 0) === 10);
     } catch (err) {
-      console.error("댓글 추가 로드 실패:", err);
+      console.error("댓글 페이지 로드 실패:", err);
     }
   };
 
@@ -186,7 +195,12 @@ function BookDetailPage() {
         <div className="book-detail-Card">
           <div className="book-cover-col">
             <BookCover title={bookData.title} coverImageUrl={bookData.coverImageUrl} />
-            <EpisodeList episodes={episodes} />
+            <EpisodeList
+              episodes={episodes}
+              bookId={id}
+              isOwner={!!getUser()?.usersId && getUser()?.usersId === bookData.usersId}
+              onEpisodeDelete={handleEpisodeDelete}
+            />
           </div>
 
           <div className="book-info">
@@ -211,7 +225,8 @@ function BookDetailPage() {
               comments={comments}
               commentInput={commentInput}
               commentError={commentError}
-              hasMoreComments={hasMoreComments}
+              currentPage={commentPage}
+              hasNextPage={hasNextPage}
               editingId={editingId}
               editingContent={editingContent}
               onCommentInputChange={setCommentInput}
@@ -221,7 +236,7 @@ function BookDetailPage() {
               onCommentEditChange={setEditingContent}
               onCommentEditSubmit={handleCommentEditSubmit}
               onCommentEditCancel={() => setEditingId(null)}
-              onLoadMore={handleLoadMoreComments}
+              onPageChange={handlePageChange}
             />
           </div>
         </div>

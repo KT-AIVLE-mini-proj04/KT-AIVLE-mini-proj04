@@ -12,5 +12,6 @@ export const hookEpisodes = async (method, data) => {
   else if (data?.bookId) url = `${baseUrl}?bookId=${data.bookId}`;
 
   const res = await commonPostHook(method, url, data);
+  console.log("hookEpisodes response:", res);
   return res;
 };
