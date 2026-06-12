@@ -35,8 +35,8 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setImageSrc(book.coverImageUrl || "");
-  }, [book.coverImageUrl]);
+    setImageSrc(book.cover || "");
+  }, [book.cover]);
 
   const validateApiKey = (key) => {
     if (!key || !key.trim()) return 'API Key를 입력해주세요.';
@@ -68,7 +68,7 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
         model, size: opt.apiSize, quality,
         compressWidth: opt.w, compressHeight: opt.h,
       });
-      setForm((prev) => ({ ...prev, coverImageUrl: result }));
+      setForm((prev) => ({ ...prev, cover: result }));
       setImageSrc(result);
     } catch (err) {
       setError(err.message || "표지 생성에 실패했습니다.");

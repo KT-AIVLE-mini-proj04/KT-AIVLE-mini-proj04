@@ -41,8 +41,8 @@ function BookListScreen() {
             <div className="book-card" key={`${book.id}-${index}`}>
               <Link to={`${book.bookId}`}>
                 <div className="book-cover">
-                  {book.coverImageUrl ? (
-                    <img src={book.coverImageUrl} alt={book.title} />
+                  {book.cover ? (
+                    <img src={book.cover} alt={book.title} />
                   ) : (
                     <div className="empty-cover">표지 없음</div>
                   )}

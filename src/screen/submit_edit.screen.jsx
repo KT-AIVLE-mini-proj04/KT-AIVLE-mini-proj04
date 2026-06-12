@@ -10,7 +10,7 @@ function SubmitEdit() {
     title: "",
     author: "",
     content: "",
-    coverImageUrl: "",
+    cover: "",
   });
   const [savedBook, setSavedBook] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
@@ -43,7 +43,7 @@ function SubmitEdit() {
           title: res.title,
           author: res.author,
           content: res.content,
-          coverImageUrl: res.coverImageUrl || "",
+          cover: res.cover || "",
         });
         setSavedBook(res);
         setAudioUrl(
@@ -106,7 +106,7 @@ function SubmitEdit() {
         title: form.title,
         author: form.author,
         content: form.content,
-        coverImageUrl: form.coverImageUrl || "",
+        cover: form.cover || "",
       });
 
       console.log(id ? "수정 성공:" : "등록 성공:", res);
@@ -119,7 +119,7 @@ function SubmitEdit() {
         if (audioUrl) {
           await hookBooks("PATCH", { id: res.id, audioUrl });
         }
-        setForm({ title: "", author: "", content: "", coverImageUrl: "" });
+        setForm({ title: "", author: "", content: "", cover: "" });
       }
     } catch (error) {
       console.error(id ? "수정 실패:" : "등록 실패:", error);

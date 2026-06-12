@@ -6,7 +6,6 @@ const normalizeBook = (book) => ({
   ...book,
   id: book.bookId,
   content: book.description,
-  coverImageUrl: book.cover,
 });
 
 export const hookBookList = async () => {

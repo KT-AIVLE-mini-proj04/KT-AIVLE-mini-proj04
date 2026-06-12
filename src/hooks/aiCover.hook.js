@@ -49,7 +49,7 @@ export const compressImage = (dataUrl, targetWidth, targetHeight) => new Promise
  * @returns {Promise<string>}
  *   생성된 이미지의 Data URL — 'data:image/png;base64,...'
  *   이 값은 <img src={imageSrc} /> 에 바로 사용 가능합니다.
- *   json-server의 해당 도서 coverImageUrl 필드에도 자동 저장됩니다.
+ *   백엔드의 해당 도서 cover 필드에도 자동 저장됩니다.
  *
  * ─────────────────────────────────────────
  * 에러
@@ -145,7 +145,7 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ coverImageUrl: compressedSrc }),
+      body: JSON.stringify({ cover: compressedSrc }),
     });
   }
 

@@ -5,22 +5,19 @@ const apiBaseUrl = import.meta.env.PROD
   ? import.meta.env.VITE_API_URL || "/api"
   : import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-// 백엔드 응답(cover/description/bookId) → 프론트 필드(coverImageUrl/content/id)
 const normalizeBook = (book) => {
   if (!book || typeof book !== "object") return book;
   return {
     ...book,
     id: book.bookId,
     content: book.description,
-    coverImageUrl: book.cover,
   };
 };
 
-// 표지를 cover 전용 엔드포인트로 저장 (생성/수정 모두 createBook·updateBook이 cover를 저장하지 않으므로 별도 호출)
-const saveCover = async (bookId, coverImageUrl) => {
-  if (!bookId || !coverImageUrl) return null;
+const saveCover = async (bookId, cover) => {
+  if (!bookId || !cover) return null;
   return commonPostHook("PATCH", `${apiBaseUrl}/books/${bookId}/cover`, {
-    coverImageUrl,
+    cover,
   });
 };
 
@@ -39,8 +36,8 @@ export const hookBooks = async (method, data) => {
     );
 
     // 생성된 도서에 표지가 있으면 cover 엔드포인트로 저장
-    if (created?.id && data.coverImageUrl) {
-      const withCover = await saveCover(created.id, data.coverImageUrl);
+    if (created?.id && data.cover) {
+      const withCover = await saveCover(created.id, data.cover);
       if (withCover) return normalizeBook(withCover);
     }
     console.log("Book API response:", created);
@@ -58,8 +55,8 @@ export const hookBooks = async (method, data) => {
       await commonPostHook("PATCH", `${apiBaseUrl}/books/${data.id}`, payload),
     );
 
-    if (data.coverImageUrl) {
-      const withCover = await saveCover(data.id, data.coverImageUrl);
+    if (data.cover) {
+      const withCover = await saveCover(data.id, data.cover);
       if (withCover) return normalizeBook(withCover);
     }
     console.log("Book API response:", updated);
