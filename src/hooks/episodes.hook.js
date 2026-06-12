@@ -6,7 +6,7 @@ const apiBaseUrl = import.meta.env.PROD
 
 export const hookEpisodes = async (method, data) => {
   const baseUrl = `${apiBaseUrl}/episodes`;
-
+  console.log("hookEpisodes called with method:", method, "and data:", data);
   let url = baseUrl;
   if (data?.id) url = `${baseUrl}/${data.id}`;
   else if (data?.bookId) url = `${baseUrl}?bookId=${data.bookId}`;
