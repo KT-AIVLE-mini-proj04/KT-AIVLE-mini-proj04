@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router";
 import { hookBooks } from "@hooks/books.hook";
 import { hookEpisodes } from "@hooks/episodes.hook";
 import { hookComment } from "@hooks/comment.hook";
-import { hookLike, hookLikeCount } from "@hooks/like.hook";
+import { hookLike, hookLikeStatus } from "@hooks/like.hook";
 import { getUser } from "@utils/authStore";
 import BookCover from "./BookCover";
 import EpisodeList from "./EpisodeList";
@@ -27,6 +27,7 @@ function BookDetailPage() {
   const [hasMoreComments, setHasMoreComments] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [likes, setLikes] = useState([]);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
@@ -34,19 +35,19 @@ function BookDetailPage() {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const [bookRes, episodesRes, commentsRes, likesRes] = await Promise.all([
-          hookBooks("GET", { id }),
-          hookEpisodes("GET", { bookId: id }),
-          hookComment("GET", { bookId: id, page: 0 }),
-          hookLikeCount(id),
-        ]);
+          const [bookRes, episodesRes, commentsRes, likeRes] = await Promise.all([
+            hookBooks("GET", { id }),
+            hookEpisodes("GET", { bookId: id }),
+            hookComment("GET", { bookId: id, page: 0 }),
+            hookLikeStatus({ bookId: id }),
+          ]);
 
         setBookData(bookRes);
         setEpisodes(episodesRes);
         setComments(commentsRes ?? []);
         setHasMoreComments((commentsRes?.length ?? 0) === 10);
-        setLikes(likesRes ?? []);
-        setLikeCount(likesRes?.length ?? 0);
+        setIsLiked(likeRes?.isLiked ?? false);
+        setLikeCount(likeRes?.totalLikes ?? 0);
       } catch (err) {
         console.error("도서 조회 실패:", err);
         setError("해당 도서를 찾을 수 없습니다.");
@@ -139,18 +140,12 @@ function BookDetailPage() {
     const user = getUser();
     if (!user || !bookData || isLikeLoading) return;
 
-    const myLike = likes.find((l) => l.usersId === user.usersId);
     setIsLikeLoading(true);
+
     try {
-      if (myLike) {
-        await hookLike({ method: "DELETE", likeId: myLike.id });
-        setLikes((prev) => prev.filter((l) => l.id !== myLike.id));
-        setLikeCount((prev) => prev - 1);
-      } else {
-        await hookLike({ method: "POST", bookId: bookData.id, usersId: user.usersId });
-        setLikes((prev) => [...prev, { usersId: user.usersId }]);
-        setLikeCount((prev) => prev + 1);
-      }
+      const res = await hookLike({ bookId: bookData.id });
+      setIsLiked(res?.isLiked ?? false);
+      setLikeCount(res?.totalLikes ?? 0);
     } catch (err) {
       console.error("좋아요 변경 실패:", err);
     } finally {
@@ -197,7 +192,7 @@ function BookDetailPage() {
           <div className="book-info">
             <BookInfo
               bookData={bookData}
-              likes={likes}
+              isLiked={isLiked}
               likeCount={likeCount}
               isLikeLoading={isLikeLoading}
               onLikeToggle={handleLikeToggle}

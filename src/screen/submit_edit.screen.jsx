@@ -104,6 +104,9 @@ function SubmitEdit() {
 
     try {
       setLoading(true);
+      console.log("현재 로그인 유저:", getUser());
+      console.log("현재 usersId:", getUser()?.usersId);
+
       const res = await hookBooks(id ? "PATCH" : "POST", {
         id,
         title: form.title,

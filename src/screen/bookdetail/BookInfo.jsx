@@ -1,7 +1,7 @@
 import { getUser } from "@utils/authStore";
 import HeartIcon from "@/assets/heart.svg?react";
 
-function BookInfo({ bookData, likes, likeCount, isLikeLoading, onLikeToggle, onEdit, onDelete }) {
+function BookInfo({ bookData, isLiked, likeCount, isLikeLoading, onLikeToggle, onEdit, onDelete }) {
   const formatDate = (isoString) => {
     if (!isoString) return "";
     return new Date(isoString).toLocaleDateString("ko-KR", {
@@ -11,7 +11,6 @@ function BookInfo({ bookData, likes, likeCount, isLikeLoading, onLikeToggle, onE
     });
   };
 
-  const isLiked = likes.some((l) => l.usersId === getUser()?.usersId);
   const isOwner = !!getUser()?.usersId && getUser()?.usersId === bookData.usersId;
 
   return (

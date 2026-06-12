@@ -9,6 +9,7 @@ function SignupScreen() {
     loginId: "",
     password: "",
     name: "",
+    gubun: 1,
     email: "",
     phone: "",
     address: "",
