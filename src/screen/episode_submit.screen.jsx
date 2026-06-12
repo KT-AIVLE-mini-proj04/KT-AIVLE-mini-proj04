@@ -63,7 +63,7 @@ function EpisodeSubmit() {
       setLoading(true);
       await hookEpisodes("POST", {
         bookId: Number(bookId),
-        userId: user?.id,
+        usersId: user?.usersId,
         episodeTitle: form.episodeTitle.trim(),
         episodeIndex: Number(form.episodeIndex),
         content: form.content.trim(),
