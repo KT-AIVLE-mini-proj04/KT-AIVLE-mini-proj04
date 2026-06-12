@@ -1,8 +1,10 @@
+import coverLogo from "/service-logo.svg";
 import { useEffect, useEffectEvent, useState } from "react";
 import { Link, useOutletContext } from "react-router";
 import coverLogo from "@assets/sample_img.png";
 import { hookMainStats } from "@hooks/mainStats.hook.js";
 import "@screen/main.screen.css";
+import logoStyle from "@/common/components/ServiceLogo.module.css";
 
 const statLabels = {
   totalBookCount: "등록 도서",
@@ -51,6 +53,7 @@ function MainScreen() {
           <div className="main-shell hero-content">
             <div className="hero-mark">
               <img src={coverLogo} alt="CoverAI" />
+              <h3 className={logoStyle["text-logo"]}>PIC:STORY</h3>
             </div>
             <h1>도서 관리 시스템에 오신 것을 환영합니다!</h1>
             <p className="hero-subtext">
