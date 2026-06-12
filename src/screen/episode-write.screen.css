@@ -145,6 +145,11 @@
   cursor: not-allowed;
 }
 
+.ep-write-tts {
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
 .ep-write-error {
   text-align: center;
   font-size: 18px;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { hookEpisodes } from "@hooks/episodes.hook";
 import { getUser } from "@utils/authStore";
+import TtsGenerator from "@screen/tts_mp3.jsx";
 import "@screen/episode-write.screen.css";
 
 function EpisodeWriteScreen() {
@@ -11,7 +12,8 @@ function EpisodeWriteScreen() {
   const navigate = useNavigate();
   const isEdit = !!id;
 
-  const [form, setForm] = useState({ episodeTitle: "", episodeIndex: "", content: "" });
+  const [form, setForm] = useState({ episodeTitle: "", episodeIndex: "", content: "", ttsPath: "" });
+  const [apiKey, setApiKey] = useState("");
   // 수정 시 변경 불가 필드 보관
   const episodeMeta = useRef({ episodeId: null, bookId: null, usersId: null, episodeIndex: null });
   const [loading, setLoading] = useState(false);
@@ -100,6 +102,7 @@ function EpisodeWriteScreen() {
           episodeIndex: meta.episodeIndex,
           episodeTitle: form.episodeTitle.trim(),
           content: form.content.trim(),
+          ttsPath: form.ttsPath || undefined,
         });
         alert("에피소드가 수정되었습니다.");
         navigate(`/episodes/${id}`);
@@ -110,6 +113,7 @@ function EpisodeWriteScreen() {
           episodeTitle: form.episodeTitle.trim(),
           episodeIndex: Number(form.episodeIndex),
           content: form.content.trim(),
+          ttsPath: form.ttsPath || undefined,
         });
         alert("에피소드가 등록되었습니다.");
         navigate(`/episodes/${res.episodeId ?? res.id}`);
@@ -188,6 +192,30 @@ function EpisodeWriteScreen() {
               className={`ep-char-counter${form.content.length > 10000 ? " over" : form.content.length < 10 && form.content.length > 0 ? " under" : ""}`}>
               {form.content.length}/10000
             </span>
+          </div>
+
+          <div className="ep-write-tts">
+            <div className="ep-write-field">
+              <label htmlFor="tts-apikey">OpenAI API Key</label>
+              <input
+                id="tts-apikey"
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-..."
+              />
+            </div>
+            <TtsGenerator
+              book={{
+                title: form.episodeTitle || "에피소드",
+                author: "",
+                content: form.content,
+              }}
+              apiKey={apiKey}
+              onAudioUpdate={(base64Url) =>
+                setForm((prev) => ({ ...prev, ttsPath: base64Url }))
+              }
+            />
           </div>
 
           <div className="ep-write-buttons">

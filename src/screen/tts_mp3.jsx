@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "@screen/tts_mp3.css";
 import { hookAITTS } from "@hooks/tts_mp3.hook";
-import { hookBooks } from "@hooks/books.hook";
 
 /**
  * TtsGenerator — 수정 페이지용 TTS 생성 컴포넌트
@@ -23,14 +22,8 @@ export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
     setIsLoading(true);
     setError("");
     try {
-      const full = `${book.title}. 저자 ${book.author}. ${book.content}`;
-      const script = full.slice(0, 80);
+      const script = book.content;
       const base64Url = await hookAITTS(apiKey.trim(), script, voice);
-
-      if (book.id) {
-        await hookBooks("PATCH", { id: book.id, audioUrl: base64Url });
-      }
-
       setAudioUrl(base64Url);
       if (onAudioUpdate) onAudioUpdate(base64Url);
     } catch (err) {
@@ -60,6 +53,7 @@ export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
       </div>
 
       <button
+        type="button"
         className="aitts-btn"
         onClick={handleGenerate}
         disabled={isLoading}>
@@ -69,9 +63,7 @@ export default function TtsGenerator({ book, onAudioUpdate, apiKey }) {
       {error && <p className="aitts-error">{error}</p>}
 
       {audioUrl && (
-        <div className="aitts-player">
-          <audio controls src={audioUrl} style={{ width: "100%" }} />
-        </div>
+        <p className="aitts-success">✅ 오디오 생성 완료. 등록 후 에피소드 페이지에서 재생할 수 있습니다.</p>
       )}
 
       <p className="aitts-notice">
