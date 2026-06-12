@@ -1,27 +1,61 @@
-import { create } from 'zustand';
+const KEYS = { token: 'accessToken', user: 'authUser' };
 
-const hookAuthStore = create((set) => ({
-  accessToken: null,
-  setAccessToken: (token) => set({ accessToken: token }),
-  clearAccessToken: () => set({ accessToken: null }),
+const parse = (key) => {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : null;
+  } catch {
+    return null;
+  }
+};
 
-  user: null,
-  setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
-}));
+const listeners = new Set();
+const notify = () => listeners.forEach((fn) => fn());
 
-// 컴포넌트/훅 안에서 사용
-export const hookAccessToken = () => hookAuthStore((state) => state.accessToken);
-export const hookSetAccessToken = () => hookAuthStore((state) => state.setAccessToken);
-export const hookUser = () => hookAuthStore((state) => state.user);
-export const hookSetUser = () => hookAuthStore((state) => state.setUser);
+const store = {
+  getAccessToken: () => localStorage.getItem(KEYS.token) ?? null,
+  setAccessToken: (token) => {
+    if (token == null) localStorage.removeItem(KEYS.token);
+    else localStorage.setItem(KEYS.token, token);
+    notify();
+  },
+  clearAccessToken: () => {
+    localStorage.removeItem(KEYS.token);
+    notify();
+  },
+
+  getUser: () => parse(KEYS.user),
+  setUser: (user) => {
+    if (user == null) localStorage.removeItem(KEYS.user);
+    else localStorage.setItem(KEYS.user, JSON.stringify(user));
+    notify();
+  },
+  clearUser: () => {
+    localStorage.removeItem(KEYS.user);
+    notify();
+  },
+
+  subscribe: (fn) => {
+    listeners.add(fn);
+    return () => listeners.delete(fn);
+  },
+};
 
 // 훅 밖 (interceptor 등)에서 사용
-export const getAccessToken = () => hookAuthStore.getState().accessToken;
-export const setAccessToken = (token) => hookAuthStore.getState().setAccessToken(token);
-export const clearAccessToken = () => hookAuthStore.getState().clearAccessToken();
+export const getAccessToken = () => store.getAccessToken();
+export const setAccessToken = (token) => store.setAccessToken(token);
+export const clearAccessToken = () => store.clearAccessToken();
 
-export const getUser = () => hookAuthStore.getState().user;
-export const setUser = (user) => hookAuthStore.getState().setUser(user);
-export const clearUser = () => hookAuthStore.getState().clearUser();
+export const getUser = () => store.getUser();
+export const setUser = (user) => store.setUser(user);
+export const clearUser = () => store.clearUser();
 
+// 컴포넌트/훅 안에서 사용
+import { useSyncExternalStore } from 'react';
+
+export const hookAccessToken = () =>
+  useSyncExternalStore(store.subscribe, store.getAccessToken);
+export const hookSetAccessToken = () => store.setAccessToken;
+export const hookUser = () =>
+  useSyncExternalStore(store.subscribe, store.getUser);
+export const hookSetUser = () => store.setUser;
