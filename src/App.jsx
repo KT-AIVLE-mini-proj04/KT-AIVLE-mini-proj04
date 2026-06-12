@@ -12,6 +12,7 @@ import SignupScreen from "@screen/signup.screen.jsx";
 import EpisodeScreen from "@screen/episode.screen.jsx";
 import EpisodeWriteScreen from "@screen/episode-write.screen.jsx";
 import { refreshAccessToken } from "@hooks/auth/refreshAccessToken.hook";
+import ProtectedRoute from "@components/ProtectedRoute.jsx";
 
 function App() {
   const [authReady, setAuthReady] = useState(false);
@@ -36,13 +37,19 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/users" element={<SignupScreen />} />
+
         <Route element={<MainLayout />}>
           <Route index element={<MainPage />} />
-          <Route path="books">
-            <Route index element={<BookList />} />
-            <Route path=":id" element={<BookDetail />} />
-            <Route path=":id/edit" element={<SubmitEdit />} />
-            <Route path="submit" element={<SubmitEdit />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="books">
+              <Route index element={<BookList />} />
+              <Route path=":id" element={<BookDetail />} />
+              <Route path=":id/edit" element={<SubmitEdit />} />
+              <Route path="submit" element={<SubmitEdit />} />
+            </Route>
+
+            <Route path="/episodes/:id" element={<EpisodeScreen />} />
           </Route>
         </Route>
         <Route path="/episodes/:id" element={<EpisodeScreen />} />

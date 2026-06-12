@@ -12,6 +12,7 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "src/assets"),
       "@screen": path.resolve(__dirname, "src/screen"),
       "@utils": path.resolve(__dirname, "src/utils"),
+      "@components": path.resolve(__dirname, "./src/common/components"),
     },
   },
 });
