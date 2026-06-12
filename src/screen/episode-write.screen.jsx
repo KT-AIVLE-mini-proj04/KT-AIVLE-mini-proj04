@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { hookEpisodes } from "@hooks/episodes.hook";
+import { getUser } from "@utils/authStore";
 import "@screen/episode-write.screen.css";
 
 function EpisodeWriteScreen() {
@@ -10,7 +11,9 @@ function EpisodeWriteScreen() {
   const navigate = useNavigate();
   const isEdit = !!id;
 
-  const [form, setForm] = useState({ episodeTitle: "", content: "" });
+  const [form, setForm] = useState({ episodeTitle: "", episodeIndex: "", content: "" });
+  // 수정 시 변경 불가 필드 보관
+  const episodeMeta = useRef({ episodeId: null, bookId: null, usersId: null, episodeIndex: null });
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
 
@@ -29,13 +32,20 @@ function EpisodeWriteScreen() {
     const load = async () => {
       try {
         const data = await hookEpisodes("GET", { id });
-        setForm({
-          episodeTitle: data.episode_title ?? "",
-          content: data.content ?? "",
-        });
+        // camelCase(목록) / snake_case(상세) 둘 다 대응
+        const title = data.episodeTitle ?? data.episode_title ?? "";
+        const content = data.content ?? "";
+        const episodeIndex = data.episodeIndex ?? data.episode_index ?? "";
+        setForm({ episodeTitle: title, episodeIndex: String(episodeIndex), content });
+        episodeMeta.current = {
+          episodeId: data.episodeId ?? Number(id),
+          bookId: data.bookId,
+          usersId: data.usersId,
+          episodeIndex: data.episodeIndex ?? data.episode_index,
+        };
         requestAnimationFrame(() => {
-          syncCounter(titleCountRef, data.episode_title ?? "", 100);
-          syncCounter(contentCountRef, data.content ?? "", 10000);
+          syncCounter(titleCountRef, title, 100);
+          syncCounter(contentCountRef, content, 10000);
         });
       } catch (err) {
         console.error("에피소드 불러오기 실패:", err);
@@ -61,6 +71,10 @@ function EpisodeWriteScreen() {
       alert("제목은 100자 이하로 입력하세요.");
       return;
     }
+    if (!form.episodeIndex || isNaN(Number(form.episodeIndex)) || Number(form.episodeIndex) < 1) {
+      alert("회차 번호를 올바르게 입력하세요.");
+      return;
+    }
     if (!form.content.trim()) {
       alert("내용을 입력하세요.");
       return;
@@ -77,8 +91,13 @@ function EpisodeWriteScreen() {
     try {
       setLoading(true);
       if (isEdit) {
+        const meta = episodeMeta.current;
         await hookEpisodes("PATCH", {
           id,
+          episodeId: meta.episodeId ?? Number(id),
+          bookId: meta.bookId,
+          usersId: meta.usersId ?? getUser()?.usersId,
+          episodeIndex: meta.episodeIndex,
           episodeTitle: form.episodeTitle.trim(),
           content: form.content.trim(),
         });
@@ -86,8 +105,10 @@ function EpisodeWriteScreen() {
         navigate(`/episodes/${id}`);
       } else {
         const res = await hookEpisodes("POST", {
-          bookId,
+          bookId: Number(bookId),
+          usersId: getUser()?.usersId,
           episodeTitle: form.episodeTitle.trim(),
+          episodeIndex: Number(form.episodeIndex),
           content: form.content.trim(),
         });
         alert("에피소드가 등록되었습니다.");
@@ -121,6 +142,19 @@ function EpisodeWriteScreen() {
         </h2>
 
         <form className="ep-write-form" onSubmit={handleSubmit}>
+          <div className="ep-write-field ep-write-field--narrow">
+            <label htmlFor="episodeIndex">회차</label>
+            <input
+              id="episodeIndex"
+              name="episodeIndex"
+              type="number"
+              min="1"
+              value={form.episodeIndex}
+              onChange={handleChange}
+              placeholder="예) 1"
+            />
+          </div>
+
           <div className="ep-write-field">
             <label htmlFor="episodeTitle">제목</label>
             <input

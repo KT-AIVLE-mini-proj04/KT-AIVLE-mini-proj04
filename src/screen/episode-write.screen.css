@@ -52,6 +52,10 @@
   gap: 6px;
 }
 
+.ep-write-field--narrow {
+  max-width: 160px;
+}
+
 .ep-write-field label {
   font-size: 14px;
   font-weight: 600;
