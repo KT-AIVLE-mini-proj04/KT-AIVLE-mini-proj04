@@ -820,3 +820,35 @@
 .ep-item-delete:hover {
   opacity: 0.75;
 }
+
+/* ── 댓글 페이지네이션 ── */
+.comment-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.comment-page-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid #e0dcd5;
+  background: #fff;
+  color: #4a4a4a;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.comment-page-btn:hover {
+  background: #f0ece8;
+  border-color: #c9b8b0;
+}
+
+.comment-page-btn.active {
+  background: #995349;
+  color: #fff;
+  border-color: #995349;
+  font-weight: 700;
+}
