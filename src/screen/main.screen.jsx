@@ -1,7 +1,6 @@
 import coverLogo from "/service-logo.svg";
 import { useEffect, useEffectEvent, useState } from "react";
 import { Link, useOutletContext } from "react-router";
-import coverLogo from "@assets/sample_img.png";
 import { hookMainStats } from "@hooks/mainStats.hook.js";
 import "@screen/main.screen.css";
 import logoStyle from "@/common/components/ServiceLogo.module.css";
