@@ -62,6 +62,16 @@ function BookDetailPage() {
     navigate("/books/submit", { state: { id: bookData.id } });
   };
 
+  const handleEpisodeDelete = async (episodeId) => {
+    try {
+      await hookEpisodes("DELETE", { id: episodeId });
+      setEpisodes((prev) => prev.filter((ep) => ep.episodeId !== episodeId));
+    } catch (err) {
+      console.error("에피소드 삭제 실패:", err);
+      alert("에피소드 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   const handleDelete = async () => {
     if (!window.confirm(`"${bookData.title}"을(를) 정말 삭제하시겠습니까?`)) return;
     try {
@@ -186,7 +196,12 @@ function BookDetailPage() {
         <div className="book-detail-Card">
           <div className="book-cover-col">
             <BookCover title={bookData.title} coverImageUrl={bookData.coverImageUrl} />
-            <EpisodeList episodes={episodes} />
+            <EpisodeList
+              episodes={episodes}
+              bookId={id}
+              isOwner={!!getUser()?.usersId && getUser()?.usersId === bookData.usersId}
+              onEpisodeDelete={handleEpisodeDelete}
+            />
           </div>
 
           <div className="book-info">
