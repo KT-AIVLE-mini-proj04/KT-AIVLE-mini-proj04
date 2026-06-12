@@ -1,14 +1,13 @@
-import { useState } from "react";
 import { getUser } from "@utils/authStore";
 
 function CommentItem({ comment, editingId, editingContent, onEdit, onEditChange, onEditSubmit, onEditCancel, onDelete }) {
   const isOwner = !!getUser()?.usersId && getUser()?.usersId === comment.usersId;
-  const isEditing = editingId === comment.id;
+  const isEditing = editingId === comment.commentsId;
 
   return (
     <article className="comment-item">
       <div className="comment-meta">
-        <span className="comment-user">{comment.name}</span>
+        <span className="comment-user">{comment.authorName}</span>
         <span className="comment-date">
           {new Date(comment.createdAt).toLocaleString("ko-KR", {
             year: "numeric",
@@ -21,7 +20,7 @@ function CommentItem({ comment, editingId, editingContent, onEdit, onEditChange,
         {isOwner && (
           <div className="comment-actions">
             <button type="button" className="comment-edit" onClick={() => onEdit(comment)}>수정</button>
-            <button type="button" className="comment-delete" onClick={() => onDelete(comment.id)}>삭제</button>
+            <button type="button" className="comment-delete" onClick={() => onDelete(comment.commentsId)}>삭제</button>
           </div>
         )}
       </div>
@@ -34,7 +33,7 @@ function CommentItem({ comment, editingId, editingContent, onEdit, onEditChange,
             rows={3}
           />
           <div className="comment-edit-actions">
-            <button type="button" className="btn-edit comment-submit" onClick={() => onEditSubmit(comment.id)}>저장</button>
+            <button type="button" className="btn-edit comment-submit" onClick={() => onEditSubmit(comment.commentsId)}>저장</button>
             <button type="button" className="comment-delete" onClick={onEditCancel}>취소</button>
           </div>
         </div>
@@ -45,11 +44,40 @@ function CommentItem({ comment, editingId, editingContent, onEdit, onEditChange,
   );
 }
 
+function CommentPagination({ currentPage, hasNextPage, onPageChange }) {
+  // 현재까지 확인된 마지막 페이지 번호(1-based)
+  const lastKnown = currentPage + 1;
+  const pages = Array.from({ length: lastKnown }, (_, i) => i);
+
+  if (lastKnown <= 1 && !hasNextPage) return null;
+
+  return (
+    <div className="comment-pagination">
+      {pages.map((page) => (
+        <button
+          key={page}
+          className={`comment-page-btn${page === currentPage ? " active" : ""}`}
+          onClick={() => onPageChange(page)}>
+          {page + 1}
+        </button>
+      ))}
+      {hasNextPage && (
+        <button
+          className="comment-page-btn"
+          onClick={() => onPageChange(currentPage + 1)}>
+          {currentPage + 2}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function CommentSection({
   comments,
   commentInput,
   commentError,
-  hasMoreComments,
+  currentPage,
+  hasNextPage,
   editingId,
   editingContent,
   onCommentInputChange,
@@ -59,7 +87,7 @@ function CommentSection({
   onCommentEditChange,
   onCommentEditSubmit,
   onCommentEditCancel,
-  onLoadMore,
+  onPageChange,
 }) {
   return (
     <section className="comments-section">
@@ -92,7 +120,7 @@ function CommentSection({
         ) : (
           comments.map((comment) => (
             <CommentItem
-              key={comment.id}
+              key={comment.commentsId}
               comment={comment}
               editingId={editingId}
               editingContent={editingContent}
@@ -106,11 +134,11 @@ function CommentSection({
         )}
       </div>
 
-      {hasMoreComments && (
-        <button className="comment-more-btn" onClick={onLoadMore}>
-          댓글 더 보기
-        </button>
-      )}
+      <CommentPagination
+        currentPage={currentPage}
+        hasNextPage={hasNextPage}
+        onPageChange={onPageChange}
+      />
     </section>
   );
 }
