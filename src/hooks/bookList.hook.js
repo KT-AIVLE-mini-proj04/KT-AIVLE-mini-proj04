@@ -10,6 +10,9 @@ const normalizeBook = (book) => ({
 
 export const hookBookList = async () => {
   const res = await commonPostHook("GET", `${apiBaseUrl}/books`, null);
-  return Array.isArray(res) ? res.map(normalizeBook) : [];
+  if (!Array.isArray(res)) return [];
+  return res
+    .map(normalizeBook)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 };
 
