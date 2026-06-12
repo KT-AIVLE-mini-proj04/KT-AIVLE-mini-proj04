@@ -1,5 +1,4 @@
 const OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 // Canvas API로 이미지를 지정 크기로 압축 (JPEG 70%) → json-server 저장 크기 절감
 export const compressImage = (dataUrl, targetWidth, targetHeight) => new Promise((resolve, reject) => {
@@ -133,21 +132,6 @@ export const hookAiCover = async (apiKey, book, options = {}) => {
   if (!b64Json) throw new Error("이미지 데이터를 받지 못했습니다.");
   const imageSrc = `data:image/png;base64,${b64Json}`;
   const compressedSrc = await compressImage(imageSrc, compressWidth, compressHeight);
-
-  // 4. PATCH /books/{id}/cover 로 백엔드 저장 (Bearer 토큰 포함)
-  if (book.id) {
-    const { getAccessToken } = await import("@utils/authStore");
-    const token = getAccessToken();
-
-    await fetch(`${API_BASE_URL}/books/${book.id}/cover`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ cover: compressedSrc }),
-    });
-  }
 
   return compressedSrc;
 };
