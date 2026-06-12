@@ -1,15 +1,51 @@
-import { Link } from "react-router";
 import coverLogo from "/service-logo.svg";
+import { useEffect, useEffectEvent, useState } from "react";
+import { Link, useOutletContext } from "react-router";
+import coverLogo from "@assets/sample_img.png";
+import { hookMainStats } from "@hooks/mainStats.hook.js";
 import "@screen/main.screen.css";
 import logoStyle from "@/common/components/ServiceLogo.module.css";
 
-const stats = [
-  { value: "99", label: "등록 도서" },
-  { value: "8", label: "나의 표지 관리" },
-  { value: "2", label: "도서 관리" },
-];
+const statLabels = {
+  totalBookCount: "등록 도서",
+  coverBookCount: "표지 생성 도서",
+  likedBookCount: "선호 도서",
+};
+
+const defaultStats = {
+  totalBookCount: 0,
+  coverBookCount: 0,
+  likedBookCount: 0,
+};
 
 function MainScreen() {
+  const [statsData, setStatsData] = useState(defaultStats);
+  const { changeLoading } = useOutletContext();
+  const handleLoading = useEffectEvent((status, message = "") => {
+    changeLoading(status, message);
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        handleLoading(true, "도서 현황을 불러오고 있습니다.");
+        const data = await hookMainStats();
+        setStatsData({ ...defaultStats, ...data });
+      } catch (error) {
+        setStatsData(defaultStats);
+      } finally {
+        handleLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const stats = Object.entries(statLabels).map(([key, label]) => ({
+    value: statsData[key],
+    label,
+  }));
+
   return (
     <div className="main-page">
       <main>

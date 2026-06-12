@@ -32,20 +32,6 @@ function LoginScreen() {
     }
   };
 
-  const handleKakaoLogin = () => {
-    window.Kakao.Auth.login({
-      success: async (authObj) => {
-        try {
-          await hookLogin({ kakaoAccessToken: authObj.access_token });
-          navigate("/");
-        } catch (_) {
-          setError("카카오 로그인 중 오류가 발생했습니다.");
-        }
-      },
-      fail: () => setError("카카오 로그인에 실패했습니다."),
-    });
-  };
-
   return (
     <div className="login-page">
       <div className="login-card">
@@ -84,12 +70,6 @@ function LoginScreen() {
             {loading ? "로그인 중..." : "로그인"}
           </button>
         </form>
-
-        <div className="login-divider"><span>또는</span></div>
-
-        <button type="button" className="kakao-btn" onClick={handleKakaoLogin}>
-          카카오로 로그인
-        </button>
 
         <p className="login-footer">
           계정이 없으신가요?{" "}

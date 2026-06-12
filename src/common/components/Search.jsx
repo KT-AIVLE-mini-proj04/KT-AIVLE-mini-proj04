@@ -37,7 +37,6 @@ export default function Search() {
     }
     const res = searchBooks(books, query);
     setSearchQuery(res);
-    console.log("검색 결과:", res);
   };
 
   useEffect(() => {

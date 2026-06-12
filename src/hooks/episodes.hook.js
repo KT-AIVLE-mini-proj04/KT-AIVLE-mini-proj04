@@ -6,12 +6,9 @@ const apiBaseUrl = import.meta.env.PROD
 
 export const hookEpisodes = async (method, data) => {
   const baseUrl = `${apiBaseUrl}/episodes`;
-
   let url = baseUrl;
   if (data?.id) url = `${baseUrl}/${data.id}`;
   else if (data?.bookId) url = `${baseUrl}?bookId=${data.bookId}`;
-
   const res = await commonPostHook(method, url, data);
-  console.log("hookEpisodes response:", res);
   return res;
 };

@@ -39,7 +39,6 @@ useEffect(() => {
         hookComment("GET", { bookId: id, page: 0 }),
         hookLikeCount(id),
       ]);
-      console.log(comments)
       setBookData(bookData);
       setEpisodes(episodes);
       setComments(comments ?? []);
@@ -47,7 +46,6 @@ useEffect(() => {
       setLikes(likes ?? []);
       setLikeCount(likes?.length ?? 0);
     } catch (err) {
-      console.error("도서 조회 실패:", err);
       setError("해당 도서를 찾을 수 없습니다.");
     } finally {
       setIsLoading(false);
@@ -74,7 +72,6 @@ useEffect(() => {
       alert("삭제되었습니다.");
       navigate("/books");
     } catch (err) {
-      console.error("삭제 중 오류:", err);
       alert("삭제 중 오류가 발생했습니다.");
     }
   };
@@ -95,7 +92,6 @@ useEffect(() => {
       setCommentInput("");
       setCommentError("");
     } catch (err) {
-      console.error("댓글 등록 실패:", err);
       setCommentError("댓글 등록 중 오류가 발생했습니다.");
     }
   };
@@ -105,7 +101,6 @@ useEffect(() => {
       await hookComment("DELETE", { id: commentId });
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch (err) {
-      console.error("댓글 삭제 실패:", err);
     }
   };
 
@@ -124,7 +119,6 @@ useEffect(() => {
       setEditingId(null);
       setEditingContent("");
     } catch (err) {
-      console.error("댓글 수정 실패:", err);
     }
   };
 
@@ -136,7 +130,6 @@ useEffect(() => {
       setCommentPage(nextPage);
       setHasMoreComments((more?.length ?? 0) === 10);
     } catch (err) {
-      console.error("댓글 추가 로드 실패:", err);
     }
   };
 
@@ -149,25 +142,21 @@ useEffect(() => {
 
     try {
       if (myLike) {
-        // 이미 좋아요 → DELETE
         await hookLike({ method: "DELETE", likeId: myLike.id });
         setLikes((prev) => prev.filter((l) => l.id !== myLike.id));
         setLikeCount((prev) => prev - 1);
       } else {
-        // 좋아요 없음 → POST
         await hookLike({ method: "POST", bookId: bookData.id, usersId: user.id });
         setLikes((prev) => [...prev, { usersId: user.id }]);
         setLikeCount((prev) => prev + 1);
       }
     } catch (err) {
-      console.error("좋아요 변경 실패:", err);
     } finally {
       setIsLikeLoading(false);
     }
   };
 
   const formatDate = (isoString) => {
-    // 날짜
     if (!isoString) return "";
     return new Date(isoString).toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -176,7 +165,6 @@ useEffect(() => {
     });
   };
 
-  // 로딩 중 표시
   if (isLoading) {
     return (
       <div className="book-detail-page">
@@ -194,7 +182,6 @@ useEffect(() => {
     );
   }
 
-  // 에러 또는 책 없음
   if (error || !bookData) {
     return (
       <div className="book-detail-page">
@@ -216,7 +203,7 @@ useEffect(() => {
   }
 
   const hasCoverImage =
-    bookData.coverImageUrl && bookData.coverImageUrl.trim() !== "";
+    bookData.cover && bookData.cover.trim() !== "";
 
   return (
     <div className="book-detail-page">
@@ -230,7 +217,7 @@ useEffect(() => {
             <div className="book-cover">
               {hasCoverImage ? (
                 <img
-                  src={bookData.coverImageUrl}
+                  src={bookData.cover}
                   alt={`${bookData.title} 표지`}
                 />
               ) : (
@@ -300,55 +287,6 @@ useEffect(() => {
               </button>
             </div>
 
-{/*
-            <div className="tts-section">
-              <h4 className="tts-title">🎧 오디오북</h4>
-              <div className="tts-key-row">
-                <input
-                  type="password"
-                  className="tts-key-input"
-                  placeholder="OpenAI API Key (sk-...)"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                />
-                <select
-                  className="tts-voice-select"
-                  value={voice}
-                  onChange={(e) => setVoice(e.target.value)}>
-                  <option value="alloy">Alloy (중성)</option>
-                  <option value="ash">Ash (중성)</option>
-                  <option value="ballad">Ballad (부드러운 남성)</option>
-                  <option value="coral">Coral (여성)</option>
-                  <option value="echo">Echo (남성)</option>
-                  <option value="fable">Fable (영국 남성)</option>
-                  <option value="nova">Nova (여성)</option>
-                  <option value="onyx">Onyx (저음 남성)</option>
-                  <option value="sage">Sage (차분한 여성)</option>
-                  <option value="shimmer">Shimmer (부드러운 여성)</option>
-                  <option value="verse">Verse (표현력 있는 중성)</option>
-                </select>
-                <button
-                  className="tts-generate-btn"
-                  onClick={handleTtsGenerate}
-                  disabled={isTtsLoading}>
-                  {isTtsLoading ? "생성 중..." : "생성"}
-                </button>
-                {audioSrc && (
-                  <button
-                    className="tts-delete-btn"
-                    onClick={handleTtsDelete}
-                    disabled={isTtsLoading}>
-                    삭제
-                  </button>
-                )}
-              </div>
-              {ttsError && <p className="tts-error">{ttsError}</p>}
-              {audioSrc && (
-                <audio controls src={audioSrc} className="tts-player" />
-              )}
-              <p className="tts-notice">* TTS 생성 시 OpenAI API 비용이 발생합니다.</p>
-            </div>
-*/}
             <section className="comments-section">
               <div className="comments-header">
                 <h3>댓글</h3>

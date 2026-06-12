@@ -13,15 +13,12 @@ function BookListScreen() {
       try {
         changeLoading(true, "도서 목록을 가져오고 있습니다.");
 
-        const data = await hookBookList(); // 여기 실제 서버 API 요청 시... (요청 지연 시간이 있잖아요)
-        console.log("데이터 로드");
-        console.log(data);
+        const data = await hookBookList();
         if (data) {
           setBookList(data);
           changeLoading(false);
         }
       } catch (err) {
-        console.error("도서 목록 조회 실패:", err);
         changeLoading(false);
       }
     };
@@ -41,8 +38,8 @@ function BookListScreen() {
             <div className="book-card" key={`${book.id}-${index}`}>
               <Link to={`${book.bookId}`}>
                 <div className="book-cover">
-                  {book.coverImageUrl ? (
-                    <img src={book.coverImageUrl} alt={book.title} />
+                  {book.cover ? (
+                    <img src={book.cover} alt={book.title} />
                   ) : (
                     <div className="empty-cover">표지 없음</div>
                   )}

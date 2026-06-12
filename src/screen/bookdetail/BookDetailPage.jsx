@@ -43,13 +43,12 @@ function BookDetailPage() {
           ]);
 
         setBookData(bookRes);
-        setEpisodes(episodesRes);
+        setEpisodes((episodesRes ?? []).slice().sort((a, b) => (a.episodeIndex ?? 0) - (b.episodeIndex ?? 0)));
         setComments(commentsRes ?? []);
         setHasNextPage((commentsRes?.length ?? 0) === 10);
         setIsLiked(likeRes?.isLiked ?? false);
         setLikeCount(likeRes?.totalLikes ?? 0);
       } catch (err) {
-        console.error("도서 조회 실패:", err);
         setError("해당 도서를 찾을 수 없습니다.");
       } finally {
         setIsLoading(false);
@@ -67,7 +66,6 @@ function BookDetailPage() {
       await hookEpisodes("DELETE", { id: episodeId });
       setEpisodes((prev) => prev.filter((ep) => ep.episodeId !== episodeId));
     } catch (err) {
-      console.error("에피소드 삭제 실패:", err);
       alert("에피소드 삭제 중 오류가 발생했습니다.");
     }
   };
@@ -79,7 +77,6 @@ function BookDetailPage() {
       alert("삭제되었습니다.");
       navigate("/books");
     } catch (err) {
-      console.error("삭제 중 오류:", err);
       alert("삭제 중 오류가 발생했습니다.");
     }
   };
@@ -92,7 +89,6 @@ function BookDetailPage() {
       return;
     }
     try {
-      console.log("getUser() 전체:", getUser());
       await hookComment("POST", { bookId: id, content: trimmed, usersId: getUser()?.usersId });
       const updated = await hookComment("GET", { bookId: id, page: 0 });
       setComments(updated ?? []);
@@ -101,7 +97,6 @@ function BookDetailPage() {
       setCommentInput("");
       setCommentError("");
     } catch (err) {
-      console.error("댓글 등록 실패:", err);
       setCommentError("댓글 등록 중 오류가 발생했습니다.");
     }
   };
@@ -111,7 +106,6 @@ function BookDetailPage() {
       await hookComment("DELETE", { id: commentId, usersId: getUser()?.usersId });
       setComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch (err) {
-      console.error("댓글 삭제 실패:", err);
     }
   };
 
@@ -130,7 +124,6 @@ function BookDetailPage() {
       setEditingId(null);
       setEditingContent("");
     } catch (err) {
-      console.error("댓글 수정 실패:", err);
     }
   };
 
@@ -141,7 +134,6 @@ function BookDetailPage() {
       setCommentPage(page);
       setHasNextPage((res?.length ?? 0) === 10);
     } catch (err) {
-      console.error("댓글 페이지 로드 실패:", err);
     }
   };
 
@@ -156,7 +148,6 @@ function BookDetailPage() {
       setIsLiked(res?.isLiked ?? false);
       setLikeCount(res?.totalLikes ?? 0);
     } catch (err) {
-      console.error("좋아요 변경 실패:", err);
     } finally {
       setIsLikeLoading(false);
     }
@@ -194,7 +185,7 @@ function BookDetailPage() {
 
         <div className="book-detail-Card">
           <div className="book-cover-col">
-            <BookCover title={bookData.title} coverImageUrl={bookData.coverImageUrl} />
+            <BookCover title={bookData.title} cover={bookData.cover} />
             <EpisodeList
               episodes={episodes}
               bookId={id}
@@ -213,13 +204,6 @@ function BookDetailPage() {
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
-
-{/*
-            <div className="tts-section">
-              <h4 className="tts-title">🎧 오디오북</h4>
-              ...
-            </div>
-*/}
 
             <CommentSection
               comments={comments}

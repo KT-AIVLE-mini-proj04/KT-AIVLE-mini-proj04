@@ -1,7 +1,7 @@
 import "@screen/submit_edit.screen.css";
 
 import { useState, useEffect, useRef } from "react";
-import { hookBooks } from "@hooks/books.hook.js";
+import { hookBooks, hookBookCover } from "@hooks/books.hook.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 import { getUser } from "@utils/authStore";
@@ -11,9 +11,8 @@ function SubmitEdit() {
     title: "",
     author: "",
     content: "",
-    coverImageUrl: "",
+    cover: "",
   });
-  const [savedBook, setSavedBook] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -46,9 +45,8 @@ function SubmitEdit() {
           title: res.title,
           author: res.author,
           content: res.content,
-          coverImageUrl: res.coverImageUrl || "",
+          cover: res.cover || "",
         });
-        setSavedBook(res);
         setAudioUrl(
           res.audioUrl || localStorage.getItem(`audio_${res.id}`) || "",
         );
@@ -58,7 +56,6 @@ function SubmitEdit() {
           syncCounter(contentCountRef, res.content || "", 5000, true);
         });
       } catch (error) {
-        console.error("도서 정보 불러오기 실패:", error);
         alert("도서 정보를 불러오는 데 실패했습니다.");
       }
     };
@@ -104,32 +101,30 @@ function SubmitEdit() {
 
     try {
       setLoading(true);
-      console.log("현재 로그인 유저:", getUser());
-      console.log("현재 usersId:", getUser()?.usersId);
 
       const res = await hookBooks(id ? "PATCH" : "POST", {
         id,
         title: form.title,
         author: form.author,
         content: form.content,
-        coverImageUrl: form.coverImageUrl || "",
         usersId: form.usersId ?? getUser()?.usersId,
       });
 
-      console.log(id ? "수정 성공:" : "등록 성공:", res);
+      if (form.cover) {
+        await hookBookCover(res.id, form.cover);
+      }
+
       alert(id ? "도서가 수정되었습니다." : "도서가 등록되었습니다.");
 
       if (id) {
         navigate(-1);
       } else {
-        setSavedBook(res);
         if (audioUrl) {
           await hookBooks("PATCH", { id: res.id, audioUrl });
         }
-        setForm({ title: "", author: "", content: "", coverImageUrl: "" });
+        setForm({ title: "", author: "", content: "", cover: "" });
       }
     } catch (error) {
-      console.error(id ? "수정 실패:" : "등록 실패:", error);
       alert(id ? "도서 수정에 실패했습니다." : "도서 등록에 실패했습니다.");
     } finally {
       setLoading(false);
@@ -245,13 +240,12 @@ function SubmitEdit() {
 
             <div className="ai-body">
               <AICoverGenerator
-                book={
-                  savedBook || {
-                    title: form.title,
-                    author: form.author,
-                    content: form.content,
-                  }
-                }
+                book={{
+                  title: form.title,
+                  author: form.author,
+                  content: form.content,
+                  cover: form.cover,
+                }}
                 setForm={setForm}
                 isGenerating={isGenerating}
                 setIsGenerating={setIsGenerating}

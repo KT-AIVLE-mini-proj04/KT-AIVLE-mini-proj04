@@ -2,15 +2,6 @@ import { useState, useEffect } from "react";
 import "@screen/AICoverGenerator.css";
 import { hookAiCover } from "@hooks/aiCover.hook";
 
-/**
- * AI 표지 생성 컴포넌트 (M5 · M6)
- *
- * 사용법:
- *   <AICoverGenerator
- *     book={{ id, title, author, content }}
- *     onCoverUpdate={(imageSrc) => { ... }}
- *   />
- */
 const SIZE_OPTIONS = [
   { label: '1024×1536 (세로 대형 · 도서표지)', apiSize: '1024x1536', w: 1024, h: 1536 },
   { label: '768×1152 (세로 중형)',              apiSize: '1024x1536', w: 768,  h: 1152 },
@@ -25,19 +16,41 @@ const SIZE_OPTIONS = [
 ];
 
 export default function AICoverGenerator({ book, setForm, isGenerating, setIsGenerating }) {
-  const model                   = 'gpt-image-2';
-  const [sizeKey, setSizeKey]   = useState('1024×1536 (세로 대형 · 도서표지)');
-  const [quality, setQuality]   = useState('medium');
-  const [error, setError]       = useState('');
-  const [imageSrc, setImageSrc] = useState('');
-  const [apiKey, setApiKey]     = useState('');
+  const model                       = 'gpt-image-2';
+  const [sizeKey, setSizeKey]       = useState('1024×1536 (세로 대형 · 도서표지)');
+  const [quality, setQuality]       = useState('medium');
+  const [error, setError]           = useState('');
+  const [apiKeyError, setApiKeyError] = useState('');
+  const [imageSrc, setImageSrc]     = useState('');
+  const [apiKey, setApiKey]         = useState('');
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setImageSrc(book.coverImageUrl || "");
-  }, [book.coverImageUrl]);
+    setImageSrc(book.cover || "");
+  }, [book.cover]);
+
+  const validateApiKey = (key) => {
+    if (!key || !key.trim()) return 'API Key를 입력해주세요.';
+    if (!key.trim().startsWith('sk-')) return 'API Key는 sk- 로 시작해야 합니다.';
+    return '';
+  };
+
+  const handleApiKeyChange = (e) => {
+    setApiKey(e.target.value);
+    if (apiKeyError) setApiKeyError(validateApiKey(e.target.value));
+  };
 
   const handleGenerateCover = async () => {
+    const keyValidation = validateApiKey(apiKey);
+    if (keyValidation) {
+      setApiKeyError(keyValidation);
+      return;
+    }
+    if (!book.title?.trim() || !book.author?.trim() || !book.content?.trim()) {
+      setError("제목, 저자, 내용을 모두 입력한 후 표지를 생성하세요.");
+      return;
+    }
+    setApiKeyError('');
     setIsGenerating(true);
     setError("");
     try {
@@ -46,7 +59,7 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
         model, size: opt.apiSize, quality,
         compressWidth: opt.w, compressHeight: opt.h,
       });
-      setForm((prev) => ({ ...prev, coverImageUrl: result }));
+      setForm((prev) => ({ ...prev, cover: result }));
       setImageSrc(result);
     } catch (err) {
       setError(err.message || "표지 생성에 실패했습니다.");
@@ -63,8 +76,10 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
           id="shared-api-key"
           type="password"
           value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
+          onChange={handleApiKeyChange}
+          onBlur={() => setApiKeyError(validateApiKey(apiKey))}
           placeholder="sk-..."
+          className={apiKeyError ? 'input-error' : ''}
         />
       </div>
 
@@ -104,7 +119,7 @@ export default function AICoverGenerator({ book, setForm, isGenerating, setIsGen
         </button>
       </div>
 
-      {error && <p className="ai-error">{error}</p>}
+      {(apiKeyError || error) && <p className="ai-error">{apiKeyError || error}</p>}
       <p className="ai-notice">* 이미지 생성 시 OpenAI API 비용이 발생합니다.</p>
     </div>
   );

@@ -45,7 +45,6 @@ function CommentItem({ comment, editingId, editingContent, onEdit, onEditChange,
 }
 
 function CommentPagination({ currentPage, hasNextPage, onPageChange }) {
-  // 현재까지 확인된 마지막 페이지 번호(1-based)
   const lastKnown = currentPage + 1;
   const pages = Array.from({ length: lastKnown }, (_, i) => i);
 

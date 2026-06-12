@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { hookEpisodes } from "@hooks/episodes.hook";
+import { getUser } from "@utils/authStore";
+import EpisodePlayer from "@screen/EpisodePlayer.jsx";
 import "@screen/episode.screen.css";
 
 function EpisodeScreen() {
@@ -17,7 +19,6 @@ function EpisodeScreen() {
         const data = await hookEpisodes("GET", { id });
         setEpisode(data);
       } catch (err) {
-        console.error("에피소드 조회 실패:", err);
         setError("에피소드를 찾을 수 없습니다.");
       } finally {
         setIsLoading(false);
@@ -68,6 +69,8 @@ function EpisodeScreen() {
         <div className="episode-content">
           {episode.content}
         </div>
+
+        <EpisodePlayer ttsPath={episode.ttsPath} />
       </div>
     </div>
   );

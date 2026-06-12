@@ -70,7 +70,7 @@
 }
 
 /* ===== 왼쪽: 표지 (배경 없이 모카 위에 둠) ===== */
-.book-cover {
+.book-detail-page .book-cover {
   width: 320px;
   min-width: 320px;
   max-width: 320px;
@@ -600,8 +600,10 @@
     gap: 32px;
   }
 
-  .book-cover {
+  .book-detail-page .book-cover {
     width: 220px;
+    min-width: 220px;
+    max-width: 220px;
   }
 
   .book-info {

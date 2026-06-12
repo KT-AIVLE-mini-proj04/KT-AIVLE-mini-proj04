@@ -49,7 +49,6 @@ const store = {
   },
 };
 
-// 훅 밖 (interceptor 등)에서 사용
 export const getAccessToken = () => store.getAccessToken();
 export const setAccessToken = (token) => store.setAccessToken(token);
 export const clearAccessToken = () => store.clearAccessToken();
@@ -58,7 +57,6 @@ export const getUser = () => store.getUser();
 export const setUser = (user) => store.setUser(user);
 export const clearUser = () => store.clearUser();
 
-// 컴포넌트/훅 안에서 사용
 import { useSyncExternalStore } from 'react';
 
 export const hookAccessToken = () =>
