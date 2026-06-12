@@ -43,7 +43,7 @@ function BookDetailPage() {
           ]);
 
         setBookData(bookRes);
-        setEpisodes(episodesRes);
+        setEpisodes((episodesRes ?? []).slice().sort((a, b) => (a.episodeIndex ?? 0) - (b.episodeIndex ?? 0)));
         setComments(commentsRes ?? []);
         setHasNextPage((commentsRes?.length ?? 0) === 10);
         setIsLiked(likeRes?.isLiked ?? false);
