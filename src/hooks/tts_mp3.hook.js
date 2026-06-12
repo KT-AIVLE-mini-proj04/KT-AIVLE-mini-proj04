@@ -42,6 +42,7 @@ const TTS_MODEL = "tts-1";
  * // → <audio controls src={audioUrl} />
  */
 export const hookAITTS = async (apiKey, script, voice = "alloy") => {
+  // base64 data URL만 반환 — DB 저장은 호출부에서 처리
   const res = await fetch(OPENAI_TTS_URL, {
     method: "POST",
     headers: {

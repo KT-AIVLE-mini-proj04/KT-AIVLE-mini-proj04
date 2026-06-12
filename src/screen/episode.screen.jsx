@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { hookEpisodes } from "@hooks/episodes.hook";
+import { getUser } from "@utils/authStore";
+import EpisodePlayer from "@screen/EpisodePlayer.jsx";
 import "@screen/episode.screen.css";
 
 function EpisodeScreen() {
@@ -68,6 +70,8 @@ function EpisodeScreen() {
         <div className="episode-content">
           {episode.content}
         </div>
+
+        <EpisodePlayer ttsPath={episode.ttsPath} />
       </div>
     </div>
   );

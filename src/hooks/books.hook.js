@@ -34,6 +34,11 @@ const toBackendBook = (data) => {
   if (data.title !== undefined) payload.title = data.title;
   if (data.author !== undefined) payload.author = data.author;
   if (data.content !== undefined) payload.description = data.content;
-  if (data.cover !== undefined) payload.cover = data.cover;
   return payload;
+};
+
+export const hookBookCover = async (id, cover) => {
+  const url = `${apiBaseUrl}/books/${id}/cover`;
+  const res = await commonPostHook("PATCH", url, { cover });
+  return res ? normalizeBook(res) : res;
 };
