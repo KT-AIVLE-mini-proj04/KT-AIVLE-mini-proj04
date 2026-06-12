@@ -1,10 +1,10 @@
-function BookCover({ title, coverImageUrl }) {
-  const hasCoverImage = coverImageUrl && coverImageUrl.trim() !== "";
+function BookCover({ title, cover }) {
+  const hasCoverImage = cover && cover.trim() !== "";
 
   return (
     <div className="book-cover">
       {hasCoverImage ? (
-        <img src={coverImageUrl} alt={`${title} 표지`} />
+        <img src={cover} alt={`${title} 표지`} />
       ) : (
         <div className="book-cover-placeholder">
           <span className="placeholder-icon">📖</span>

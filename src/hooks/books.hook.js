@@ -8,7 +8,6 @@ export const hookBooks = async (method, data) => {
   const baseUrl = `${apiBaseUrl}/books/${data.id}`;
   let url = baseUrl;
 
-  const now = new Date().toISOString();
   if (method === "POST") {
     data = toBackendBook(data);
     url = `${apiBaseUrl}/books`;
@@ -19,6 +18,7 @@ export const hookBooks = async (method, data) => {
   }
 
   const res = await commonPostHook(method, url, data);
+  console.log("Book API response:", res);
   return res ? normalizeBook(res) : res;
 };
 
@@ -26,7 +26,6 @@ const normalizeBook = (book) => ({
   ...book,
   id: book.bookId,
   content: book.description,
-  coverImageUrl: book.cover,
 });
 
 const toBackendBook = (data) => {
@@ -35,6 +34,6 @@ const toBackendBook = (data) => {
   if (data.title !== undefined) payload.title = data.title;
   if (data.author !== undefined) payload.author = data.author;
   if (data.content !== undefined) payload.description = data.content;
-  if (data.coverImageUrl !== undefined) payload.cover = data.coverImageUrl;
+  if (data.cover !== undefined) payload.cover = data.cover;
   return payload;
 };

@@ -17,8 +17,8 @@ export const commonPostHook = async (method, url, data) => {
     const response = await axios(req);
     return response.data;
   } catch (error) {
-    // Access Token 만료 → refresh 후 재시도
-    if (error.response?.status === 401) {
+    // Access Token 만료 → refresh 후 재시도 (기존에 로그인이 되어 있었을 때만)
+    if (error.response?.status === 401 && accessToken) {
       try {
         const newToken = await refreshAccessToken();
         const retryResponse = await axios({
