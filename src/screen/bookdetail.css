@@ -341,6 +341,20 @@
   color: var(--subtle);
 }
 
+.episode-add-btn {
+  margin-left: auto;
+  background-color: #ffc0b8;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.episode-add-btn:hover {
+  background-color: #f0a89e;
+}
+
 .no-episodes {
   font-size: 14px;
   color: var(--subtle);
