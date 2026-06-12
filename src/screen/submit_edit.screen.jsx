@@ -1,7 +1,7 @@
 import "@screen/submit_edit.screen.css";
 
 import { useState, useEffect, useRef } from "react";
-import { hookBooks } from "@hooks/books.hook.js";
+import { hookBooks, hookBookCover } from "@hooks/books.hook.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import AICoverGenerator from "@screen/AICoverGenerator.jsx";
 import { getUser } from "@utils/authStore";
@@ -13,7 +13,6 @@ function SubmitEdit() {
     content: "",
     cover: "",
   });
-  const [savedBook, setSavedBook] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +47,6 @@ function SubmitEdit() {
           content: res.content,
           cover: res.cover || "",
         });
-        setSavedBook(res);
         setAudioUrl(
           res.audioUrl || localStorage.getItem(`audio_${res.id}`) || "",
         );
@@ -112,9 +110,12 @@ function SubmitEdit() {
         title: form.title,
         author: form.author,
         content: form.content,
-        cover: form.cover || "",
         usersId: form.usersId ?? getUser()?.usersId,
       });
+
+      if (form.cover) {
+        await hookBookCover(res.id, form.cover);
+      }
 
       console.log(id ? "수정 성공:" : "등록 성공:", res);
       alert(id ? "도서가 수정되었습니다." : "도서가 등록되었습니다.");
@@ -122,7 +123,6 @@ function SubmitEdit() {
       if (id) {
         navigate(-1);
       } else {
-        setSavedBook(res);
         if (audioUrl) {
           await hookBooks("PATCH", { id: res.id, audioUrl });
         }
@@ -245,13 +245,12 @@ function SubmitEdit() {
 
             <div className="ai-body">
               <AICoverGenerator
-                book={
-                  savedBook || {
-                    title: form.title,
-                    author: form.author,
-                    content: form.content,
-                  }
-                }
+                book={{
+                  title: form.title,
+                  author: form.author,
+                  content: form.content,
+                  cover: form.cover,
+                }}
                 setForm={setForm}
                 isGenerating={isGenerating}
                 setIsGenerating={setIsGenerating}
