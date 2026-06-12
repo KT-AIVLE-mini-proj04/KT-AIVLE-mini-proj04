@@ -51,8 +51,8 @@ function EpisodeScreen() {
         </button>
 
         <div className="episode-header">
-          <span className="episode-index">{episode.episode_index}화</span>
-          <h1 className="episode-title">{episode.episode_title}</h1>
+          <span className="episode-index">{episode.episodeIndex ?? episode.episode_index}화</span>
+          <h1 className="episode-title">{episode.episodeTitle ?? episode.episode_title}</h1>
           <span className="episode-view">조회수 {episode.view ?? 0}</span>
           <span className="episode-date">
             {episode.created_at
