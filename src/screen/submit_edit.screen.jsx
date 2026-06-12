@@ -13,7 +13,6 @@ function SubmitEdit() {
     content: "",
     cover: "",
   });
-  const [savedBook, setSavedBook] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +47,6 @@ function SubmitEdit() {
           content: res.content,
           cover: res.cover || "",
         });
-        setSavedBook(res);
         setAudioUrl(
           res.audioUrl || localStorage.getItem(`audio_${res.id}`) || "",
         );
@@ -122,7 +120,6 @@ function SubmitEdit() {
       if (id) {
         navigate(-1);
       } else {
-        setSavedBook(res);
         if (audioUrl) {
           await hookBooks("PATCH", { id: res.id, audioUrl });
         }
@@ -245,13 +242,12 @@ function SubmitEdit() {
 
             <div className="ai-body">
               <AICoverGenerator
-                book={
-                  savedBook || {
-                    title: form.title,
-                    author: form.author,
-                    content: form.content,
-                  }
-                }
+                book={{
+                  title: form.title,
+                  author: form.author,
+                  content: form.content,
+                  cover: form.cover,
+                }}
                 setForm={setForm}
                 isGenerating={isGenerating}
                 setIsGenerating={setIsGenerating}
