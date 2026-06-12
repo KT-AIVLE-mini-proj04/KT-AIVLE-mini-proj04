@@ -10,15 +10,16 @@ export const hookBooks = async (method, data) => {
 
   const now = new Date().toISOString();
   if (method === "POST") {
-    data = { ...data, createdAt: now, updatedAt: now };
+    data = toBackendBook(data);
     url = `${apiBaseUrl}/books`;
   }
+
   if (method === "PATCH") {
-    data = { ...data, updatedAt: now };
+    data = toBackendBook(data);
   }
+
   const res = await commonPostHook(method, url, data);
-  console.log("Book API response:", res);
-  return res;
+  return res ? normalizeBook(res) : res;
 };
 
 const normalizeBook = (book) => ({
@@ -30,6 +31,7 @@ const normalizeBook = (book) => ({
 
 const toBackendBook = (data) => {
   const payload = {};
+  if (data.usersId !== undefined) payload.usersId = data.usersId;
   if (data.title !== undefined) payload.title = data.title;
   if (data.author !== undefined) payload.author = data.author;
   if (data.content !== undefined) payload.description = data.content;

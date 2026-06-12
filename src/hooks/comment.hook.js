@@ -4,18 +4,48 @@ const apiBaseUrl = import.meta.env.PROD
   ? import.meta.env.VITE_API_URL || "/api"
   : import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-export const hookComment = async (method, data) => {
+const normalizeComment = (comment) => ({
+  ...comment,
+  id: comment.commentsId,
+  name: comment.authorName,
+});
+
+export const hookComment = async (method, data = {}) => {
   const baseUrl = `${apiBaseUrl}/comment`;
-  console.log("Comment API called with method:", method, "and data:", data);
   let url = baseUrl;
-  if (data?.id) url = `${baseUrl}/${data.id}`;
-  else if (data?.usersId) url = `${baseUrl}?usersId=${data.usersId}`;
-  else if (data?.bookId) {
+  let body = data;
+
+  if (method === "GET") {
     const page = data.page ?? 0;
     url = `${baseUrl}?bookId=${data.bookId}&page=${page}`;
+    body = null;
   }
 
-  const res = await commonPostHook(method, url, data);
+  if (method === "POST") {
+    url = baseUrl;
+    body = {
+      bookId: Number(data.bookId),
+      content: data.content,
+    };
+  }
 
-  return res;
+  if (method === "PATCH") {
+    url = `${baseUrl}/${data.id}`;
+    body = {
+      content: data.content,
+    };
+  }
+
+  if (method === "DELETE") {
+    url = `${baseUrl}/${data.id}`;
+    body = null;
+  }
+
+  const res = await commonPostHook(method, url, body);
+
+  if (Array.isArray(res)) {
+    return res.map(normalizeComment);
+  }
+
+  return res ? normalizeComment(res) : res;
 };
