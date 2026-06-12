@@ -9,6 +9,8 @@ const parse = (key) => {
   }
 };
 
+let currentUserCache = parse(KEYS.user);
+
 const listeners = new Set();
 const notify = () => listeners.forEach((fn) => fn());
 
@@ -24,14 +26,20 @@ const store = {
     notify();
   },
 
-  getUser: () => parse(KEYS.user),
+  getUser: () => currentUserCache,
   setUser: (user) => {
-    if (user == null) localStorage.removeItem(KEYS.user);
-    else localStorage.setItem(KEYS.user, JSON.stringify(user));
+    if (user == null) {
+      localStorage.removeItem(KEYS.user);
+      currentUserCache = null;
+    } else {
+      localStorage.setItem(KEYS.user, JSON.stringify(user));
+      currentUserCache = user;
+    }
     notify();
   },
   clearUser: () => {
     localStorage.removeItem(KEYS.user);
+    currentUserCache = null;
     notify();
   },
 

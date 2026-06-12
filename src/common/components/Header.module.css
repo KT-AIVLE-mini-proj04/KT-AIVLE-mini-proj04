@@ -116,3 +116,9 @@ header {
   border-radius: 5px;
   cursor: pointer;
 }
+
+.auth-btn {
+  justify-content: center;
+  width: auto;
+  min-width: 92px;
+}
