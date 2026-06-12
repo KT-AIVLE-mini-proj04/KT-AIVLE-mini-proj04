@@ -216,7 +216,7 @@ useEffect(() => {
   }
 
   const hasCoverImage =
-    bookData.coverImageUrl && bookData.coverImageUrl.trim() !== "";
+    bookData.cover && bookData.cover.trim() !== "";
 
   return (
     <div className="book-detail-page">
@@ -230,7 +230,7 @@ useEffect(() => {
             <div className="book-cover">
               {hasCoverImage ? (
                 <img
-                  src={bookData.coverImageUrl}
+                  src={bookData.cover}
                   alt={`${bookData.title} 표지`}
                 />
               ) : (
