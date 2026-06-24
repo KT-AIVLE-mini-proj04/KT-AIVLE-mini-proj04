@@ -1,26 +1,24 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_REGION: ap-southeast-2
-    AWS_ACCOUNT_ID: "416225317325"
-    IMAGE_REPO_NAME: user105-front
+# 주의: ECR 좌표를 env.variables 로 두면 CodeBuild 프로젝트/CodePipeline 액션에 남아있는
+# 옛 값 환경변수 오버라이드(us-east-1 / 879772956301 / lms-frontend)가 이를 덮어써
+# 옛 cross-account 리포로 push되어 권한 거부가 발생함.
+# 그래서 오버라이드의 영향을 받지 않도록 ECR 주소를 명령에 직접 박아 넣음. (변수 의존 제거)
 
 phases:
   pre_build:
     commands:
       - echo "VITE_API_URL=$VITE_API_URL" > .env
       - cat .env
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
   build:
     commands:
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - docker build -t 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com/user105-front:$IMAGE_TAG .
+      - docker tag 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com/user105-front:$IMAGE_TAG 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com/user105-front:latest
 
   post_build:
     commands:
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - docker push 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com/user105-front:$IMAGE_TAG
+      - docker push 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com/user105-front:latest

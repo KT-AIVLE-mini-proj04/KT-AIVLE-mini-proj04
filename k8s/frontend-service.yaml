@@ -6,8 +6,8 @@ metadata:
 spec:
   selector:
     app: user105-front
-  ports: 
+  ports:
     - protocol: TCP
-      port: 80        # 서비스를 호출할 때 쓰는 포트
-      targetPort: 80
-  type: NodePort      # AWS Ingress Controller(ALB) 연동을 위한 표준 타입 - 이후 조정
+      port: 80        # 로드밸런서가 외부에서 받는 포트
+      targetPort: 80  # 파드(nginx) 컨테이너 포트
+  type: LoadBalancer  # AWS ELB를 자동 생성해 외부 IP/DNS로 노출
