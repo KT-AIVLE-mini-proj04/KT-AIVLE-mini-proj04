@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: lms-frontend-service
+  name: user105-front-service
   namespace: default
 spec:
   selector:
-    app: lms-frontend
+    app: user105-front
   ports: 
     - protocol: TCP
       port: 80        # 서비스를 호출할 때 쓰는 포트

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lms-frontend-deployment
+  name: user105-front-deployment
   namespace: default
 spec:
   replicas: 2
@@ -14,19 +14,19 @@ spec:
       
   selector:
     matchLabels:
-      app: lms-frontend
+      app: user105-front
   template:
     metadata:
       labels:
-        app: lms-frontend
+        app: user105-front
     spec:
       containers: # image aws_account_id: 변경사항 확인해보기, back도
       - name: frontend-container
-        image: 879772956301.dkr.ecr.us-east-1.amazonaws.com/lms-frontend:latest
+        image: 416225317325.dkr.ecr.ap-southeast-2.amazonaws.com/user105-front:latest
         
         ports:
         - containerPort: 80
 
         envFrom:
         - configMapRef:
-            name: lms-frontend-config
+            name: user105-front-config
