@@ -8,6 +8,6 @@ spec:
     app: user105-front
   ports:
     - protocol: TCP
-      port: 80        # 로드밸런서가 외부에서 받는 포트
+      port: 80        # 서비스 포트(클러스터 내부)
       targetPort: 80  # 파드(nginx) 컨테이너 포트
-  type: LoadBalancer  # AWS ELB를 자동 생성해 외부 IP/DNS로 노출
+  type: ClusterIP     # 외부 노출은 Ingress(ALB)가 담당 → 서비스는 내부 전용

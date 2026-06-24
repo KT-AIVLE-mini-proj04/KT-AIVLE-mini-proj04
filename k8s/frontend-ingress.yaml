@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: user105-front-ingress
+  namespace: default
+  annotations:
+    # 인터넷에 노출되는 ALB 생성
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    # ClusterIP 서비스의 파드 IP로 직접 타겟 등록 (EKS VPC CNI 기준)
+    alb.ingress.kubernetes.io/target-type: ip
+    # 같은 group.name 을 쓰는 다른 Ingress(백엔드)와 ALB 1개를 공유
+    alb.ingress.kubernetes.io/group.name: user105-app
+    # 규칙 평가 순서(낮을수록 먼저). 프론트의 "/" 는 catch-all 이므로 뒤로.
+    # 백엔드 Ingress(/api)는 이보다 낮은 값(예: 10)을 줘서 먼저 매칭되게 함.
+    alb.ingress.kubernetes.io/group.order: "100"
+    # 리스너: 지금은 HTTP(80). 이후 ACM 인증서 붙이면 443 추가.
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    # 헬스체크 경로 (nginx 가 index.html 서빙)
+    alb.ingress.kubernetes.io/healthcheck-path: /
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: user105-front-service
+                port:
+                  number: 80
